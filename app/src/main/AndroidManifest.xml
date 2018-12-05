@@ -12,7 +12,7 @@
         <activity
             android:name=".view.EventActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/ThemeOverlay.MyNoTitleActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,8 +23,11 @@
         <activity
             android:name=".view.PositionActivity"
             android:label="@string/title_activity_position"
-            android:theme="@style/AppTheme.NoActionBar" />
+            />
         <activity android:name=".view.PositionFormActivity"></activity>
+        <activity android:name=".view.LoginActivity"
+                android:theme="@style/ThemeOverlay.MyNoTitleActivity"/>
+        />
     </application>
 
 </manifest>

@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "831824467251",
+    "firebase_url": "https://group-expenses-omran.firebaseio.com",
+    "project_id": "group-expenses-omran",
+    "storage_bucket": "group-expenses-omran.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:831824467251:android:fe9cfca22ef7dc56",
+        "android_client_info": {
+          "package_name": "de.thm.ap.groupexpenses"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "831824467251-rdvuhu29jv47ajf75lbs7uckqgfqo9o8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "de.thm.ap.groupexpenses",
+            "certificate_hash": "e08a06149343a5a12dc144c26fc934e9f85cf7ca"
+          }
+        },
+        {
+          "client_id": "831824467251-42b0c06c77ag9tjb01bft0i84586pc9s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_dferiyBXV-QpmdvGct2-oTxwJCfcAcs"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "831824467251-42b0c06c77ag9tjb01bft0i84586pc9s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
