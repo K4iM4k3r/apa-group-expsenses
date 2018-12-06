@@ -88,6 +88,26 @@
                 android:theme="@style/ThemeOverlay.MyDarkButton" />
         </LinearLayout>
 
+        <Button
+            android:id="@+id/sendNewPassword"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/resetPassword"
+            android:theme="@style/ThemeOverlay.MyDarkButton"
+            android:layout_below="@id/passwordForgot"
+            android:layout_centerInParent="true"
+            android:visibility="gone"/>
+        <TextView
+            android:id="@+id/passwordForgot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/emailPasswordButtons"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/colorPassword"
+            android:textStyle="bold"
+            android:text="@string/password_forgot"/>
+
         <LinearLayout
             android:id="@+id/signedInButtons"
             android:layout_width="match_parent"

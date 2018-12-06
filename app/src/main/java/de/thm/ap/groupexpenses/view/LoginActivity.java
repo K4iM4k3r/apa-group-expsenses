@@ -1,15 +1,14 @@
 package de.thm.ap.groupexpenses.view;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +27,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private TextView tvDetail;
     private EditText edEmail;
     private EditText edPassword;
+    private TextView tvForgot;
+    private Button btnSendPassword;
+    private LinearLayout layoutEmailPassword;
+    private LinearLayout layoutSignedIn;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +42,22 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         tvDetail = findViewById(R.id.detail);
         edPassword = findViewById(R.id.fieldPassword);
         edEmail = findViewById(R.id.fieldEmail);
+        tvForgot = findViewById(R.id.passwordForgot);
+
+
+        btnSendPassword = findViewById(R.id.sendNewPassword);
+        layoutEmailPassword = findViewById(R.id.emailPasswordButtons);
+        layoutSignedIn = findViewById(R.id.signedInButtons);
+
+
 
         findViewById(R.id.emailSignInButton).setOnClickListener(this);
         findViewById(R.id.emailCreateAccountButton).setOnClickListener(this);
         findViewById(R.id.signOutButton).setOnClickListener(this);
         findViewById(R.id.verifyEmailButton).setOnClickListener(this);
+        findViewById(R.id.sendNewPassword).setOnClickListener(this);
+
+        tvForgot.setOnClickListener(this);
 
         auth = FirebaseAuth.getInstance();
     }
@@ -58,13 +73,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     private void createAccount(String email, String password) {
         Log.d(TAG, "createAccount:" + email);
-        if (!validateForm()) {
+        if (isInvalidForm()) {
             return;
         }
 
         showProgressDialog();
-
-        // [START create_user_with_email]
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -73,32 +86,27 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = auth.getCurrentUser();
+                            Snackbar.make(tvStatus, getString(R.string.create_account_successful), Snackbar.LENGTH_LONG).show();
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
+                            Snackbar.make(tvStatus, getString(R.string.create_account_failed), Snackbar.LENGTH_LONG).show();
                             updateUI(null);
                         }
-
-                        // [START_EXCLUDE]
                         hideProgressDialog();
-                        // [END_EXCLUDE]
                     }
                 });
-        // [END create_user_with_email]
     }
 
     private void signIn(String email, String password) {
         Log.d(TAG, "signIn:" + email);
-        if (!validateForm()) {
+        
+        if (isInvalidForm()) {
             return;
         }
-
         showProgressDialog();
 
-        // [START sign_in_with_email]
         auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -108,6 +116,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = auth.getCurrentUser();
                             if(user !=null && user.isEmailVerified()){
+                                Snackbar.make(tvStatus, getString(R.string.auth_successful), Snackbar.LENGTH_LONG).show();
                                 finish();
                             }
                             else {
@@ -116,20 +125,17 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
+                            Snackbar.make(tvStatus, getString(R.string.auth_failed), Snackbar.LENGTH_LONG).show();
                             updateUI(null);
                         }
 
-                        // [START_EXCLUDE]
+                        // task error handling
                         if (!task.isSuccessful()) {
                             tvStatus.setText(R.string.auth_failed);
                         }
                         hideProgressDialog();
-                        // [END_EXCLUDE]
                     }
                 });
-        // [END sign_in_with_email]
     }
 
     private void signOut() {
@@ -144,31 +150,31 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         // Send verification email
         // [START send_email_verification]
         final FirebaseUser user = auth.getCurrentUser();
-        user.sendEmailVerification()
-                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        // [START_EXCLUDE]
-                        // Re-enable button
-                        findViewById(R.id.verifyEmailButton).setEnabled(true);
-
-                        if (task.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this,
-                                    "Verification email sent to " + user.getEmail(),
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            Log.e(TAG, "sendEmailVerification", task.getException());
-                            Toast.makeText(LoginActivity.this,
-                                    "Failed to send verification email.",
-                                    Toast.LENGTH_SHORT).show();
+        if (user != null) {
+            user.sendEmailVerification()
+                    .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            // [START_EXCLUDE]
+                            // Re-enable button
+                            findViewById(R.id.verifyEmailButton).setEnabled(true);
+    
+                            if (task.isSuccessful()) {
+                                Toast.makeText(LoginActivity.this,
+                                        "Verification email sent to " + user.getEmail(),
+                                        Toast.LENGTH_SHORT).show();
+                            } else {
+                                Log.e(TAG, "sendEmailVerification", task.getException());
+                                Toast.makeText(LoginActivity.this,
+                                        "Failed to send verification email.",
+                                        Toast.LENGTH_SHORT).show();
+                            }
                         }
-                        // [END_EXCLUDE]
-                    }
-                });
-        // [END send_email_verification]
+                    });
+        }
     }
 
-    private boolean validateForm() {
+    private boolean isInvalidForm() {
         boolean valid = true;
 
         String email = edEmail.getText().toString();
@@ -187,7 +193,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             edPassword.setError(null);
         }
 
-        return valid;
+        return !valid;
     }
 
     private void updateUI(FirebaseUser user) {
@@ -199,9 +205,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     user.getEmail(), user.isEmailVerified()));
             tvDetail.setText(getString(R.string.firebase_status_fmt, user.getUid()));
 
-            findViewById(R.id.emailPasswordButtons).setVisibility(View.GONE);
+            layoutEmailPassword.setVisibility(View.GONE);
             findViewById(R.id.emailPasswordFields).setVisibility(View.GONE);
-            findViewById(R.id.signedInButtons).setVisibility(View.VISIBLE);
+            layoutSignedIn.setVisibility(View.VISIBLE);
 
             findViewById(R.id.verifyEmailButton).setEnabled(!user.isEmailVerified());
 
@@ -211,23 +217,78 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             tvDetail.setText(null);
 
             findViewById(R.id.info).setVisibility(View.GONE);
-            findViewById(R.id.emailPasswordButtons).setVisibility(View.VISIBLE);
+            layoutEmailPassword.setVisibility(View.VISIBLE);
             findViewById(R.id.emailPasswordFields).setVisibility(View.VISIBLE);
-            findViewById(R.id.signedInButtons).setVisibility(View.GONE);
+            layoutSignedIn.setVisibility(View.GONE);
         }
     }
 
     @Override
     public void onClick(View v) {
-        int i = v.getId();
-        if (i == R.id.emailCreateAccountButton) {
-            createAccount(edEmail.getText().toString(), edPassword.getText().toString());
-        } else if (i == R.id.emailSignInButton) {
-            signIn(edEmail.getText().toString(), edPassword.getText().toString());
-        } else if (i == R.id.signOutButton) {
-            signOut();
-        } else if (i == R.id.verifyEmailButton) {
-            sendEmailVerification();
+        switch (v.getId()){
+            case R.id.emailCreateAccountButton:
+                createAccount(edEmail.getText().toString(), edPassword.getText().toString());
+                break;
+            case R.id.emailSignInButton:
+                signIn(edEmail.getText().toString(), edPassword.getText().toString());
+                break;
+            case R.id.signOutButton:
+                signOut();
+                break;
+            case R.id.verifyEmailButton:
+                sendEmailVerification();
+                break;
+            case R.id.passwordForgot:
+                showPasswordForgot();
+                break;
+            case R.id.sendNewPassword:
+                sendNewPassword();
+            default:
+                break;
         }
+    }
+
+    private void sendNewPassword() {
+        showProgressDialog();
+
+        final String email = edEmail.getText().toString();
+        if (TextUtils.isEmpty(email)) {
+            edEmail.setError("Required.");
+        } else {
+            edEmail.setError(null);
+            auth.sendPasswordResetEmail(email).addOnCompleteListener(this, new OnCompleteListener<Void>() {
+
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    hideProgressDialog();
+
+                    if (task.isSuccessful()) {
+                        Snackbar.make(tvStatus, getString(R.string.resetPassword_success, email), Snackbar.LENGTH_LONG).show();
+
+                        //change Layout back to Login
+                        edPassword.setVisibility(View.VISIBLE);
+                        tvForgot.setVisibility(View.VISIBLE);
+                        layoutEmailPassword.setVisibility(View.VISIBLE);
+                        layoutSignedIn.setVisibility(View.VISIBLE);
+                        btnSendPassword.setVisibility(View.GONE);
+
+                    }
+                    else {
+                        Snackbar.make(tvStatus, getString(R.string.resetPassword_error), Snackbar.LENGTH_LONG).show();
+                    }
+                }
+            });
+
+        }
+
+    }
+
+    private void showPasswordForgot() {
+        edPassword.setVisibility(View.GONE);
+        tvForgot.setVisibility(View.GONE);
+        btnSendPassword.setVisibility(View.VISIBLE);
+        layoutEmailPassword.setVisibility(View.GONE);
+        layoutSignedIn.setVisibility(View.GONE);
+
     }
 }
