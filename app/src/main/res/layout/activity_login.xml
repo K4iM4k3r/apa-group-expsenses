@@ -145,6 +145,8 @@
             android:layout_height="wrap_content"
             android:visibility="gone"
             android:id="@+id/info"
+            android:padding="16dp"
+            android:layout_above="@id/signedInButtons"
 
             android:orientation="vertical">
             <TextView

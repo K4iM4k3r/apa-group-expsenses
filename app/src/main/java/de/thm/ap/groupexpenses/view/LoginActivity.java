@@ -1,8 +1,11 @@
 package de.thm.ap.groupexpenses.view;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -20,7 +23,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import de.thm.ap.groupexpenses.R;
 
-public class LoginActivity extends BaseActivity implements View.OnClickListener {
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "LoginActivity";
     private FirebaseAuth auth;
     private TextView tvStatus;
@@ -31,6 +34,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private Button btnSendPassword;
     private LinearLayout layoutEmailPassword;
     private LinearLayout layoutSignedIn;
+    @VisibleForTesting
+    public ProgressDialog mProgressDialog;
 
 
     @Override
@@ -48,7 +53,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         btnSendPassword = findViewById(R.id.sendNewPassword);
         layoutEmailPassword = findViewById(R.id.emailPasswordButtons);
         layoutSignedIn = findViewById(R.id.signedInButtons);
-
 
 
         findViewById(R.id.emailSignInButton).setOnClickListener(this);
@@ -69,6 +73,12 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = auth.getCurrentUser();
         updateUI(currentUser);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        hideProgressDialog();
     }
 
     private void createAccount(String email, String password) {
@@ -160,14 +170,10 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                             findViewById(R.id.verifyEmailButton).setEnabled(true);
     
                             if (task.isSuccessful()) {
-                                Toast.makeText(LoginActivity.this,
-                                        "Verification email sent to " + user.getEmail(),
-                                        Toast.LENGTH_SHORT).show();
+                                Snackbar.make(tvStatus, getString(R.string.info_verification_fmt, user.getEmail()), Snackbar.LENGTH_LONG).show();
                             } else {
                                 Log.e(TAG, "sendEmailVerification", task.getException());
-                                Toast.makeText(LoginActivity.this,
-                                        "Failed to send verification email.",
-                                        Toast.LENGTH_SHORT).show();
+                                Snackbar.make(tvStatus, getString(R.string.info_verification_error), Snackbar.LENGTH_LONG).show();
                             }
                         }
                     });
@@ -203,23 +209,42 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             findViewById(R.id.info).setVisibility(View.VISIBLE);
             tvStatus.setText(getString(R.string.emailpassword_status_fmt,
                     user.getEmail(), user.isEmailVerified()));
-            tvDetail.setText(getString(R.string.firebase_status_fmt, user.getUid()));
+
+            tvDetail.setText(getString(R.string.detail_verification));
 
             layoutEmailPassword.setVisibility(View.GONE);
             findViewById(R.id.emailPasswordFields).setVisibility(View.GONE);
             layoutSignedIn.setVisibility(View.VISIBLE);
-
+            tvForgot.setVisibility(View.GONE);
             findViewById(R.id.verifyEmailButton).setEnabled(!user.isEmailVerified());
 
 
         } else {
             tvStatus.setText(R.string.signed_out);
             tvDetail.setText(null);
-
+            tvForgot.setVisibility(View.VISIBLE);
             findViewById(R.id.info).setVisibility(View.GONE);
             layoutEmailPassword.setVisibility(View.VISIBLE);
             findViewById(R.id.emailPasswordFields).setVisibility(View.VISIBLE);
             layoutSignedIn.setVisibility(View.GONE);
+        }
+    }
+
+
+
+    public void showProgressDialog() {
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(this);
+            mProgressDialog.setMessage(getString(R.string.loading));
+            mProgressDialog.setIndeterminate(true);
+        }
+
+        mProgressDialog.show();
+    }
+
+    public void hideProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
         }
     }
 
@@ -239,16 +264,16 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 sendEmailVerification();
                 break;
             case R.id.passwordForgot:
-                showPasswordForgot();
+                showPasswordForgot(true);
                 break;
             case R.id.sendNewPassword:
-                sendNewPassword();
+                sendPasswordResetEmail();
             default:
                 break;
         }
     }
 
-    private void sendNewPassword() {
+    private void sendPasswordResetEmail() {
         showProgressDialog();
 
         final String email = edEmail.getText().toString();
@@ -266,12 +291,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         Snackbar.make(tvStatus, getString(R.string.resetPassword_success, email), Snackbar.LENGTH_LONG).show();
 
                         //change Layout back to Login
-                        edPassword.setVisibility(View.VISIBLE);
-                        tvForgot.setVisibility(View.VISIBLE);
-                        layoutEmailPassword.setVisibility(View.VISIBLE);
-                        layoutSignedIn.setVisibility(View.VISIBLE);
-                        btnSendPassword.setVisibility(View.GONE);
-
+                        showPasswordForgot(false);
                     }
                     else {
                         Snackbar.make(tvStatus, getString(R.string.resetPassword_error), Snackbar.LENGTH_LONG).show();
@@ -283,12 +303,22 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     }
 
-    private void showPasswordForgot() {
-        edPassword.setVisibility(View.GONE);
-        tvForgot.setVisibility(View.GONE);
-        btnSendPassword.setVisibility(View.VISIBLE);
-        layoutEmailPassword.setVisibility(View.GONE);
-        layoutSignedIn.setVisibility(View.GONE);
+    private void showPasswordForgot(boolean visible) {
+        if(visible){
+            edPassword.setVisibility(View.GONE);
+            tvForgot.setVisibility(View.GONE);
+            btnSendPassword.setVisibility(View.VISIBLE);
+            layoutEmailPassword.setVisibility(View.GONE);
+            layoutSignedIn.setVisibility(View.GONE);
+        }
+        else{
+            edPassword.setVisibility(View.VISIBLE);
+            tvForgot.setVisibility(View.VISIBLE);
+            btnSendPassword.setVisibility(View.GONE);
+            layoutEmailPassword.setVisibility(View.VISIBLE);
+            layoutSignedIn.setVisibility(View.VISIBLE);
+        }
+
 
     }
 }
