@@ -2,4 +2,27 @@
     <string name="app_name">GroupExpenses</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_position">PositionActivity</string>
+    <string name="loading">loading</string>
+    <string name="desc_firebase_lockup">firebase lookup</string>
+    <string name="login_title">Group Expenses</string>
+    <string name="signed_out">Sign out</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="sign_in">Sign In</string>
+    <string name="create_account">Create Account</string>
+    <string name="sign_out">Sign out</string>
+    <string name="verify_email">Confirm</string>
+    <string name="emailpassword_status_fmt">Email User: %1$s (verified: %2$b)</string>
+    <string name="firebase_status_fmt">Firebase User: %s</string>
+    <string name="auth_failed">Auth failed</string>
+    <string name="auth_successful">Login erfolgreich</string>
+    <string name="create_account_failed">Create new Account failed</string>
+    <string name="create_account_successful">Account successful create</string>
+    <string name="password_forgot">Passwort vergessen?</string>
+    <string name="resetPassword">Passwort reseten</string>
+    <string name="resetPassword_success">Send ResetEmail to %s</string>
+    <string name="resetPassword_error">Error occurred</string>
+    <string name="info_verification_fmt">Verification email sent to %s</string>
+    <string name="info_verification_error">Failed to send verification email.</string>
+    <string name="detail_verification">Sie müssen erst ihre Email bestätigen, um die App nutzen zu können!</string>
 </resources>
