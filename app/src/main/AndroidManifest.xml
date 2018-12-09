@@ -30,6 +30,7 @@
         <activity
             android:name=".view.FriendsActivity"
             android:label="@string/title_activity_friends"
+            android:theme="@style/AppTheme.NoActionBar"
             android:exported="true" />
         <activity android:name=".view.LoginActivity"
                 android:theme="@style/ThemeOverlay.MyNoTitleActivity"/>
