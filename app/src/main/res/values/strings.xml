@@ -2,4 +2,7 @@
     <string name="app_name">GroupExpenses</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_position">PositionActivity</string>
+    <string name="title_activity_friends">FriendsActivity</string>
+    <string name="no_friends">Sie haben noch keine Freunde</string>
+    <string name="FriendsActivityTitle">Freunde</string>
 </resources>

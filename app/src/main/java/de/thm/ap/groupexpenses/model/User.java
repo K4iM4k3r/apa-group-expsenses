@@ -1,8 +1,10 @@
 package de.thm.ap.groupexpenses.model;
 
+import android.support.annotation.NonNull;
+
 import java.util.Date;
 
-public class User {
+public class User implements Comparable<User> {
 
     int id;
 
@@ -56,4 +58,15 @@ public class User {
         return this.id == otherUser.getId();
     }
 
+    @NonNull
+    @Override
+    public String toString(){
+        return firstName + " " + lastName;
+    }
+
+    // allows Collections.sort() by first name
+    @Override
+    public int compareTo(User other) {
+        return this.firstName.compareTo(other.firstName);
+    }
 }
