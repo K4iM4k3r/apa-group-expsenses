@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_item_start"
+        android:orderInCategory="1"
+        android:title="@string/menu_item_example" />
+    <item
+        android:id="@+id/menu_item_profile"
+        android:title="@string/menu_item_profile"/>
+    <item
+        android:id="@+id/menu_item_logout"
+        android:title="@string/menu_item_logout"/>
+</menu>

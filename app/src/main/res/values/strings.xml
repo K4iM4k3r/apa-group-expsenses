@@ -25,4 +25,7 @@
     <string name="info_verification_fmt">Verification email sent to %s</string>
     <string name="info_verification_error">Failed to send verification email.</string>
     <string name="detail_verification">Sie müssen erst ihre Email bestätigen, um die App nutzen zu können!</string>
+    <string name="menu_item_example">Test</string>
+    <string name="menu_item_logout">logout</string>
+    <string name="menu_item_profile">Profil</string>
 </resources>
