@@ -3,9 +3,10 @@
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/login_background"
     android:orientation="vertical"
     android:weightSum="4">
+    <!--/    android:background="@drawable/login_background"-->
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,7 +19,6 @@
             android:id="@+id/titleText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/title_bottom_margin"
             android:text="@string/login_title"
             android:theme="@style/ThemeOverlay.MyTitleText" />
 
