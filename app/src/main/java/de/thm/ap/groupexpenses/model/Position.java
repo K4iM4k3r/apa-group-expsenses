@@ -1,51 +1,35 @@
 package de.thm.ap.groupexpenses.model;
 
-import android.text.TextUtils;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
+import java.util.Map;
 
 public class Position {
 
     int id;
 
-    private String topic;
-    private int value;
+    private HistoryValue topic;
+    private HistoryValue value;
+
     private final User creator;
 
-    private List<String> topicHistory;
-    private List<Integer> valueHistory;
-
-    public Position(User creator){
+    public Position(User creator, String topic, Integer value){
         this.creator = creator;
-        topicHistory = new ArrayList<>();
-        valueHistory = new ArrayList<>();
-    }
-    public Position(User creator, String topic, int value){
-        this.creator = creator;
-        this.topic = topic;
-        this.value = value;
-        this.topicHistory = new ArrayList<>();
-        this.valueHistory = new ArrayList<>();
-
-        topicHistory.add(topic);
-        valueHistory.add(value);
+        this.topic = new HistoryValue(topic);
+        this.value = new HistoryValue(value);
     }
 
     public void setTopic(String topic){
-        this.topic = topic;
-        topicHistory.add(topic);
+        this.topic.set(topic);
     }
-    public void setValue(int value){
-        this.value = value;
-        valueHistory.add(value);
+    public void setValue(Integer value){
+        this.value.set(value);
     }
 
     public String getTopic(){
-        return topic;
+        return (String) topic.get();
     }
     public int getValue(){
-        return value;
+        return (int) value.get();
     }
     public int getId() {
         return id;
@@ -53,15 +37,16 @@ public class Position {
     public User getCreator() {
         return creator;
     }
-    public String getTopicHistory() {
-        return TextUtils.join(", ", topicHistory);
+
+    public Map<Date, String> getTopicHistory() {
+        return topic.getHistory();
     }
-    public String getValueHistory() {
-        return TextUtils.join(", ", valueHistory);
+    public Map<Date, Integer> getValueHistory() {
+        return value.getHistory();
     }
 
     public float getFactorizedValue(float factor){
-        return value*factor;
+        return ((Integer)value.get()*factor);
     }
 
 }
