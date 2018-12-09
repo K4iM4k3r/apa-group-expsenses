@@ -14,7 +14,7 @@ import static junit.framework.TestCase.assertEquals;
 
 public class StatsTest {
 
-    User creator = new User(0, "Nils", "Müller", "nMueller@mail.de");;
+    User creator = new User(0, "Nils", "Müller", "nMueller@mail.de");
     User[] member = new User[]{
             new User(1, "Jan", "Müller", "jMueller@mail.de"),
             new User(2, "Tom", "Müller", "tMueller@mail.de"),
