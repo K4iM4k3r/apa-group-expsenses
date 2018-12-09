@@ -56,4 +56,9 @@ public class User {
         return this.id == otherUser.getId();
     }
 
+    @Override
+    public String toString(){
+        return firstName + " " + lastName;
+    }
+
 }

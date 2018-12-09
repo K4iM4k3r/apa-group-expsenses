@@ -1,9 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
-    tools:context=".view.EventFormActivity">
+    android:layout_width="match_parent"
+    android:orientation="vertical">
 
-</android.support.constraint.ConstraintLayout>
+    <TextView
+        android:id="@+id/event_form_name_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/event_form_name" />
+
+    <EditText
+        android:id="@+id/event_form_name_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="text"
+        android:maxLength="50" />
+
+    <TextView
+        android:id="@+id/event_form_date_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/event_form_date" />
+
+    <EditText
+        android:id="@+id/event_form_date_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="text" />
+
+
+    <TextView
+        android:id="@+id/event_form_info_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/event_form_info" />
+
+    <EditText
+        android:id="@+id/event_form_info_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textMultiLine"
+        android:singleLine="false"
+        android:maxLength="500"/>
+
+    <Button
+        android:id="@+id/event_form_add_members_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/event_form_add_members" />
+
+</LinearLayout>

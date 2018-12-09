@@ -25,6 +25,7 @@
             android:label="@string/title_activity_position"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".view.PositionFormActivity"></activity>
+        <activity android:name=".view.AddUsersActivity"></activity>
     </application>
 
 </manifest>
