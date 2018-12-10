@@ -5,19 +5,22 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
 
+import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.User;
@@ -80,6 +83,23 @@ public class EventActivity extends AppCompatActivity {
             public void onClick(View view) {
                 startActivityForResult(new Intent(EventActivity.this,
                         EventFormActivity.class), EVENT_CREATE_SUCCESS);
+            }
+        });
+
+        eventList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Event selectedEvent = (Event) eventList.getItemAtPosition(position);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder( EventActivity.this);
+                builder.setTitle(R.string.event_form_info);
+                builder.setMessage(
+                        Html.fromHtml(selectedEvent.getInfo() + "<br><br>" +
+                        "<b>" + getString(R.string.event_form_users) + ": " + "</b>" +
+                        App.listToHTMLString(selectedEvent.getUsers()))
+                );
+                builder.show();
             }
         });
     }

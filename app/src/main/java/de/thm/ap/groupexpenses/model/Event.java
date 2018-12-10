@@ -12,17 +12,17 @@ public class Event implements Serializable {
     private String date;
     private String info;
     private final User creator;
-    private List<User> member;
+    private List<User> users;
     private List<Position> positions;
 
-    public Event(User creator, String name, String date, String info, List<User> member) {
+    public Event(User creator, String name, String date, String info, List<User> users) {
         this.creator = creator;
         this.name = name;
         this.date = date;
         this.info = info;
-        this.member = new ArrayList<>();
-        this.member.add(creator);
-        this.member.addAll(member);
+        this.users = new ArrayList<>();
+        this.users.add(creator);
+        this.users.addAll(users);
         this.positions = new ArrayList<>();
     }
     public Event(User creator, String name, String date, String info) {
@@ -30,8 +30,8 @@ public class Event implements Serializable {
         this.name = name;
         this.date = date;
         this.info = info;
-        this.member = new ArrayList<>();
-        this.member.add(creator);
+        this.users = new ArrayList<>();
+        this.users.add(creator);
         this.positions = new ArrayList<>();
     }
 
@@ -56,11 +56,11 @@ public class Event implements Serializable {
     public void setInfo(String info) {
         this.info = info;
     }
-    public List<User> getMember() {
-        return member;
+    public List<User> getUsers() {
+        return users;
     }
-    public void addMember(User user) {
-        this.member.add(user);
+    public void addUser(User user) {
+        this.users.add(user);
     }
     public List<Position> getPositions() {
         return positions;
@@ -75,8 +75,8 @@ public class Event implements Serializable {
     }
 
     public float getPositionFactor(boolean positive){
-        float posFactor = (float)(member.size()-1) / (float)member.size();
-        float negFactor = (float) (1.00/member.size());
+        float posFactor = (float)(users.size()-1) / (float) users.size();
+        float negFactor = (float) (1.00/ users.size());
         return positive? posFactor: negFactor;
     }
 
