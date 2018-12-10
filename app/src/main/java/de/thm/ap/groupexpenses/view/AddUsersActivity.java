@@ -64,37 +64,28 @@ public class AddUsersActivity extends AppCompatActivity {
 
         eventUserList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                View listItem = view;
-
-                if (listItem == null)
-                    listItem = LayoutInflater.from(getApplicationContext()).inflate(R.layout.list_item_layout, parent, false);
-
                 User selectedUser = (User) eventUserList.getItemAtPosition(position);
 
-                ImageView image = listItem.findViewById(R.id.add_user_imageView);
-                if(image.getVisibility() == View.INVISIBLE){
-                    image.setVisibility(View.VISIBLE);
-                    selectedUsers.add(selectedUser);
-                } else if(image.getVisibility() == View.VISIBLE){
-                    image.setVisibility(View.INVISIBLE);
+                if(selectedUsers.contains(selectedUser))
                     selectedUsers.remove(selectedUser);
-                }
+                else
+                    selectedUsers.add(selectedUser);
+
                 userArrayAdapter.notifyDataSetChanged();
             }
         });
 
         userPickEditText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
-            }
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                userArrayAdapter.getFilter().filter(charSequence);}
+                userArrayAdapter.getFilter().filter(charSequence);
+            }
 
             @Override
-            public void afterTextChanged(Editable s) {
-            }
+            public void afterTextChanged(Editable s) {}
         });
     }
 
@@ -110,7 +101,7 @@ public class AddUsersActivity extends AppCompatActivity {
 
         if (id == R.id.add_users_finish_btn) {
             Intent returnIntent = new Intent();
-            returnIntent.putExtra("selectedUsers",selectedUsers);
+            returnIntent.putExtra("selectedUsers", selectedUsers);
             setResult(Activity.RESULT_OK,returnIntent);
             finish();
         }
@@ -133,13 +124,17 @@ public class AddUsersActivity extends AppCompatActivity {
             View listItem = convertView;
 
             if (listItem == null)
-                listItem = LayoutInflater.from(mContext).inflate(R.layout.list_item_layout, parent, false);
+                listItem = LayoutInflater.from(mContext).inflate(R.layout.list_item_layout, parent,
+                        false);
 
             User currentUser = usersList.get(position);
 
-            //ImageView image = listItem.findViewById(R.id.add_user_imageView);
-            //image.setVisibility(View.VISIBLE);
-            //image.setImageResource(currentMovie.getmImageDrawable());
+            ImageView image = listItem.findViewById(R.id.add_user_imageView);
+
+            if(selectedUsers.contains(currentUser))
+                image.setVisibility(View.VISIBLE);
+            else
+                image.setVisibility(View.INVISIBLE);
 
             TextView name = listItem.findViewById(R.id.add_user_textView);
             name.setText(currentUser.toString());
