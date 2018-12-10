@@ -100,14 +100,15 @@ public class EventFormActivity extends AppCompatActivity {
             if(eventNameEditText.getText().toString().isEmpty()){
                 eventNameEditText.setError(getString(R.string.error_field_required));
                 eventNameEditText.requestFocus();
-            } else if(eventInfoEditText.getText().toString().isEmpty()){
-                eventInfoEditText.setError(getString(R.string.error_field_required));
-                eventInfoEditText.requestFocus();
             } else if(eventDateEditText.getText().toString().isEmpty()){
                 eventDateEditText.setError(getString(R.string.error_field_required));
                 eventDateEditText.requestFocus();
             } else if(!isValidDate(eventDateEditText.getText().toString())){
                 eventDateEditText.setError(getString(R.string.error_invalid_date));
+            } else if(eventUsersList == null || eventUsersList.isEmpty()){
+                eventUsersTextView.setText(getString(R.string.error_users_required));
+                addMembersBtn.setError("");
+                addMembersBtn.requestFocus();
             } else {
                 // save event strings here
                 User creator = new User(1,"Lukas", "Hilfrich", "l.hilfrich@gmx.de");

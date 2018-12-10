@@ -9,6 +9,7 @@
     <string name="event_form_users">Teilnehmer</string>
     <string name="event_form_create_event">Neues Event erstellen</string>
     <string name="error_field_required">Feld darf nicht leer sein!</string>
+    <string name="error_users_required">Mindestens ein Teilnehmer muss vorhanden sein!</string>
     <string name="error_invalid_date">Ungültiges Datum!</string>
     <string name="done">Fertig</string>
     <string name="no_users">Keine Teilnehmer</string>
