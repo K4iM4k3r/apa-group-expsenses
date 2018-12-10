@@ -14,6 +14,15 @@ public class Event {
     private List<User> member;
     private List<Position> positions;
 
+    public Event(User creator, String name, String date, String info, List<User> member, List<Position> positions) {
+        this.name = name;
+        this.date = date;
+        this.info = info;
+        this.creator = creator;
+        this.member = member;
+        this.positions = positions;
+    }
+
     public Event(User creator, String name, String date, String info, List<User> member) {
         this.creator = creator;
         this.name = name;
