@@ -70,6 +70,8 @@ public class AddUsersActivity extends AppCompatActivity {
                     selectedUsers.remove(selectedUser);
                 else
                     selectedUsers.add(selectedUser);
+
+                userArrayAdapter.notifyDataSetChanged();
             }
         });
 

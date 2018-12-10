@@ -20,6 +20,7 @@ import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.User;
@@ -105,6 +106,7 @@ public class EventFormActivity extends AppCompatActivity {
                 eventDateEditText.requestFocus();
             } else if(!isValidDate(eventDateEditText.getText().toString())){
                 eventDateEditText.setError(getString(R.string.error_invalid_date));
+                eventDateEditText.requestFocus();
             } else if(eventUsersList == null || eventUsersList.isEmpty()){
                 eventUsersTextView.setText(getString(R.string.error_users_required));
                 addMembersBtn.setError("");
@@ -112,8 +114,11 @@ public class EventFormActivity extends AppCompatActivity {
             } else {
                 // save event strings here
                 User creator = new User(1,"Lukas", "Hilfrich", "l.hilfrich@gmx.de");
+                String eventName = eventNameEditText.getText().toString().trim();
+                eventName = eventName.substring(0,1).toUpperCase() + eventName.substring(1);
+
                 Event event = new Event(creator,
-                        eventNameEditText.getText().toString(),
+                        eventName,
                         eventDateEditText.getText().toString(),
                         eventInfoEditText.getText().toString(),
                         eventUsersList
@@ -132,7 +137,7 @@ public class EventFormActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == USER_PICK_SUCCESS) {
             eventUsersList = (ArrayList<User>) data.getExtras().getSerializable("selectedUsers");
-            this.eventUsersTextView.setText(eventUsersList.toString());
+            this.eventUsersTextView.setText(App.listToString(eventUsersList));
         }
     }
 

@@ -12,6 +12,7 @@
     <string name="error_users_required">Mindestens ein Teilnehmer muss vorhanden sein!</string>
     <string name="error_invalid_date">Ungültiges Datum!</string>
     <string name="done">Fertig</string>
-    <string name="no_users">Keine Teilnehmer</string>
+    <string name="no_events">Keine Events vorhanden!</string>
+    <string name="total_balance">Gesamtbilanz</string>
 </resources>
 

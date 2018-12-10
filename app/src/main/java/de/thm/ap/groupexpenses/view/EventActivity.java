@@ -2,12 +2,14 @@ package de.thm.ap.groupexpenses.view;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
@@ -27,6 +29,7 @@ import de.thm.ap.groupexpenses.model.User;
 
 public class EventActivity extends AppCompatActivity {
 
+    private TextView eventSummary, totalBalance;
     private ListView eventList;
     private ArrayList<Event> events;
     private EventArrayAdapter eventAdapter;
@@ -38,6 +41,8 @@ public class EventActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event);
 
+        eventSummary = findViewById(R.id.event_summary);
+        totalBalance = findViewById(R.id.balance_total);
         eventList = findViewById(R.id.event_list);
 
         events = new ArrayList<>();
@@ -89,7 +94,6 @@ public class EventActivity extends AppCompatActivity {
         eventList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
                 Event selectedEvent = (Event) eventList.getItemAtPosition(position);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder( EventActivity.this);
@@ -107,7 +111,16 @@ public class EventActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        int test = 0;
+        if(!events.isEmpty()){
+            eventSummary.setText(getString(R.string.total_balance) + ":");
+            eventSummary.setTextSize(30.f);
+            eventSummary.setTextColor(Color.RED);
+            // calculate balance here and show it in 'totalBalance.setText'
+            totalBalance.setVisibility(View.VISIBLE);
+            totalBalance.setText("-20€");
+            totalBalance.setTextSize(30.f);
+            totalBalance.setTextColor(Color.RED);
+        }
     }
 
     @Override
