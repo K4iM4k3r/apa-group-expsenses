@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -28,14 +29,12 @@ import de.thm.ap.groupexpenses.model.User;
 public class EventFormActivity extends AppCompatActivity {
 
     private EditText eventNameEditText, eventDateEditText, eventInfoEditText;
+    private TextView eventUsers;
+    private ArrayList<String> selectedUsers;
     private Button addMembersBtn;
     private DatePickerDialog.OnDateSetListener dateSetListener;
-    private ArrayAdapter<String> membersAdapter;
-
-    private static final int CONTACT_PICK_SUCCESS = 27478;
-
-    private ArrayList<User> selectedUsers;
     private boolean fromDateSet;
+    private static final int CONTACT_PICK_SUCCESS = 27478;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +45,7 @@ public class EventFormActivity extends AppCompatActivity {
         eventDateEditText = findViewById(R.id.event_form_date_edit);
         eventInfoEditText = findViewById(R.id.event_form_info_edit);
         addMembersBtn = findViewById(R.id.event_form_add_members_btn);
-
-
-        // usersInContactList.add etc.
-
+        eventUsers = findViewById(R.id.event_form_users_textView);
 
         addMembersBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,7 +122,8 @@ public class EventFormActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CONTACT_PICK_SUCCESS) {
-
+            ArrayList<User> users = (ArrayList<User>) data.getExtras().getSerializable("selectedUsers");
+            eventUsers.setText(users.toString());
         }
     }
 

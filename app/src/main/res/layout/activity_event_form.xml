@@ -47,6 +47,21 @@
         android:singleLine="false"
         android:maxLength="500"/>
 
+    <TextView
+        android:id="@+id/event_form_info_view2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/event_form_users" />
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/event_form_users_textView"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="@string/no_users"
+        android:textAlignment="textStart"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="18sp"></TextView>
+
     <Button
         android:id="@+id/event_form_add_members_btn"
         android:layout_width="match_parent"

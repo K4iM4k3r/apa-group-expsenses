@@ -1,15 +1,16 @@
 package de.thm.ap.groupexpenses.view;
 
+import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.Movie;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -22,7 +23,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.StreamHandler;
 
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.model.User;
@@ -96,6 +96,25 @@ public class AddUsersActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.add_users_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.add_users_finish_btn) {
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("selectedUsers",selectedUsers);
+            setResult(Activity.RESULT_OK,returnIntent);
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private class UserArrayAdapter extends ArrayAdapter<User> {

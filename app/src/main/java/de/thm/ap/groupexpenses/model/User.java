@@ -1,8 +1,9 @@
 package de.thm.ap.groupexpenses.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class User {
+public class User implements Serializable{
 
     int id;
 
