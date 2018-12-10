@@ -1,5 +1,6 @@
 package de.thm.ap.groupexpenses.view;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -8,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -40,6 +42,9 @@ public class EventActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event);
+        Toolbar toolbar = findViewById(R.id.event_toolbar);
+        setSupportActionBar(toolbar);
+
 
         eventSummary = findViewById(R.id.event_summary);
         totalBalance = findViewById(R.id.balance_total);
@@ -147,11 +152,15 @@ public class EventActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == EVENT_CREATE_SUCCESS) {
-            Event event  = (Event) data.getExtras().getSerializable("createdEvent");
-            events.add(event);
-            eventAdapter.clear();
-            eventAdapter.addAll(events);
+        if(resultCode == Activity.RESULT_OK){
+            switch(requestCode) {
+                case EVENT_CREATE_SUCCESS:
+                    Event event  = (Event) data.getExtras().getSerializable("createdEvent");
+                    events.add(event);
+                    eventAdapter.clear();
+                    eventAdapter.addAll(events);
+                    break;
+            }
         }
     }
 

@@ -135,9 +135,13 @@ public class EventFormActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == USER_PICK_SUCCESS) {
-            eventUsersList = (ArrayList<User>) data.getExtras().getSerializable("selectedUsers");
-            this.eventUsersTextView.setText(App.listToString(eventUsersList));
+        if(resultCode == Activity.RESULT_OK){
+            switch (requestCode){
+                case USER_PICK_SUCCESS:
+                    eventUsersList = (ArrayList<User>) data.getExtras().getSerializable("selectedUsers");
+                    this.eventUsersTextView.setText(App.listToString(eventUsersList));
+                    break;
+            }
         }
     }
 
