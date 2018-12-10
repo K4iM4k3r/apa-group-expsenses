@@ -1,9 +1,10 @@
 package de.thm.ap.groupexpenses.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Event {
+public class Event implements Serializable {
 
     private int id;
 
@@ -40,6 +41,9 @@ public class Event {
     public void setName(String name) {
         this.name = name;
     }
+    public String getCreator() {
+        return creator.toString();
+    }
     public String getDate() {
         return date;
     }
@@ -75,5 +79,8 @@ public class Event {
         float negFactor = (float) (1.00/member.size());
         return positive? posFactor: negFactor;
     }
+
+    @Override
+    public String toString(){ return name; }
 
 }

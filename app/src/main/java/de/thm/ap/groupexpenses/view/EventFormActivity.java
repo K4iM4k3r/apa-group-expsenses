@@ -10,12 +10,9 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -24,17 +21,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.thm.ap.groupexpenses.R;
+import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.User;
 
 public class EventFormActivity extends AppCompatActivity {
 
     private EditText eventNameEditText, eventDateEditText, eventInfoEditText;
-    private TextView eventUsers;
-    private ArrayList<String> selectedUsers;
+    private TextView eventUsersTextView;
+    private ArrayList<User> eventUsersList;
     private Button addMembersBtn;
     private DatePickerDialog.OnDateSetListener dateSetListener;
     private boolean fromDateSet;
-    private static final int CONTACT_PICK_SUCCESS = 27478;
+    private static final int USER_PICK_SUCCESS = 27478;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,14 +43,14 @@ public class EventFormActivity extends AppCompatActivity {
         eventDateEditText = findViewById(R.id.event_form_date_edit);
         eventInfoEditText = findViewById(R.id.event_form_info_edit);
         addMembersBtn = findViewById(R.id.event_form_add_members_btn);
-        eventUsers = findViewById(R.id.event_form_users_textView);
+        eventUsersTextView = findViewById(R.id.event_form_users_textView);
 
         addMembersBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivityForResult(new Intent(
                         EventFormActivity.this, AddUsersActivity.class),
-                        CONTACT_PICK_SUCCESS);
+                        USER_PICK_SUCCESS);
             }
         });
 
@@ -112,7 +110,17 @@ public class EventFormActivity extends AppCompatActivity {
                 eventDateEditText.setError(getString(R.string.error_invalid_date));
             } else {
                 // save event strings here
+                User creator = new User(1,"Lukas", "Hilfrich", "l.hilfrich@gmx.de");
+                Event event = new Event(creator,
+                        eventNameEditText.getText().toString(),
+                        eventDateEditText.getText().toString(),
+                        eventInfoEditText.getText().toString(),
+                        eventUsersList
+                        );
 
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("createdEvent", event);
+                setResult(Activity.RESULT_OK, returnIntent);
                 finish();
             }
         }
@@ -121,9 +129,9 @@ public class EventFormActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CONTACT_PICK_SUCCESS) {
-            ArrayList<User> users = (ArrayList<User>) data.getExtras().getSerializable("selectedUsers");
-            eventUsers.setText(users.toString());
+        if (requestCode == USER_PICK_SUCCESS) {
+            eventUsersList = (ArrayList<User>) data.getExtras().getSerializable("selectedUsers");
+            this.eventUsersTextView.setText(eventUsersList.toString());
         }
     }
 
