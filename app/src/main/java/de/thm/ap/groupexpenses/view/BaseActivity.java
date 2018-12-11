@@ -3,6 +3,7 @@ package de.thm.ap.groupexpenses.view;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -20,6 +21,9 @@ import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.io.File;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 import de.thm.ap.groupexpenses.R;
 
 
@@ -31,7 +35,9 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
     private ActionBarDrawerToggle mDrawerToggle;
     private Menu drawerMenu;
     private TextView name;
-    private FirebaseAuth auth;
+    private CircleImageView picture;
+    protected FirebaseAuth auth;
+    private FirebaseUser currentUser;
 
 
     @Override
@@ -46,6 +52,12 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         name = headerView.findViewById(R.id.header_name);
+        picture = headerView.findViewById(R.id.header_pic);
+
+        File pic = new File(getExternalFilesDir(null), "profilePic.jpg");
+        if(pic.exists()){
+            picture.setImageURI(Uri.fromFile(pic));
+        }
 
         // Add listener
         drawerMenu = navigation_view.getMenu();
@@ -115,21 +127,19 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = auth.getCurrentUser();
-        if(currentUser == null || !currentUser.isEmailVerified()){
-            startActivity(new Intent(this, LoginActivity.class));
-        }
-        else{
-            name.setText("Manfred Muster");
+        checkLoginState();
+    }
 
-        }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkLoginState();
     }
 
     @Override
     public void onClick(View v) {
         if(v == headerView){
-//                startActivity(new Intent(this, ProfileActivity.class));
+                startActivity(new Intent(this, ProfileActivity.class));
         }
     }
 
@@ -137,7 +147,7 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_item_profile:
-//                startActivity(new Intent(this, ProfileActivity.class));
+                startActivity(new Intent(this, ProfileActivity.class));
                 return true;
             case R.id.menu_item_logout:
                 auth.signOut();
@@ -145,6 +155,17 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
                 return true;
             default:
                 return false;
+        }
+    }
+
+    public void checkLoginState(){
+        // Check if user is signed in (non-null) and update UI accordingly.
+        currentUser = auth.getCurrentUser();
+        if(currentUser == null || !currentUser.isEmailVerified()){
+            startActivity(new Intent(this, LoginActivity.class));
+        }
+        else{
+            name.setText(currentUser.getDisplayName());
         }
     }
 }
