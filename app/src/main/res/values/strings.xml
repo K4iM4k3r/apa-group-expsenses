@@ -28,4 +28,13 @@
     <string name="menu_item_example">Test</string>
     <string name="menu_item_logout">logout</string>
     <string name="menu_item_profile">Profil</string>
+    <string name="labelProfileEmail">Email</string>
+    <string name="labelProfileName">Name</string>
+    <string name="edit_profile_name">Edit Name</string>
+    <string name="btn_save_profile">Speichern</string>
+    <string name="error_invalid_name">invalid</string>
+    <string name="file_provider_authority">de.thm.ap.groupexpenses.fileprovider</string>
+    <string name="error_file_not_found">File not found</string>
+    <string name="error_file_couldnt_upload">File could not uploaded</string>
+    <string name="success_profile_pic_uploaded">Profile Picture successful uploaded</string>
 </resources>
