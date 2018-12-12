@@ -2,7 +2,6 @@ package de.thm.ap.groupexpenses.view;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -14,10 +13,12 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.io.File;
 
 import de.thm.ap.groupexpenses.R;
 
@@ -120,6 +121,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         FirebaseUser user = auth.getCurrentUser();
                         if(user !=null && user.isEmailVerified()){
                             Snackbar.make(tvStatus, getString(R.string.auth_successful), Snackbar.LENGTH_LONG).show();
+
+                            FirebaseStorage storage = FirebaseStorage.getInstance();
+                            StorageReference profilePic = storage.getReferenceFromUrl(String.valueOf(user.getPhotoUrl()));
+                            File filePic = new File(getExternalFilesDir(null), "profilePic.jpg");
+
+                            profilePic.getFile(filePic).addOnSuccessListener(taskSnapshot -> {
+                                // Local file has been created
+                                Snackbar.make(tvStatus, getString(R.string.success_download_ProfilePic), Snackbar.LENGTH_LONG).show();
+                            }).addOnFailureListener(exception -> Snackbar.make(tvStatus, getString(R.string.error_download_ProfilePic), Snackbar.LENGTH_LONG).show());
+
+
                             finish();
                         }
                         else {
@@ -270,21 +282,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             edEmail.setError("Required.");
         } else {
             edEmail.setError(null);
-            auth.sendPasswordResetEmail(email).addOnCompleteListener(this, new OnCompleteListener<Void>() {
+            auth.sendPasswordResetEmail(email).addOnCompleteListener(this, task -> {
+                hideProgressDialog();
 
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    hideProgressDialog();
+                if (task.isSuccessful()) {
+                    Snackbar.make(tvStatus, getString(R.string.resetPassword_success, email), Snackbar.LENGTH_LONG).show();
 
-                    if (task.isSuccessful()) {
-                        Snackbar.make(tvStatus, getString(R.string.resetPassword_success, email), Snackbar.LENGTH_LONG).show();
-
-                        //change Layout back to Login
-                        showPasswordForgot(false);
-                    }
-                    else {
-                        Snackbar.make(tvStatus, getString(R.string.resetPassword_error), Snackbar.LENGTH_LONG).show();
-                    }
+                    //change Layout back to Login
+                    showPasswordForgot(false);
+                }
+                else {
+                    Snackbar.make(tvStatus, getString(R.string.resetPassword_error), Snackbar.LENGTH_LONG).show();
                 }
             });
 

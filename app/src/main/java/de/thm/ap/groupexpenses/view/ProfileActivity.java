@@ -62,6 +62,8 @@ public class ProfileActivity extends BaseActivity {
         btnSave = findViewById(R.id.btn_save_profile);
         profile_pic = findViewById(R.id.profile_pic);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         FirebaseUser user = super.auth.getCurrentUser();
         if(user != null){

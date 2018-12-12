@@ -54,11 +54,6 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
         name = headerView.findViewById(R.id.header_name);
         picture = headerView.findViewById(R.id.header_pic);
 
-        File pic = new File(getExternalFilesDir(null), "profilePic.jpg");
-        if(pic.exists()){
-            picture.setImageURI(Uri.fromFile(pic));
-        }
-
         // Add listener
         drawerMenu = navigation_view.getMenu();
         for(int i = 0; i < drawerMenu.size(); i++) {
@@ -153,6 +148,9 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
                 auth.signOut();
                 startActivity(new Intent(this, LoginActivity.class));
                 return true;
+            case R.id.menu_item_main:
+                startActivity(new Intent(this, EventActivity.class));
+                return true;
             default:
                 return false;
         }
@@ -165,6 +163,10 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
             startActivity(new Intent(this, LoginActivity.class));
         }
         else{
+            File pic = new File(getExternalFilesDir(null), "profilePic.jpg");
+            if(pic.exists()){
+                picture.setImageURI(Uri.fromFile(pic));
+            }
             name.setText(currentUser.getDisplayName());
         }
     }

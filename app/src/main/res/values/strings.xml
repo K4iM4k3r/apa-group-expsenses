@@ -25,8 +25,7 @@
     <string name="info_verification_fmt">Verification email sent to %s</string>
     <string name="info_verification_error">Failed to send verification email.</string>
     <string name="detail_verification">Sie müssen erst ihre Email bestätigen, um die App nutzen zu können!</string>
-    <string name="menu_item_example">Test</string>
-    <string name="menu_item_logout">logout</string>
+    <string name="menu_item_logout">Logout</string>
     <string name="menu_item_profile">Profil</string>
     <string name="labelProfileEmail">Email</string>
     <string name="labelProfileName">Name</string>
@@ -37,4 +36,7 @@
     <string name="error_file_not_found">File not found</string>
     <string name="error_file_couldnt_upload">File could not uploaded</string>
     <string name="success_profile_pic_uploaded">Profile Picture successful uploaded</string>
+    <string name="success_download_ProfilePic">Successful download profile pic</string>
+    <string name="error_download_ProfilePic">Error while downloading profile pic</string>
+    <string name="menu_item_main">Main</string>
 </resources>
