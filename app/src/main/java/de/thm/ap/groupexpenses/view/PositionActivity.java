@@ -68,7 +68,7 @@ public class PositionActivity extends AppCompatActivity {
         else
             finish();
 
-        positionAdapter = new PositionArrayAdapter(this, (ArrayList<Position>) positions);
+        positionAdapter = new PositionArrayAdapter(this, positions);
         positionList.setAdapter(positionAdapter);
 
         if(!positions.isEmpty()){
@@ -102,7 +102,7 @@ public class PositionActivity extends AppCompatActivity {
         if (id == R.id.position_menu_done) {
             // check for created positions
 
-            
+
             finish();
         }
         return super.onOptionsItemSelected(item);
@@ -113,7 +113,7 @@ public class PositionActivity extends AppCompatActivity {
     private class PositionArrayAdapter extends ArrayAdapter<Position> {
         private Context mContext;
 
-        public PositionArrayAdapter(@NonNull Context context, ArrayList<Position> list) {
+        public PositionArrayAdapter(@NonNull Context context, List<Position> list) {
             super(context, 0, list);
             mContext = context;
         }

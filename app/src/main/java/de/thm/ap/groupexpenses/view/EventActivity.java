@@ -22,7 +22,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
@@ -88,6 +90,10 @@ public class EventActivity extends AppCompatActivity {
         testEvent.addPosition(new Position(myUser, "TestPosition2", -5));
         testEvent.addPosition(new Position(myUser, "TestPosition3", -98));
 
+        testEvent2.addPosition(new Position(myUser, "TestPosition4", 22));
+        testEvent2.addPosition(new Position(myUser, "TestPosition5", -17));
+        testEvent2.addPosition(new Position(myUser, "TestPosition6", 128));
+
         events.add(testEvent);
         events.add(testEvent2);
 
@@ -138,8 +144,17 @@ public class EventActivity extends AppCompatActivity {
             eventSummary.setTextSize(30.f);
             eventSummary.setTextColor(Color.RED);
             // calculate balance here and show it in 'totalBalance.setText'
+            float eventBalance = 0;
+            for(int idx = 0; idx < events.size(); ++idx){
+                List<Position> positions = events.get(idx).getPositions();
+                float balance = 0;
+                for(int idx2 = 0; idx2 < positions.size(); ++idx2)
+                    balance += positions.get(idx2).getValue();
+
+                eventBalance += balance;
+            }
             totalBalance.setVisibility(View.VISIBLE);
-            totalBalance.setText("-20€");
+            totalBalance.setText(new DecimalFormat("0.00").format(eventBalance) + " €");
             totalBalance.setTextSize(30.f);
             totalBalance.setTextColor(Color.RED);
         }
@@ -208,7 +223,15 @@ public class EventActivity extends AppCompatActivity {
             creatorAndDate.setText("Erstellt von " + e.getCreator() + "  |  Start: " + e.getDate());
 
             TextView balance =  listItem.findViewById(R.id.balance);
-            balance.setText("-10€");
+
+            List<Position> positions = e.getPositions();
+            float balance_f = 0;
+
+            for(int idx = 0; idx < positions.size(); ++idx){
+                balance_f += positions.get(idx).getValue();
+            }
+
+            balance.setText(new DecimalFormat("0.00").format(balance_f) + " €");
 
             return listItem;
         }
