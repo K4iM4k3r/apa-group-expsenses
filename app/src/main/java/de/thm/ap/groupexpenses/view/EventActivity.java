@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.model.Event;
+import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.User;
 
 public class EventActivity extends AppCompatActivity {
@@ -37,6 +38,7 @@ public class EventActivity extends AppCompatActivity {
     private EventArrayAdapter eventAdapter;
 
     private static final int EVENT_CREATE_SUCCESS = 19438;
+    private static final int POSITION_CREATE_SUCCESS = 26374;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +55,8 @@ public class EventActivity extends AppCompatActivity {
         events = new ArrayList<>();
 
         ArrayList<User> userList = new ArrayList<>();
-        userList.add(new User(1, "Lukas", "Hilfrich", "l.hilfrich@gmx.de"));
+        User myUser = new User(1, "Lukas", "Hilfrich", "l.hilfrich@gmx.de");
+        userList.add(myUser);
         userList.add(new User(2, "Hendrik", "Kegel", "oof"));
         userList.add(new User(3, "Kai", "Schäfer", "oof2"));
         userList.add(new User(4, "David", "Omran", "oof3"));
@@ -81,6 +84,10 @@ public class EventActivity extends AppCompatActivity {
                 userList
         );
 
+        testEvent.addPosition(new Position(myUser, "TestPosition", 34));
+        testEvent.addPosition(new Position(myUser, "TestPosition2", -5));
+        testEvent.addPosition(new Position(myUser, "TestPosition3", -98));
+
         events.add(testEvent);
         events.add(testEvent2);
 
@@ -101,6 +108,14 @@ public class EventActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Event selectedEvent = (Event) eventList.getItemAtPosition(position);
 
+                Intent intent = new Intent(EventActivity.this, PositionActivity.class);
+                intent.putExtra("event", selectedEvent);
+
+                startActivityForResult(intent, POSITION_CREATE_SUCCESS);
+
+                /*
+                display event info and members
+
                 AlertDialog.Builder builder = new AlertDialog.Builder( EventActivity.this);
                 builder.setTitle(R.string.event_form_info);
                 builder.setMessage(
@@ -109,6 +124,8 @@ public class EventActivity extends AppCompatActivity {
                         App.listToHTMLString(selectedEvent.getUsers()))
                 );
                 builder.show();
+
+                */
             }
         });
     }

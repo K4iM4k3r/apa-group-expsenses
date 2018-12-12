@@ -14,6 +14,9 @@
     <string name="done">Fertig</string>
     <string name="create">Erstellen</string>
     <string name="no_events">Keine Events vorhanden!</string>
+    <string name="no_positions">Keine Positionen vorhanden!</string>
     <string name="total_balance">Gesamtbilanz</string>
+    <string name="position_inspect_positions">Event-Positionen</string>
+    <string name="euro">€</string>
 </resources>
 

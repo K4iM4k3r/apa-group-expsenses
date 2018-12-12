@@ -1,0 +1,24 @@
+<RelativeLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:activatedBackgroundIndicator"
+    android:minHeight="?android:listPreferredItemHeight"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:id="@+id/position_name"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_toStartOf="@id/position_balance"
+        android:layout_centerVertical="true"
+        android:textAppearance="?android:textAppearanceListItem"
+        />
+
+    <TextView
+        android:id="@+id/position_balance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="8dp"
+        android:textAppearance="?android:textAppearanceListItem" />
+</RelativeLayout>

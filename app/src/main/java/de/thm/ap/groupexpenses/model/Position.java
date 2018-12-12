@@ -2,26 +2,27 @@ package de.thm.ap.groupexpenses.model;
 
 import android.text.TextUtils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Position {
+public class Position implements Serializable{
 
     int id;
 
     private String topic;
-    private int value;
+    private float value;
     private final User creator;
 
     private List<String> topicHistory;
-    private List<Integer> valueHistory;
+    private List<Float> valueHistory;
 
     public Position(User creator){
         this.creator = creator;
         topicHistory = new ArrayList<>();
         valueHistory = new ArrayList<>();
     }
-    public Position(User creator, String topic, int value){
+    public Position(User creator, String topic, float value){
         this.creator = creator;
         this.topic = topic;
         this.value = value;
@@ -36,7 +37,7 @@ public class Position {
         this.topic = topic;
         topicHistory.add(topic);
     }
-    public void setValue(int value){
+    public void setValue(float value){
         this.value = value;
         valueHistory.add(value);
     }
@@ -44,7 +45,7 @@ public class Position {
     public String getTopic(){
         return topic;
     }
-    public int getValue(){
+    public float getValue(){
         return value;
     }
     public int getId() {
