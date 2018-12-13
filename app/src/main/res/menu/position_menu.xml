@@ -1,8 +1,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/position_menu_info"
+        android:title="@string/event_form_info"
+        android:icon="@drawable/ic_info_outline_white_24dp"
+        app:showAsAction="always"
+        />
+    <item
         android:id="@+id/position_menu_done"
         android:title="@string/done"
         app:showAsAction="always"
         />
+
 </menu>

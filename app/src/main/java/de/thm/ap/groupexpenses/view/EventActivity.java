@@ -30,6 +30,7 @@ import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
+import de.thm.ap.groupexpenses.model.Stats;
 import de.thm.ap.groupexpenses.model.User;
 
 public class EventActivity extends AppCompatActivity {
@@ -58,6 +59,7 @@ public class EventActivity extends AppCompatActivity {
 
         ArrayList<User> userList = new ArrayList<>();
         User myUser = new User(1, "Lukas", "Hilfrich", "l.hilfrich@gmx.de");
+        App.CurrentUser = myUser;
         userList.add(myUser);
         userList.add(new User(2, "Hendrik", "Kegel", "oof"));
         userList.add(new User(3, "Kai", "Schäfer", "oof2"));
@@ -118,20 +120,6 @@ public class EventActivity extends AppCompatActivity {
                 intent.putExtra("event", selectedEvent);
 
                 startActivityForResult(intent, POSITION_CREATE_SUCCESS);
-
-                /*
-                display event info and members
-
-                AlertDialog.Builder builder = new AlertDialog.Builder( EventActivity.this);
-                builder.setTitle(R.string.event_form_info);
-                builder.setMessage(
-                        Html.fromHtml(selectedEvent.getInfo() + "<br><br>" +
-                        "<b>" + getString(R.string.event_form_users) + ": " + "</b>" +
-                        App.listToHTMLString(selectedEvent.getUsers()))
-                );
-                builder.show();
-
-                */
             }
         });
     }
@@ -220,12 +208,12 @@ public class EventActivity extends AppCompatActivity {
             name.setText(e.getName());
 
             TextView creatorAndDate =  listItem.findViewById(R.id.creatorAndDate);
-            creatorAndDate.setText("Erstellt von " + e.getCreator() + "  |  Start: " + e.getDate());
+            creatorAndDate.setText("Ersteller: " + e.getCreator());
 
             TextView balance =  listItem.findViewById(R.id.balance);
 
             List<Position> positions = e.getPositions();
-            float balance_f = 0;
+            float balance_f = Stats.getEventBalance(e);
 
             for(int idx = 0; idx < positions.size(); ++idx){
                 balance_f += positions.get(idx).getValue();

@@ -28,9 +28,9 @@ public class App extends Application {
     }
 
     public static String listToHTMLString(List<?> list) {
-        String result = "<br>";
+        String result = "";
         for (int i = 0; i < list.size(); ++i) {
-            result += list.get(i) + (i == list.size()-1 ? "" : "<br>");
+            result += list.get(i) + (i == list.size()-1 ? "" : ", ");
         }
         result += "\b";
         return result;

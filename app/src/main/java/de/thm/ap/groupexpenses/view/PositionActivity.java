@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,6 +22,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
@@ -99,11 +102,33 @@ public class PositionActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
+        switch(id){
+            case R.id.position_menu_done:
+                // check for created positions
+
+
+                finish();
+                break;
+
+            case R.id.position_menu_info:
+                // display event info, date and members
+
+                AlertDialog.Builder builder = new AlertDialog.Builder( PositionActivity.this);
+                builder.setTitle(R.string.event_form_info);
+                builder.setMessage(
+                        Html.fromHtml(selectedEvent.getInfo() + "<br><br>" + "<b>"
+                                + getString(R.string.event_form_begin) + ": </b><br>" + selectedEvent.getDate()
+                                + "<br><br><b>"
+                                + getString(R.string.event_form_users) + "("
+                                + selectedEvent.getUsers().size() + "): " + "</b><br>" +
+                        App.listToHTMLString(selectedEvent.getUsers()))
+                );
+                builder.show();
+                break;
+        }
+
         if (id == R.id.position_menu_done) {
-            // check for created positions
 
-
-            finish();
         }
         return super.onOptionsItemSelected(item);
     }

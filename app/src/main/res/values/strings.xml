@@ -7,6 +7,7 @@
     <string name="event_form_add_members">Teilnehmer hinzufügen</string>
     <string name="event_form_info">Info</string>
     <string name="event_form_users">Teilnehmer</string>
+    <string name="event_form_begin">Beginn</string>
     <string name="event_form_create_event">Neues Event erstellen</string>
     <string name="error_field_required">Feld darf nicht leer sein!</string>
     <string name="error_users_required">Mindestens ein Teilnehmer muss vorhanden sein!</string>
