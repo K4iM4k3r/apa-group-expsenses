@@ -1,11 +1,12 @@
 package de.thm.ap.groupexpenses.model;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HistoryValue<T> {
+public class HistoryValue<T> implements Serializable{
 
     private T value;
     private Map<Date, T> history;

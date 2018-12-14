@@ -2,9 +2,10 @@ package de.thm.ap.groupexpenses.model;
 
 import android.support.annotation.NonNull;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class User implements Comparable<User> {
+public class User implements Comparable<User>, Serializable {
 
     int id;
 

@@ -2,10 +2,11 @@ package de.thm.ap.groupexpenses.model;
 
 import android.support.annotation.NonNull;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
-public class Position implements Serializable{
+public class Position implements Serializable {
 
     int id;
 

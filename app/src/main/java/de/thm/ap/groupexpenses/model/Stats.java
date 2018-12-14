@@ -13,13 +13,13 @@ public class Stats {
 
     private static final String TAG = Stats.class.getName();
 
-    public Map<Event, Float> calculateAll(List<Event> events){
+    public static Map<Event, Float> calculateAll(List<Event> events){
         if (App.CurrentUser == null)
             throw new IllegalStateException("User not specified!");
         return calculateAll(App.CurrentUser, events);
     }
 
-    public Map<Event, Float> calculateAll(User appuser, List<Event> events){
+    public static Map<Event, Float> calculateAll(User appuser, List<Event> events){
         Map<Event, Float> result = new HashMap<>();
         for (Event event: events){
             result.put(event, getEventBalance(appuser, event));
@@ -27,13 +27,13 @@ public class Stats {
         return result;
     }
 
-    public float getBalance(@NonNull List<Event> events){
+    public static float getBalance(@NonNull List<Event> events){
         if (App.CurrentUser == null)
             throw new IllegalStateException("User not specified!");
         return getBalance(App.CurrentUser, events);
     }
 
-    public float getBalance(@NonNull User creator, @NonNull List<Event> events){
+    public static float getBalance(@NonNull User creator, @NonNull List<Event> events){
         float sum = 0.00f;
         for(Event e: events) sum += getEventBalance(creator, e);
         return sum;
@@ -41,7 +41,7 @@ public class Stats {
 
 
 
-    public float getEventBalance(Event e){
+    public static float getEventBalance(Event e){
         if (App.CurrentUser == null){
             throw new IllegalStateException("User not specified!");
         }

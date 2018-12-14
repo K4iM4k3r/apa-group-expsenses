@@ -17,12 +17,12 @@ public class Event implements Serializable {
     private List<User> users;
     private List<Position> positions;
 
-    public Event(User creator, String name, String date, String info, List<User> member, List<Position> positions) {
+    public Event(User creator, String name, String date, String info, List<User> user, List<Position> positions) {
         this.name = name;
         this.date = date;
         this.info = info;
         this.creator = creator;
-        this.member = member;
+        this.users = user;
         this.positions = positions;
     }
 
@@ -91,12 +91,7 @@ public class Event implements Serializable {
         return positive? posFactor: negFactor;
     }
 
-    @Override
-    public String toString(){ return name; }
-
     @NonNull
     @Override
-    public String toString() {
-        return name;
-    }
+    public String toString() { return name; }
 }
