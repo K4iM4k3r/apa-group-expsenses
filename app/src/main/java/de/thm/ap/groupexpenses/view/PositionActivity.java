@@ -29,11 +29,9 @@ import de.thm.ap.groupexpenses.model.Position;
 
 public class PositionActivity extends AppCompatActivity {
 
-    private TextView positionSummary, positionBalance;
-    private ListView positionList;
     private Event selectedEvent;
     private List<Position> positions;
-    private PositionActivity.PositionArrayAdapter positionAdapter;
+    private View headerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +48,9 @@ public class PositionActivity extends AppCompatActivity {
             }
         });
 
-        positionSummary = findViewById(R.id.position_summary);
-        positionBalance = findViewById(R.id.position_balance_total);
-        positionList = findViewById(R.id.position_list);
+        ListView positionList = findViewById(R.id.position_list);
+        headerView = getLayoutInflater().inflate(R.layout.position_list_header, null);
+        positionList.addHeaderView(headerView);
 
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
@@ -71,25 +69,24 @@ public class PositionActivity extends AppCompatActivity {
         else
             finish();
 
-        positionAdapter = new PositionArrayAdapter(this, positions);
+        PositionArrayAdapter positionAdapter = new PositionArrayAdapter(this, positions);
         positionList.setAdapter(positionAdapter);
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         if(!positions.isEmpty()){
-            positionSummary.setText(getString(R.string.total_balance) + ":");
-            positionSummary.setTextSize(30.f);
-            positionSummary.setTextColor(Color.RED);
-
-            float totalBalance = 0;
+            findViewById(R.id.no_positions).setVisibility(View.GONE);
+            // calculate position balance here
+            float position_balance = 0;
             for(int idx = 0; idx < positions.size(); ++idx)
-                totalBalance += positions.get(idx).getValue();
+                position_balance += positions.get(idx).getValue();
 
-            positionBalance.setVisibility(View.VISIBLE);
-            positionBalance.setText(new DecimalFormat("0.00").format(totalBalance)
-                    + getString(R.string.euro));
-            positionBalance.setTextSize(30.f);
-            positionBalance.setTextColor(Color.RED);
+            ((TextView)headerView.findViewById(R.id.position_balance_summary_val))
+                    .setText(new DecimalFormat("0.00").format(position_balance) + " " + getString(R.string.euro));
         }
-
     }
 
     @Override

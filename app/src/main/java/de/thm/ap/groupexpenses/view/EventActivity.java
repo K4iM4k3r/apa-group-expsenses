@@ -7,11 +7,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
@@ -20,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
@@ -35,10 +33,11 @@ import de.thm.ap.groupexpenses.model.User;
 
 public class EventActivity extends AppCompatActivity {
 
-    private TextView eventSummary, totalBalance;
+    private TextView noEvents;
     private ListView eventList;
     private ArrayList<Event> events;
     private EventArrayAdapter eventAdapter;
+    private View headerView;
 
     private static final int EVENT_CREATE_SUCCESS = 19438;
     private static final int POSITION_CREATE_SUCCESS = 26374;
@@ -51,26 +50,29 @@ public class EventActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
 
-        eventSummary = findViewById(R.id.event_summary);
-        totalBalance = findViewById(R.id.balance_total);
+        noEvents = findViewById(R.id.no_events);
         eventList = findViewById(R.id.event_list);
+        headerView = getLayoutInflater().inflate(R.layout.event_list_header, null);
+
+        eventList.addHeaderView(headerView);
 
         events = new ArrayList<>();
 
         ArrayList<User> userList = new ArrayList<>();
         User myUser = new User(1, "Lukas", "Hilfrich", "l.hilfrich@gmx.de");
+        User myUser2 = new User(2, "Hendrik", "Kegel", "oof");
         App.CurrentUser = myUser;
         userList.add(myUser);
-        userList.add(new User(2, "Hendrik", "Kegel", "oof"));
+        userList.add(myUser2);
         userList.add(new User(3, "Kai", "Schäfer", "oof2"));
         userList.add(new User(4, "David", "Omran", "oof3"));
         userList.add(new User(5, "Ulf", "Smolka", "ka"));
-        userList.add(new User(6, "Dominik", "Herz", "kjlkalsd"));
-        userList.add(new User(7, "Aris", "Christidis", "lolo"));
-        userList.add(new User(8, "KQC", "NA", "xD"));
-        userList.add(new User(9, "Adam", "Bdam", "dontEvenknow"));
-        userList.add(new User(10, "Max", "Muster", "maybe@fdm"));
-        userList.add(new User(11, "Rainer", "Rein", "lalalala"));
+        //userList.add(new User(6, "Dominik", "Herz", "kjlkalsd"));
+        //userList.add(new User(7, "Aris", "Christidis", "lolo"));
+        //userList.add(new User(8, "KQC", "NA", "xD"));
+        //userList.add(new User(9, "Adam", "Bdam", "dontEvenknow"));
+        //userList.add(new User(10, "Max", "Muster", "maybe@fdm"));
+        //userList.add(new User(11, "Rainer", "Rein", "lalalala"));
 
         Event testEvent = new Event(
                 new User(1, "Lukas", "Hilfrich", "l.hilfrich@gmx.de"),
@@ -88,13 +90,13 @@ public class EventActivity extends AppCompatActivity {
                 userList
         );
 
-        testEvent.addPosition(new Position(myUser, "TestPosition", 34));
-        testEvent.addPosition(new Position(myUser, "TestPosition2", -5));
-        testEvent.addPosition(new Position(myUser, "TestPosition3", -98));
+        testEvent.addPosition(new Position(myUser, "TestPosition", 30));
+        testEvent.addPosition(new Position(myUser, "TestPosition2", 30));
+        //testEvent.addPosition(new Position(myUser, "TestPosition3", -98));
 
-        testEvent2.addPosition(new Position(myUser, "TestPosition4", 22));
-        testEvent2.addPosition(new Position(myUser, "TestPosition5", -17));
-        testEvent2.addPosition(new Position(myUser, "TestPosition6", 128));
+        testEvent2.addPosition(new Position(myUser2, "TestPosition4", 30));
+        //testEvent2.addPosition(new Position(myUser, "TestPosition5", -17));
+        //testEvent2.addPosition(new Position(myUser, "TestPosition6", 128));
 
         events.add(testEvent);
         events.add(testEvent2);
@@ -114,6 +116,11 @@ public class EventActivity extends AppCompatActivity {
         eventList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (eventList.getHeaderViewsCount() == 1 && position == 0) {
+                    // click on balance summary field (on top of list)
+                    return;
+                }
+
                 Event selectedEvent = (Event) eventList.getItemAtPosition(position);
 
                 Intent intent = new Intent(EventActivity.this, PositionActivity.class);
@@ -128,23 +135,20 @@ public class EventActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if(!events.isEmpty()){
-            eventSummary.setText(getString(R.string.total_balance) + ":");
-            eventSummary.setTextSize(30.f);
-            eventSummary.setTextColor(Color.RED);
-            // calculate balance here and show it in 'totalBalance.setText'
-            float eventBalance = 0;
-            for(int idx = 0; idx < events.size(); ++idx){
-                List<Position> positions = events.get(idx).getPositions();
-                float balance = 0;
-                for(int idx2 = 0; idx2 < positions.size(); ++idx2)
-                    balance += positions.get(idx2).getValue();
+            noEvents.setVisibility(View.GONE);
+            // calculate event balance here
+            float event_balance = 0;
 
-                eventBalance += balance;
+            for(int idx = 0; idx < events.size(); ++idx)
+                event_balance += Stats.getEventBalance(events.get(idx));
+
+            ((TextView)headerView.findViewById(R.id.event_balance_summary_val))
+                    .setText(new DecimalFormat("0.00").format(event_balance) + " " + getString(R.string.euro));
+
+            if(event_balance < 0){
+                headerView.findViewById(R.id.event_list_header_layout)
+                        .setBackgroundColor(Color.parseColor("#ef4545"));   // red
             }
-            totalBalance.setVisibility(View.VISIBLE);
-            totalBalance.setText(new DecimalFormat("0.00").format(eventBalance) + " €");
-            totalBalance.setTextSize(30.f);
-            totalBalance.setTextColor(Color.RED);
         }
     }
 
@@ -212,12 +216,7 @@ public class EventActivity extends AppCompatActivity {
 
             TextView balance =  listItem.findViewById(R.id.balance);
 
-            List<Position> positions = e.getPositions();
             float balance_f = Stats.getEventBalance(e);
-
-            for(int idx = 0; idx < positions.size(); ++idx){
-                balance_f += positions.get(idx).getValue();
-            }
 
             balance.setText(new DecimalFormat("0.00").format(balance_f) + " €");
 

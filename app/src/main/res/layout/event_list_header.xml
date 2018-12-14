@@ -1,0 +1,28 @@
+<RelativeLayout android:layout_width="match_parent"
+    android:id="@+id/event_list_header_layout"
+    android:layout_height="wrap_content"
+    android:background="#20e599"
+    android:minHeight="?android:listPreferredItemHeight"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:id="@+id/event_balance_summary_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@id/event_balance_summary_val"
+        android:textAppearance="?android:textAppearanceListItem"
+        android:text="@string/event_total_balance"/>
+
+
+    <TextView
+        android:id="@+id/event_balance_summary_val"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="8dp"
+        android:textAppearance="?android:textAppearanceListItem" />
+
+</RelativeLayout>
