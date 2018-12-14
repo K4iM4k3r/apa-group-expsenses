@@ -1,6 +1,8 @@
 package de.thm.ap.groupexpenses.model;
 
 import java.io.Serializable;
+import android.support.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +17,16 @@ public class Event implements Serializable {
     private List<User> users;
     private List<Position> positions;
 
-    public Event(User creator, String name, String date, String info, List<User> users) {
+    public Event(User creator, String name, String date, String info, List<User> member, List<Position> positions) {
+        this.name = name;
+        this.date = date;
+        this.info = info;
+        this.creator = creator;
+        this.member = member;
+        this.positions = positions;
+    }
+
+    public Event(User creator, String name, String date, String info, List<User> member) {
         this.creator = creator;
         this.name = name;
         this.date = date;
@@ -83,4 +94,9 @@ public class Event implements Serializable {
     @Override
     public String toString(){ return name; }
 
+    @NonNull
+    @Override
+    public String toString() {
+        return name;
+    }
 }
