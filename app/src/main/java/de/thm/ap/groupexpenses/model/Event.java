@@ -1,5 +1,7 @@
 package de.thm.ap.groupexpenses.model;
 
+import android.support.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,4 +87,9 @@ public class Event {
         return positive? posFactor: negFactor;
     }
 
+    @NonNull
+    @Override
+    public String toString() {
+        return name;
+    }
 }
