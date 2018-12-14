@@ -1,5 +1,7 @@
 package de.thm.ap.groupexpenses.model;
 
+import android.support.annotation.NonNull;
+
 import java.util.Date;
 import java.util.Map;
 
@@ -49,4 +51,9 @@ public class Position {
         return ((Integer)value.get()*factor);
     }
 
+    @NonNull
+    @Override
+    public String toString() {
+        return topic.toString() + ": " + value.toString() + " by " + creator.toString();
+    }
 }

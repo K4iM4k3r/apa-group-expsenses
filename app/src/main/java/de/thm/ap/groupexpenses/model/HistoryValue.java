@@ -39,5 +39,10 @@ public class HistoryValue<T> {
         return Calendar.getInstance().getTime();
     }
 
+    @Override
+    public String toString(){
+        return value.toString();
+    }
+
 
 }
