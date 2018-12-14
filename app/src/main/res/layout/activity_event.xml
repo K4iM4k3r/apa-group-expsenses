@@ -20,6 +20,12 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <fragment
+        android:id="@+id/fragmentTest"
+        android:name="de.thm.ap.groupexpenses.view.FragmentTest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <TextView
         android:id="@+id/no_events"
         android:layout_width="match_parent"

@@ -66,6 +66,9 @@ public class EventActivity extends BaseActivity {
         setSupportActionBar(toolbar);
 
 
+        FragmentTest fragmentTest = (FragmentTest)getSupportFragmentManager().findFragmentById(R.id.fragmentTest);
+        fragmentTest.setFragmentText("TestText");
+
         noEvents = findViewById(R.id.no_events);
         eventList = findViewById(R.id.event_list);
         headerView = getLayoutInflater().inflate(R.layout.event_list_header, null);
