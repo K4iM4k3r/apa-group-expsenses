@@ -27,7 +27,6 @@ import de.thm.ap.groupexpenses.R;
 public class EventActivity extends BaseActivity {
 
     private static final String TAG = "EventActivity";
-    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,13 +39,10 @@ public class EventActivity extends BaseActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                auth.signOut();
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
-        auth = FirebaseAuth.getInstance();
 
     }
 
@@ -71,16 +67,5 @@ public class EventActivity extends BaseActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = auth.getCurrentUser();
-        if(currentUser == null || !currentUser.isEmailVerified()){
-            startActivity(new Intent(this, LoginActivity.class));
-        }
-    }
-
 
 }
