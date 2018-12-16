@@ -1,6 +1,7 @@
 package de.thm.ap.groupexpenses.view;
 
 import android.app.ProgressDialog;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.Snackbar;
@@ -130,14 +131,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             Snackbar.make(tvStatus, getString(R.string.auth_successful), Snackbar.LENGTH_LONG).show();
 
                             FirebaseStorage storage = FirebaseStorage.getInstance();
-                            StorageReference profilePic = storage.getReferenceFromUrl(String.valueOf(user.getPhotoUrl()));
-                            File filePic = new File(getExternalFilesDir(null), "profilePic.jpg");
 
-                            profilePic.getFile(filePic).addOnSuccessListener(taskSnapshot -> {
-                                // Local file has been created
-                                Snackbar.make(tvStatus, getString(R.string.success_download_ProfilePic), Snackbar.LENGTH_LONG).show();
-                            }).addOnFailureListener(exception -> Snackbar.make(tvStatus, getString(R.string.error_download_ProfilePic), Snackbar.LENGTH_LONG).show());
 
+                            Uri uri = user.getPhotoUrl();
+                            if(uri != null){
+                                StorageReference profilePic = storage.getReferenceFromUrl(String.valueOf(uri));
+                                File filePic = new File(getExternalFilesDir(null), "profilePic.jpg");
+
+                                profilePic.getFile(filePic).addOnSuccessListener(taskSnapshot -> {
+                                    // Local file has been created
+                                    Snackbar.make(tvStatus, getString(R.string.success_download_ProfilePic), Snackbar.LENGTH_LONG).show();
+                                }).addOnFailureListener(exception -> Snackbar.make(tvStatus, getString(R.string.error_download_ProfilePic), Snackbar.LENGTH_LONG).show());
+
+                            }
 
                             finish();
                         }
@@ -254,9 +260,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 .set(user)
                 .addOnSuccessListener(l -> Log.d(TAG, "Userdata successfull written"))
                 .addOnFailureListener(f -> Log.d(TAG, "User data couldnt written"));
-
-
-
 
 
     }
