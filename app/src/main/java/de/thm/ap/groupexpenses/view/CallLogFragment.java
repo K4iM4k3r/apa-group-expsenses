@@ -3,9 +3,7 @@ package de.thm.ap.groupexpenses.view;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
-import android.provider.CallLog;
 import android.support.v4.app.Fragment;
-import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +12,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
+import de.thm.ap.groupexpenses.model.Stats;
 import de.thm.ap.groupexpenses.model.User;
 
 public class CallLogFragment extends Fragment
@@ -120,29 +118,30 @@ public class CallLogFragment extends Fragment
             view=inflater.inflate(resource, parent,false);
 
             holder=new Holder();
-            holder.text_number=(TextView)view.findViewById(R.id.text_calllog_number);
-            holder.text_date=(TextView)view.findViewById(R.id.text_calllog_date);
-            holder.text_time=(TextView)view.findViewById(R.id.text_calllog_time);
+            holder.event_name =(TextView)view.findViewById(R.id.name);
+            holder.event_balance =(TextView)view.findViewById(R.id.balance);
 
             m_event =callLogData.get(position);
+
+            holder.event_name.setText(m_event.getName());
+            holder.event_balance.setText(Float.toString(Stats.getBalance(callLogData)));
 
             //Date date=new Date(Long.parseLong(m_event.get(CallLog.Calls.DATE)));
             //java.text.DateFormat dateFormat= DateFormat.getDateFormat(context);
             //java.text.DateFormat timeformat=DateFormat.getTimeFormat(context);
 
 
-            //holder.text_number.setText(m_event.get(CallLog.Calls.NUMBER));
+            //holder.event_name.setText(m_event.get(CallLog.Calls.NUMBER));
             //holder.text_time.setText(timeformat.format(date));
-            //holder.text_date.setText(dateFormat.format(date));
+            //holder.event_balance.setText(dateFormat.format(date));
 
             return view;
         }
 
         public class Holder
         {
-            TextView text_number;
-            TextView text_date;
-            TextView text_time;
+            TextView event_name;
+            TextView event_balance;
         }
 
     }

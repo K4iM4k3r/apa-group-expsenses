@@ -6,7 +6,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <TextView
-        android:id="@+id/name"
+        android:id="@+id/name2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -23,7 +23,7 @@
         android:textColor="?android:textColorHint" />
 
     <TextView
-        android:id="@+id/balance"
+        android:id="@+id/balance2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"

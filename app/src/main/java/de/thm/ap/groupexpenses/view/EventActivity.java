@@ -228,13 +228,13 @@ public class EventActivity extends BaseActivity {
 
             Event e = getItem(position);
 
-            TextView name = listItem.findViewById(R.id.name);
+            TextView name = listItem.findViewById(R.id.name2);
             name.setText(e.getName());
 
             TextView creatorAndDate =  listItem.findViewById(R.id.creatorAndDate);
             creatorAndDate.setText("Ersteller: " + e.getCreator());
 
-            TextView balance =  listItem.findViewById(R.id.balance);
+            TextView balance =  listItem.findViewById(R.id.balance2);
 
             float balance_f = Stats.getEventBalance(e);
 
