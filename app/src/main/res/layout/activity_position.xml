@@ -6,19 +6,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/no_positions"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:layout_centerVertical="true"
-        android:text="@string/no_positions" />
-
-
-    <ListView
-        android:id="@+id/position_list"
+    <fragment
+        android:id="@+id/position_fragment"
+        android:name="de.thm.ap.groupexpenses.view.CallLogFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
 
     <LinearLayout
         android:layout_width="match_parent"

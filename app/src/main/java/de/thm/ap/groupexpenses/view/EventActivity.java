@@ -1,54 +1,32 @@
 package de.thm.ap.groupexpenses.view;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import de.thm.ap.groupexpenses.App;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
-import de.thm.ap.groupexpenses.model.Stats;
 import de.thm.ap.groupexpenses.model.User;
 
-public class EventActivity extends BaseActivity {
+public class EventActivity extends BaseActivity implements CallLogFragment.ItemClickListener{
 
     //private TextView noEvents;
     //private ListView eventList;
-    private ArrayList<Event> events;
+    private List<Object> events;
     //private EventArrayAdapter eventAdapter;
     //private View headerView;
 
@@ -65,12 +43,8 @@ public class EventActivity extends BaseActivity {
         Toolbar toolbar = findViewById(R.id.event_toolbar);
         setSupportActionBar(toolbar);
 
-        CallLogFragment fragmentTest2 = (CallLogFragment)getSupportFragmentManager().findFragmentById(R.id.fragmentTest);
-        fragmentTest2.setFragmentText("avs");
-
-
         //FragmentTest fragmentTest = (FragmentTest)getSupportFragmentManager().findFragmentById(R.id.fragmentTest);
-        //fragmentTest.setFragmentText("TestText");
+        //fragmentTest.setFragmentObjects("TestText");
 
         //noEvents = findViewById(R.id.no_events);
         //eventList = findViewById(R.id.event_list);
@@ -123,6 +97,10 @@ public class EventActivity extends BaseActivity {
         events.add(testEvent);
         events.add(testEvent2);
 
+
+        CallLogFragment fragmentTest2 = (CallLogFragment)getSupportFragmentManager().findFragmentById(R.id.event_fragment);
+        fragmentTest2.setFragmentObjects(events);
+
         //eventAdapter = new EventArrayAdapter(this, events);
         //eventList.setAdapter(eventAdapter);
 
@@ -138,7 +116,7 @@ public class EventActivity extends BaseActivity {
         /*
         eventList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onFragmentObjectClick(AdapterView<?> parent, View view, int position, long id) {
                 if (eventList.getHeaderViewsCount() == 1 && position == 0) {
                     // click on balance summary field (on top of list)
                     return;
@@ -164,12 +142,12 @@ public class EventActivity extends BaseActivity {
             // calculate event balance here
 
             /*
-            float event_balance = Stats.getBalance(events);
+            float object_balance = Stats.getBalance(events);
 
             ((TextView)headerView.findViewById(R.id.event_balance_summary_val))
-                    .setText(new DecimalFormat("0.00").format(event_balance) + " " + getString(R.string.euro));
+                    .setText(new DecimalFormat("0.00").format(object_balance) + " " + getString(R.string.euro));
 
-            if(event_balance < 0){
+            if(object_balance < 0){
                 headerView.findViewById(R.id.event_list_header_layout)
                         .setBackgroundColor(Color.parseColor("#ef4545"));   // red
             }
@@ -223,5 +201,11 @@ public class EventActivity extends BaseActivity {
         }
     }
 
+    @Override
+    public void onFragmentObjectClick(Object event) {
+        Intent intent = new Intent(EventActivity.this, PositionActivity.class);
+        intent.putExtra("event", (Event)event);
 
+        startActivityForResult(intent, POSITION_CREATE_SUCCESS);
+    }
 }

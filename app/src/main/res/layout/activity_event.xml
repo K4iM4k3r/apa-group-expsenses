@@ -21,7 +21,7 @@
     </android.support.design.widget.AppBarLayout>
 
     <fragment
-        android:id="@+id/fragmentTest"
+        android:id="@+id/event_fragment"
         android:name="de.thm.ap.groupexpenses.view.CallLogFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

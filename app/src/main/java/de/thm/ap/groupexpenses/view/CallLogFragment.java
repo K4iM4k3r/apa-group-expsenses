@@ -1,109 +1,65 @@
 package de.thm.ap.groupexpenses.view;
 
-import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import java.util.List;
 
-import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.Stats;
-import de.thm.ap.groupexpenses.model.User;
 
 public class CallLogFragment extends Fragment
 {
     private View view;
     private ListView list_calllog;
-    private ArrayList<Event> eventLog;
+    private List<Object> objectList;
+
+    ItemClickListener itemClickListener;
+
+    public interface ItemClickListener {
+        void onFragmentObjectClick(Object object);
+    }
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-    {
-        if(view==null)
-        {
-            view=inflater.inflate(R.layout.fragment_call_log_layout, container,false);
+    public void onAttach(Activity activity){
+        super.onAttach(activity);
+        try{
+            itemClickListener = (ItemClickListener)activity;
+        }catch (ClassCastException e){
+            throw new ClassCastException(activity.toString());
         }
-        else
-        {
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        if(view == null) {
+            view=inflater.inflate(R.layout.fragment_call_log_layout, container,false);
+        }else {
             ViewGroup parent = (ViewGroup) view.getParent();
             parent.removeView(view);
         }
-
-        eventLog = getEvents();
-        CustomCallLogListAdapter adapter=new CustomCallLogListAdapter(getActivity(),R.layout.row_call_log_layout, eventLog);
-        list_calllog=(ListView)view.findViewById(R.id.list_calllog);
-        list_calllog.setAdapter(adapter);
         return view;
     }
 
-    @SuppressLint("NewApi")
-    public ArrayList<Event> getEvents()
-    {
-        ArrayList<Event> events = new ArrayList<>();
-        ArrayList<User> userList = new ArrayList<>();
-        User myUser = new User(1, "Lukas", "Hilfrich", "l.hilfrich@gmx.de");
-        User myUser2 = new User(2, "Hendrik", "Kegel", "oof");
-        App.CurrentUser = myUser;
-        userList.add(myUser);
-        userList.add(myUser2);
-        userList.add(new User(3, "Kai", "Schäfer", "oof2"));
-        userList.add(new User(4, "David", "Omran", "oof3"));
-        userList.add(new User(5, "Ulf", "Smolka", "ka"));
-        //userList.add(new User(6, "Dominik", "Herz", "kjlkalsd"));
-        //userList.add(new User(7, "Aris", "Christidis", "lolo"));
-        //userList.add(new User(8, "KQC", "NA", "xD"));
-        //userList.add(new User(9, "Adam", "Bdam", "dontEvenknow"));
-        //userList.add(new User(10, "Max", "Muster", "maybe@fdm"));
-        //userList.add(new User(11, "Rainer", "Rein", "lalalala"));
-
-        Event testEvent = new Event(
-                new User(1, "Lukas", "Hilfrich", "l.hilfrich@gmx.de"),
-                "TestEvent1",
-                "13.08.2019",
-                "Eventinfo",
-                userList
-        );
-
-        Event testEvent2 = new Event(
-                new User(1, "Hendrik", "Kegel", "dontknow"),
-                "TestEvent2",
-                "01.12.2033",
-                "Eventinfo blblbablablabla",
-                userList
-        );
-        testEvent.addPosition(new Position(myUser, "TestPosition", 30));
-        testEvent.addPosition(new Position(myUser, "TestPosition2", 30));
-        //testEvent.addPosition(new Position(myUser, "TestPosition3", -98));
-
-        testEvent2.addPosition(new Position(myUser2, "TestPosition4", 30));
-        //testEvent2.addPosition(new Position(myUser, "TestPosition5", -17));
-        //testEvent2.addPosition(new Position(myUser, "TestPosition6", 128));
-
-        events.add(testEvent);
-        events.add(testEvent2);
-
-        return events;
-    }
-
-    private class CustomCallLogListAdapter extends ArrayAdapter<Event>
-    {
-        private ArrayList<Event> callLogData;
+    private class CustomCallLogListAdapter extends ArrayAdapter<Object> {
+        private List<Object> callLogData;
         private Context context;
         private int resource;
         private View view;
         private Holder holder;
-        private Event m_event;
-        public CustomCallLogListAdapter(Context context, int resource,ArrayList<Event> objects)
-        {
+        private Object m_object;
+        public CustomCallLogListAdapter(Context context, int resource,List<Object> objects) {
             super(context, resource, objects);
             this.context=context;
             this.resource=resource;
@@ -111,43 +67,57 @@ public class CallLogFragment extends Fragment
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent)
-        {
-
+        public View getView(int index, View convertView, ViewGroup parent) {
             LayoutInflater inflater=(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view=inflater.inflate(resource, parent,false);
+            view = inflater.inflate(resource, parent,false);
 
-            holder=new Holder();
-            holder.event_name =(TextView)view.findViewById(R.id.name);
-            holder.event_balance =(TextView)view.findViewById(R.id.balance);
+            holder = new Holder();
+            holder.object_name = view.findViewById(R.id.name);
+            holder.object_balance = view.findViewById(R.id.balance);
 
-            m_event =callLogData.get(position);
+            m_object = callLogData.get(index);
 
-            holder.event_name.setText(m_event.getName());
-            holder.event_balance.setText(Float.toString(Stats.getBalance(callLogData)));
+            if(m_object instanceof Event){
+                Event event = (Event)m_object;
+                List<Event> eventList = (List<Event>)(List<?>) callLogData;
 
-            //Date date=new Date(Long.parseLong(m_event.get(CallLog.Calls.DATE)));
-            //java.text.DateFormat dateFormat= DateFormat.getDateFormat(context);
-            //java.text.DateFormat timeformat=DateFormat.getTimeFormat(context);
+                holder.object_name.setText(event.getName());
+                holder.object_balance.setText(Float.toString(Stats.getBalance(eventList)));
 
+            } else if(m_object instanceof Position){
+                Position position = (Position) m_object;
 
-            //holder.event_name.setText(m_event.get(CallLog.Calls.NUMBER));
-            //holder.text_time.setText(timeformat.format(date));
-            //holder.event_balance.setText(dateFormat.format(date));
-
+                holder.object_name.setText(position.getTopic());
+                holder.object_balance.setText(Float.toString(position.getValue()));
+            }
             return view;
         }
 
-        public class Holder
+        private class Holder
         {
-            TextView event_name;
-            TextView event_balance;
+            TextView object_name;
+            TextView object_balance;
         }
 
     }
 
-    public void setFragmentText(String text){
-        //
+    public void setFragmentObjects(List<Object> objects){
+        objectList = objects;
+        CustomCallLogListAdapter adapter = new CustomCallLogListAdapter(getActivity(),
+                R.layout.row_call_log_layout, objectList);
+        list_calllog = view.findViewById(R.id.list_calllog);
+        list_calllog.setAdapter(adapter);
+
+        list_calllog.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                itemSelected(list_calllog.getItemAtPosition(position));
+            }
+        });
+    }
+
+    public void itemSelected(Object object){
+        itemClickListener.onFragmentObjectClick(object);
     }
 }
 

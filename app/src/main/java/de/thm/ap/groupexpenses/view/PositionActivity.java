@@ -27,11 +27,9 @@ import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 
-public class PositionActivity extends AppCompatActivity {
+public class PositionActivity extends AppCompatActivity implements CallLogFragment.ItemClickListener{
 
     private Event selectedEvent;
-    private List<Position> positions;
-    private View headerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +46,6 @@ public class PositionActivity extends AppCompatActivity {
             }
         });
 
-        ListView positionList = findViewById(R.id.position_list);
-        headerView = getLayoutInflater().inflate(R.layout.position_list_header, null);
-        positionList.addHeaderView(headerView);
 
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
@@ -64,29 +59,12 @@ public class PositionActivity extends AppCompatActivity {
             selectedEvent = (Event) savedInstanceState.getSerializable("event");
         }
 
-        if(selectedEvent != null)
-            positions = selectedEvent.getPositions();
-        else
+        if(selectedEvent != null){
+            List<Object> objectList = (List<Object>)(List<?>) selectedEvent.getPositions();
+            CallLogFragment fragmentTest2 = (CallLogFragment)getSupportFragmentManager().findFragmentById(R.id.position_fragment);
+            fragmentTest2.setFragmentObjects(objectList);
+        } else
             finish();
-
-        PositionArrayAdapter positionAdapter = new PositionArrayAdapter(this, positions);
-        positionList.setAdapter(positionAdapter);
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if(!positions.isEmpty()){
-            findViewById(R.id.no_positions).setVisibility(View.GONE);
-            // calculate position balance here
-            float position_balance = 0;
-            for(int idx = 0; idx < positions.size(); ++idx)
-                position_balance += positions.get(idx).getValue();
-
-            ((TextView)headerView.findViewById(R.id.position_balance_summary_val))
-                    .setText(new DecimalFormat("0.00").format(position_balance) + " " + getString(R.string.euro));
-        }
     }
 
     @Override
@@ -130,35 +108,8 @@ public class PositionActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
-
-    private class PositionArrayAdapter extends ArrayAdapter<Position> {
-        private Context mContext;
-
-        public PositionArrayAdapter(@NonNull Context context, List<Position> list) {
-            super(context, 0, list);
-            mContext = context;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View listItem = convertView;
-
-            if (listItem == null)
-                listItem = LayoutInflater.from(mContext).inflate(R.layout.position_list_item, parent,
-                        false);
-
-            Position p = getItem(position);
-
-            TextView name = listItem.findViewById(R.id.position_name);
-            name.setText(p.getTopic());
-
-            TextView balance =  listItem.findViewById(R.id.position_balance);
-            balance.setText(new DecimalFormat("0.00").format(p.getValue()) + "€");
-
-            return listItem;
-        }
-
+    @Override
+    public void onFragmentObjectClick(Object object) {
+        int doNothing = 0;
     }
-
 }
