@@ -92,7 +92,7 @@ public class ObjectListFragment extends Fragment
             }
             return view;
         }
-        
+
         private class Holder {
             TextView object_name;
             TextView object_balance;

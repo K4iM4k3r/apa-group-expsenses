@@ -79,7 +79,7 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
         testEvent.addPosition(new Position(myUser, "TestPosition2", 30));
         //testEvent.addPosition(new Position(myUser, "TestPosition3", -98));
 
-        testEvent2.addPosition(new Position(myUser2, "TestPosition4", 100));
+        //testEvent2.addPosition(new Position(myUser2, "TestPosition4", 100));
         //testEvent2.addPosition(new Position(myUser, "TestPosition5", -17));
         //testEvent2.addPosition(new Position(myUser, "TestPosition6", 128));
 
