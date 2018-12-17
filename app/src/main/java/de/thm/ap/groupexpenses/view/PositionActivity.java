@@ -37,16 +37,6 @@ public class PositionActivity extends AppCompatActivity implements CallLogFragme
         setContentView(R.layout.activity_position);
         getSupportActionBar().setTitle(R.string.position_inspect_positions);
 
-        FloatingActionButton fab = findViewById(R.id.create_position_btn);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if(extras == null) {
@@ -62,7 +52,7 @@ public class PositionActivity extends AppCompatActivity implements CallLogFragme
         if(selectedEvent != null){
             List<Object> objectList = (List<Object>)(List<?>) selectedEvent.getPositions();
             CallLogFragment fragmentTest2 = (CallLogFragment)getSupportFragmentManager().findFragmentById(R.id.position_fragment);
-            fragmentTest2.setFragmentObjects(objectList);
+            fragmentTest2.setFragmentObjects(objectList, "Position");
         } else
             finish();
     }
@@ -110,6 +100,11 @@ public class PositionActivity extends AppCompatActivity implements CallLogFragme
 
     @Override
     public void onFragmentObjectClick(Object object) {
+        int doNothing = 0;
+    }
+
+    @Override
+    public void onCreateBtnClick() {
         int doNothing = 0;
     }
 }

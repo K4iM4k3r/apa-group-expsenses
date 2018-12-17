@@ -13,7 +13,7 @@
         android:layout_centerVertical="true"
         android:layout_toStartOf="@id/position_balance_summary_val"
         android:textAppearance="?android:textAppearanceListItem"
-        android:text="@string/position_balance"/>
+        android:text="@string/position_total_balance"/>
 
 
     <TextView

@@ -1,25 +1,28 @@
 <RelativeLayout android:layout_width="match_parent"
+    android:id="@+id/object_list_header_layout"
     android:layout_height="wrap_content"
-    android:background="?android:activatedBackgroundIndicator"
+    android:background="#20e599"
     android:minHeight="?android:listPreferredItemHeight"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <TextView
-        android:id="@+id/fragment_no_object_text"
-        android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        android:layout_marginStart="8dp"
-        android:layout_toStartOf="@id/position_balance"
-        android:layout_centerVertical="true"
-        android:textAppearance="?android:textAppearanceListItem" />
-
-    <TextView
-        android:id="@+id/position_balance"
-        android:layout_width="wrap_content"
+        android:id="@+id/object_balance_summary_text"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@id/object_balance_summary_val"
+        android:textAppearance="?android:textAppearanceListItem"
+        android:text="@string/event_total_balance"/>
+
+
+    <TextView
+        android:id="@+id/object_balance_summary_val"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_marginEnd="8dp"
         android:textAppearance="?android:textAppearanceListItem" />
+
 </RelativeLayout>

@@ -99,11 +99,12 @@ public class EventActivity extends BaseActivity implements CallLogFragment.ItemC
 
 
         CallLogFragment fragmentTest2 = (CallLogFragment)getSupportFragmentManager().findFragmentById(R.id.event_fragment);
-        fragmentTest2.setFragmentObjects(events);
+        fragmentTest2.setFragmentObjects(events, "Event");
 
         //eventAdapter = new EventArrayAdapter(this, events);
         //eventList.setAdapter(eventAdapter);
 
+        /*
         FloatingActionButton createEventBtn = findViewById(R.id.create_event_btn);
         createEventBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,6 +113,8 @@ public class EventActivity extends BaseActivity implements CallLogFragment.ItemC
                         EventFormActivity.class), EVENT_CREATE_SUCCESS);
             }
         });
+
+        */
 
         /*
         eventList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -207,5 +210,11 @@ public class EventActivity extends BaseActivity implements CallLogFragment.ItemC
         intent.putExtra("event", (Event)event);
 
         startActivityForResult(intent, POSITION_CREATE_SUCCESS);
+    }
+
+    @Override
+    public void onCreateBtnClick() {
+        startActivityForResult(new Intent(EventActivity.this,
+                EventFormActivity.class), EVENT_CREATE_SUCCESS);
     }
 }

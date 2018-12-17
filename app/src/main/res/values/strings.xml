@@ -17,7 +17,7 @@
     <string name="no_events">Keine Events vorhanden!</string>
     <string name="no_positions">Keine Positionen vorhanden!</string>
     <string name="event_total_balance">Gesamtbilanz</string>
-    <string name="position_balance">Positionssumme</string>
+    <string name="position_total_balance">Positionssumme</string>
     <string name="position_inspect_positions">Event-Positionen</string>
     <string name="euro">€</string>
     <string name="title_activity_friends">FriendsActivity</string>

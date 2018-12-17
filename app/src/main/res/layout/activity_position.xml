@@ -12,23 +12,4 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="1"
-        android:gravity="center|bottom"
-        android:orientation="vertical">
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/create_position_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/fab_margin"
-            android:backgroundTint="#008577"
-            app:borderWidth="0dp"
-            app:srcCompat="@drawable/ic_add_white_24dp" />
-    </LinearLayout>
-
 </LinearLayout>
