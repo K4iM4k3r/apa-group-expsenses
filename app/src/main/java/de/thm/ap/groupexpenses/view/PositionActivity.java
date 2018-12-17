@@ -37,8 +37,9 @@ public class PositionActivity extends AppCompatActivity implements ObjectListFra
 
         if(selectedEvent != null){
             List<Object> objectList = (List<Object>)(List<?>) selectedEvent.getPositions();
-            ObjectListFragment fragmentTest2 = (ObjectListFragment)getSupportFragmentManager().findFragmentById(R.id.position_fragment);
-            fragmentTest2.setFragmentObjects(objectList, "Position");
+            ObjectListFragment objectListFragment = (ObjectListFragment)getSupportFragmentManager()
+                    .findFragmentById(R.id.position_fragment);
+            objectListFragment.setFragmentObjects(objectList, "Position");
         } else
             finish();
     }
