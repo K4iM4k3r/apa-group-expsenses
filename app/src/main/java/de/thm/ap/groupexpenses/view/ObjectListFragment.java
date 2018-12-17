@@ -142,6 +142,9 @@ public class ObjectListFragment extends Fragment
                 if(balance < 0)
                     headerLayout.setBackgroundColor(Color
                             .parseColor("#ef4545"));    // red
+                else
+                    headerLayout.setBackgroundColor(Color
+                            .parseColor("#20e599"));    // green
                 break;
 
             case "Position":
