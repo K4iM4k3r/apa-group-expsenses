@@ -1,5 +1,7 @@
 package de.thm.ap.groupexpenses.view;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -12,10 +14,14 @@ import java.util.List;
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.model.Event;
+import de.thm.ap.groupexpenses.model.Position;
 
 public class PositionActivity extends AppCompatActivity implements ObjectListFragment.ItemClickListener{
 
     private Event selectedEvent;
+    private List<Object> positionList;
+    private ObjectListFragment objectListFragment;
+    private static final int POSITION_CREATE_SUCCESS = 11215;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,10 +42,10 @@ public class PositionActivity extends AppCompatActivity implements ObjectListFra
         }
 
         if(selectedEvent != null){
-            List<Object> objectList = (List<Object>)(List<?>) selectedEvent.getPositions();
-            ObjectListFragment objectListFragment = (ObjectListFragment)getSupportFragmentManager()
+            positionList = (List<Object>)(List<?>) selectedEvent.getPositions();
+            objectListFragment = (ObjectListFragment)getSupportFragmentManager()
                     .findFragmentById(R.id.position_fragment);
-            objectListFragment.setFragmentObjects(objectList, "Position");
+            objectListFragment.createFragmentObjects(positionList, "Position");
         } else
             finish();
     }
@@ -86,12 +92,26 @@ public class PositionActivity extends AppCompatActivity implements ObjectListFra
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == Activity.RESULT_OK){
+            switch(requestCode) {
+                case POSITION_CREATE_SUCCESS:
+                    Position position  = (Position) data.getExtras().getSerializable("createdPosition");
+                    positionList.add(position);
+                    objectListFragment.updateFragmentObjects(positionList, "Position");
+                    break;
+            }
+        }
+    }
+
+    @Override
     public void onFragmentObjectClick(Object object) {
         int doNothing = 0;
     }
 
     @Override
     public void onCreateBtnClick() {
-        int doNothing = 0;
+        startActivityForResult(new Intent(PositionActivity.this,
+                PositionFormActivity.class), POSITION_CREATE_SUCCESS);
     }
 }

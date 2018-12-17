@@ -15,7 +15,7 @@ public class Position implements Serializable {
 
     private final User creator;
 
-    public Position(User creator, String topic, Integer value){
+    public Position(User creator, String topic, Float value){
         this.creator = creator;
         this.topic = new HistoryValue(topic);
         this.value = new HistoryValue(value);
@@ -24,17 +24,17 @@ public class Position implements Serializable {
     public void setTopic(String topic){
         this.topic.set(topic);
     }
-    public void setValue(Integer value){
+    public void setValue(Float value){
         this.value.set(value);
     }
 
     public String getTopic(){
         return (String) topic.get();
     }
-    public int getValue(){
-        return (int) value.get();
+    public float getValue(){
+        return (float) value.get();
     }
-    public int getId() {
+    public float getId() {
         return id;
     }
     public User getCreator() {
@@ -49,7 +49,7 @@ public class Position implements Serializable {
     }
 
     public float getFactorizedValue(float factor){
-        return ((Integer)value.get()*factor);
+        return ((Float)value.get()*factor);
     }
 
     @NonNull

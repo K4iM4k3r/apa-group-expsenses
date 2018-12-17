@@ -75,11 +75,11 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
                 userList
         );
 
-        testEvent.addPosition(new Position(myUser, "TestPosition", 30));
-        testEvent.addPosition(new Position(myUser, "TestPosition2", 30));
+        testEvent.addPosition(new Position(myUser, "TestPosition", 35.56f));
+        testEvent.addPosition(new Position(myUser, "TestPosition2", 30.f));
         //testEvent.addPosition(new Position(myUser, "TestPosition3", -98));
 
-        testEvent2.addPosition(new Position(myUser2, "TestPosition4", 100));
+        //testEvent2.addPosition(new Position(myUser2, "TestPosition4", 100.35f));
         //testEvent2.addPosition(new Position(myUser, "TestPosition5", -17));
         //testEvent2.addPosition(new Position(myUser, "TestPosition6", 128));
 
@@ -89,7 +89,7 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
 
         ObjectListFragment objectListFragment = (ObjectListFragment)getSupportFragmentManager()
                 .findFragmentById(R.id.event_fragment);
-        objectListFragment.setFragmentObjects(events, "Event");
+        objectListFragment.createFragmentObjects(events, "Event");
         auth = FirebaseAuth.getInstance();
     }
 
@@ -130,8 +130,6 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
                 case EVENT_CREATE_SUCCESS:
                     Event event  = (Event) data.getExtras().getSerializable("createdEvent");
                     events.add(event);
-                    //eventAdapter.clear();
-                    //eventAdapter.addAll(events);
                     break;
             }
         }

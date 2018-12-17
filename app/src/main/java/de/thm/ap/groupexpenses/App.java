@@ -82,17 +82,17 @@ public class App extends Application {
 
 
         public static Position[] POSITIONS_1 = new Position[]{
-                new Position(USERS[1], "Bier", 90),
-                new Position(USERS[2], "Sprit", 120),
-                new Position(USERS[3], "Essen", 15)
+                new Position(USERS[1], "Bier", 90.f),
+                new Position(USERS[2], "Sprit", 120.f),
+                new Position(USERS[3], "Essen", 15.f)
         };
 
         public static Position[] POSITIONS_2 = new Position[]{
-                new Position(USERS[3], "Bier", 15),
-                new Position(USERS[1], "Sprit", 10),
-                new Position(USERS[0], "Essen", 15),
-                new Position(USERS[0], "Tee", 15),
-                new Position(USERS[0], "Reinigung", 15)
+                new Position(USERS[3], "Bier", 15.f),
+                new Position(USERS[1], "Sprit", 10.f),
+                new Position(USERS[0], "Essen", 15.f),
+                new Position(USERS[0], "Tee", 15.f),
+                new Position(USERS[0], "Reinigung", 15.f)
         };
 
         public static Event EVENT = new Event(USER, "Festival", "Morgen", "", Arrays.asList(USERS), Arrays.asList(POSITIONS_1));
