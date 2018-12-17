@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/position_fragment"
-        android:name="de.thm.ap.groupexpenses.view.CallLogFragment"
+        android:name="de.thm.ap.groupexpenses.view.ObjectListFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

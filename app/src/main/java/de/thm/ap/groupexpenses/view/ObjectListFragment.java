@@ -22,7 +22,7 @@ import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.Stats;
 
-public class CallLogFragment extends Fragment
+public class ObjectListFragment extends Fragment
 {
     private View view;
     private ListView object_listView;
@@ -48,7 +48,7 @@ public class CallLogFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if(view == null) {
-            view=inflater.inflate(R.layout.fragment_layout, container,false);
+            view = inflater.inflate(R.layout.fragment_object_list, container,false);
         }else {
             ViewGroup parent = (ViewGroup) view.getParent();
             parent.removeView(view);
@@ -92,7 +92,7 @@ public class CallLogFragment extends Fragment
             }
             return view;
         }
-
+        
         private class Holder {
             TextView object_name;
             TextView object_balance;
@@ -102,7 +102,7 @@ public class CallLogFragment extends Fragment
     public void setFragmentObjects(List<Object> objects, String type){
         objectList = objects;
         TextView noObjects_textView = view.findViewById(R.id.fragment_no_object_text);
-        View headerView = getLayoutInflater().inflate(R.layout.object_list_header, null);
+        View headerView = getLayoutInflater().inflate(R.layout.fragment_object_list_header, null);
 
         if(!objects.isEmpty()){
             noObjects_textView.setVisibility(View.GONE);
@@ -144,7 +144,7 @@ public class CallLogFragment extends Fragment
             }
 
             CustomCallLogListAdapter adapter = new CustomCallLogListAdapter(getActivity(),
-                    R.layout.row_call_log_layout, objectList);
+                    R.layout.fragment_object_list_row, objectList);
             object_listView = view.findViewById(R.id.fragment_listView);
             object_listView.addHeaderView(headerView);
             object_listView.setAdapter(adapter);

@@ -3,9 +3,7 @@ package de.thm.ap.groupexpenses.view;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -22,7 +20,7 @@ import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.User;
 
-public class EventActivity extends BaseActivity implements CallLogFragment.ItemClickListener{
+public class EventActivity extends BaseActivity implements ObjectListFragment.ItemClickListener{
 
     //private TextView noEvents;
     //private ListView eventList;
@@ -42,15 +40,6 @@ public class EventActivity extends BaseActivity implements CallLogFragment.ItemC
         setContentView(R.layout.activity_event);
         Toolbar toolbar = findViewById(R.id.event_toolbar);
         setSupportActionBar(toolbar);
-
-        //FragmentTest fragmentTest = (FragmentTest)getSupportFragmentManager().findFragmentById(R.id.fragmentTest);
-        //fragmentTest.setFragmentObjects("TestText");
-
-        //noEvents = findViewById(R.id.no_events);
-        //eventList = findViewById(R.id.event_list);
-        //headerView = getLayoutInflater().inflate(R.layout.event_list_header, null);
-
-        //eventList.addHeaderView(headerView);
 
         events = new ArrayList<>();
 
@@ -90,7 +79,7 @@ public class EventActivity extends BaseActivity implements CallLogFragment.ItemC
         testEvent.addPosition(new Position(myUser, "TestPosition2", 30));
         //testEvent.addPosition(new Position(myUser, "TestPosition3", -98));
 
-        testEvent2.addPosition(new Position(myUser2, "TestPosition4", 30));
+        testEvent2.addPosition(new Position(myUser2, "TestPosition4", 100));
         //testEvent2.addPosition(new Position(myUser, "TestPosition5", -17));
         //testEvent2.addPosition(new Position(myUser, "TestPosition6", 128));
 
@@ -98,42 +87,9 @@ public class EventActivity extends BaseActivity implements CallLogFragment.ItemC
         events.add(testEvent2);
 
 
-        CallLogFragment fragmentTest2 = (CallLogFragment)getSupportFragmentManager().findFragmentById(R.id.event_fragment);
-        fragmentTest2.setFragmentObjects(events, "Event");
-
-        //eventAdapter = new EventArrayAdapter(this, events);
-        //eventList.setAdapter(eventAdapter);
-
-        /*
-        FloatingActionButton createEventBtn = findViewById(R.id.create_event_btn);
-        createEventBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivityForResult(new Intent(EventActivity.this,
-                        EventFormActivity.class), EVENT_CREATE_SUCCESS);
-            }
-        });
-
-        */
-
-        /*
-        eventList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onFragmentObjectClick(AdapterView<?> parent, View view, int position, long id) {
-                if (eventList.getHeaderViewsCount() == 1 && position == 0) {
-                    // click on balance summary field (on top of list)
-                    return;
-                }
-
-                Event selectedEvent = (Event) eventList.getItemAtPosition(position);
-
-                Intent intent = new Intent(EventActivity.this, PositionActivity.class);
-                intent.putExtra("event", selectedEvent);
-
-                startActivityForResult(intent, POSITION_CREATE_SUCCESS);
-            }
-        });
-        */
+        ObjectListFragment objectListFragment = (ObjectListFragment)getSupportFragmentManager()
+                .findFragmentById(R.id.event_fragment);
+        objectListFragment.setFragmentObjects(events, "Event");
         auth = FirebaseAuth.getInstance();
     }
 
@@ -141,20 +97,7 @@ public class EventActivity extends BaseActivity implements CallLogFragment.ItemC
     protected void onResume() {
         super.onResume();
         if(!events.isEmpty()){
-            //noEvents.setVisibility(View.GONE);
-            // calculate event balance here
-
-            /*
-            float object_balance = Stats.getBalance(events);
-
-            ((TextView)headerView.findViewById(R.id.event_balance_summary_val))
-                    .setText(new DecimalFormat("0.00").format(object_balance) + " " + getString(R.string.euro));
-
-            if(object_balance < 0){
-                headerView.findViewById(R.id.event_list_header_layout)
-                        .setBackgroundColor(Color.parseColor("#ef4545"));   // red
-            }
-            */
+            // do nothing?
         }
     }
 

@@ -1,33 +1,19 @@
 package de.thm.ap.groupexpenses.view;
 
-import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.model.Event;
-import de.thm.ap.groupexpenses.model.Position;
 
-public class PositionActivity extends AppCompatActivity implements CallLogFragment.ItemClickListener{
+public class PositionActivity extends AppCompatActivity implements ObjectListFragment.ItemClickListener{
 
     private Event selectedEvent;
 
@@ -51,7 +37,7 @@ public class PositionActivity extends AppCompatActivity implements CallLogFragme
 
         if(selectedEvent != null){
             List<Object> objectList = (List<Object>)(List<?>) selectedEvent.getPositions();
-            CallLogFragment fragmentTest2 = (CallLogFragment)getSupportFragmentManager().findFragmentById(R.id.position_fragment);
+            ObjectListFragment fragmentTest2 = (ObjectListFragment)getSupportFragmentManager().findFragmentById(R.id.position_fragment);
             fragmentTest2.setFragmentObjects(objectList, "Position");
         } else
             finish();
