@@ -46,11 +46,11 @@ import de.thm.ap.groupexpenses.model.User;
 
 public class EventActivity extends BaseActivity {
 
-    private TextView noEvents;
-    private ListView eventList;
+    //private TextView noEvents;
+    //private ListView eventList;
     private ArrayList<Event> events;
-    private EventArrayAdapter eventAdapter;
-    private View headerView;
+    //private EventArrayAdapter eventAdapter;
+    //private View headerView;
 
     private static final int EVENT_CREATE_SUCCESS = 19438;
     private static final int POSITION_CREATE_SUCCESS = 26374;
@@ -72,11 +72,11 @@ public class EventActivity extends BaseActivity {
         //FragmentTest fragmentTest = (FragmentTest)getSupportFragmentManager().findFragmentById(R.id.fragmentTest);
         //fragmentTest.setFragmentText("TestText");
 
-        noEvents = findViewById(R.id.no_events);
-        eventList = findViewById(R.id.event_list);
-        headerView = getLayoutInflater().inflate(R.layout.event_list_header, null);
+        //noEvents = findViewById(R.id.no_events);
+        //eventList = findViewById(R.id.event_list);
+        //headerView = getLayoutInflater().inflate(R.layout.event_list_header, null);
 
-        eventList.addHeaderView(headerView);
+        //eventList.addHeaderView(headerView);
 
         events = new ArrayList<>();
 
@@ -123,8 +123,8 @@ public class EventActivity extends BaseActivity {
         events.add(testEvent);
         events.add(testEvent2);
 
-        eventAdapter = new EventArrayAdapter(this, events);
-        eventList.setAdapter(eventAdapter);
+        //eventAdapter = new EventArrayAdapter(this, events);
+        //eventList.setAdapter(eventAdapter);
 
         FloatingActionButton createEventBtn = findViewById(R.id.create_event_btn);
         createEventBtn.setOnClickListener(new View.OnClickListener() {
@@ -135,6 +135,7 @@ public class EventActivity extends BaseActivity {
             }
         });
 
+        /*
         eventList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -151,6 +152,7 @@ public class EventActivity extends BaseActivity {
                 startActivityForResult(intent, POSITION_CREATE_SUCCESS);
             }
         });
+        */
         auth = FirebaseAuth.getInstance();
     }
 
@@ -158,8 +160,10 @@ public class EventActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         if(!events.isEmpty()){
-            noEvents.setVisibility(View.GONE);
+            //noEvents.setVisibility(View.GONE);
             // calculate event balance here
+
+            /*
             float event_balance = Stats.getBalance(events);
 
             ((TextView)headerView.findViewById(R.id.event_balance_summary_val))
@@ -169,6 +173,7 @@ public class EventActivity extends BaseActivity {
                 headerView.findViewById(R.id.event_list_header_layout)
                         .setBackgroundColor(Color.parseColor("#ef4545"));   // red
             }
+            */
         }
     }
 
@@ -201,48 +206,11 @@ public class EventActivity extends BaseActivity {
                 case EVENT_CREATE_SUCCESS:
                     Event event  = (Event) data.getExtras().getSerializable("createdEvent");
                     events.add(event);
-                    eventAdapter.clear();
-                    eventAdapter.addAll(events);
+                    //eventAdapter.clear();
+                    //eventAdapter.addAll(events);
                     break;
             }
         }
-    }
-
-
-
-    private class EventArrayAdapter extends ArrayAdapter<Event> {
-        private Context mContext;
-
-        public EventArrayAdapter(@NonNull Context context, ArrayList<Event> list) {
-            super(context, 0, list);
-            mContext = context;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View listItem = convertView;
-
-            if (listItem == null)
-                listItem = LayoutInflater.from(mContext).inflate(R.layout.event_list_item, parent,
-                        false);
-
-            Event e = getItem(position);
-
-            TextView name = listItem.findViewById(R.id.name2);
-            name.setText(e.getName());
-
-            TextView creatorAndDate =  listItem.findViewById(R.id.creatorAndDate);
-            creatorAndDate.setText("Ersteller: " + e.getCreator());
-
-            TextView balance =  listItem.findViewById(R.id.balance2);
-
-            float balance_f = Stats.getEventBalance(e);
-
-            balance.setText(new DecimalFormat("0.00").format(balance_f) + " €");
-
-            return listItem;
-        }
-
     }
 
     @Override
