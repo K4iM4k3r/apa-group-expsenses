@@ -65,9 +65,12 @@ public class EventActivity extends BaseActivity {
         Toolbar toolbar = findViewById(R.id.event_toolbar);
         setSupportActionBar(toolbar);
 
+        CallLogFragment fragmentTest2 = (CallLogFragment)getSupportFragmentManager().findFragmentById(R.id.fragmentTest);
+        fragmentTest2.setFragmentText("avs");
 
-        FragmentTest fragmentTest = (FragmentTest)getSupportFragmentManager().findFragmentById(R.id.fragmentTest);
-        fragmentTest.setFragmentText("TestText");
+
+        //FragmentTest fragmentTest = (FragmentTest)getSupportFragmentManager().findFragmentById(R.id.fragmentTest);
+        //fragmentTest.setFragmentText("TestText");
 
         noEvents = findViewById(R.id.no_events);
         eventList = findViewById(R.id.event_list);
