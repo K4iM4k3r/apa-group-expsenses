@@ -7,19 +7,20 @@ import java.util.Map;
 
 public class Position {
 
-    int id;
-
-    private HistoryValue topic;
-    private HistoryValue value;
-
+    private int id;
+    private HistoryValue<String> topic;
+    private HistoryValue<Integer> value;
     private final User creator;
 
     public Position(User creator, String topic, Integer value){
         this.creator = creator;
-        this.topic = new HistoryValue(topic);
-        this.value = new HistoryValue(value);
+        this.topic = new HistoryValue<>(topic);
+        this.value = new HistoryValue<>(value);
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
     public void setTopic(String topic){
         this.topic.set(topic);
     }
@@ -27,14 +28,14 @@ public class Position {
         this.value.set(value);
     }
 
-    public String getTopic(){
-        return (String) topic.get();
-    }
-    public int getValue(){
-        return (int) value.get();
-    }
     public int getId() {
         return id;
+    }
+    public String getTopic(){
+        return topic.get();
+    }
+    public int getValue(){
+        return value.get();
     }
     public User getCreator() {
         return creator;
@@ -48,7 +49,7 @@ public class Position {
     }
 
     public float getFactorizedValue(float factor){
-        return ((Integer)value.get()*factor);
+        return (value.get()*factor);
     }
 
     @NonNull

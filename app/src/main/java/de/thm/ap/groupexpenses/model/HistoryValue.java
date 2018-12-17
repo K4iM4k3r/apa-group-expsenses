@@ -1,5 +1,7 @@
 package de.thm.ap.groupexpenses.model;
 
+import android.support.annotation.NonNull;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,6 +42,7 @@ public class HistoryValue<T> {
     }
 
     @Override
+    @NonNull
     public String toString(){
         return value.toString();
     }
