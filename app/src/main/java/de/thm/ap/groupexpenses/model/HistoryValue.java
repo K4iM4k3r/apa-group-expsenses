@@ -1,6 +1,8 @@
 package de.thm.ap.groupexpenses.model;
 
 import java.io.Serializable;
+import android.support.annotation.NonNull;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -41,6 +43,7 @@ public class HistoryValue<T> implements Serializable{
     }
 
     @Override
+    @NonNull
     public String toString(){
         return value.toString();
     }

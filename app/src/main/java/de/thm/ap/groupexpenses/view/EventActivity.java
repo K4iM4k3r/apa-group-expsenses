@@ -32,7 +32,6 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
     private static final int POSITION_CREATE_SUCCESS = 26374;
 
     private static final String TAG = "EventActivity";
-    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,18 +123,6 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode == Activity.RESULT_OK){
-            switch(requestCode) {
-                case EVENT_CREATE_SUCCESS:
-                    Event event  = (Event) data.getExtras().getSerializable("createdEvent");
-                    events.add(event);
-                    break;
-            }
-        }
-    }
-
-    @Override
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
@@ -145,17 +132,5 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
         }
     }
 
-    @Override
-    public void onFragmentObjectClick(Object event) {
-        Intent intent = new Intent(EventActivity.this, PositionActivity.class);
-        intent.putExtra("event", (Event)event);
 
-        startActivityForResult(intent, POSITION_CREATE_SUCCESS);
-    }
-
-    @Override
-    public void onCreateBtnClick() {
-        startActivityForResult(new Intent(EventActivity.this,
-                EventFormActivity.class), EVENT_CREATE_SUCCESS);
-    }
 }

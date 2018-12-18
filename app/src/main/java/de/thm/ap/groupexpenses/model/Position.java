@@ -8,19 +8,20 @@ import java.util.Map;
 
 public class Position implements Serializable {
 
-    int id;
-
-    private HistoryValue topic;
-    private HistoryValue value;
-
+    private int id;
+    private HistoryValue<String> topic;
+    private HistoryValue<Integer> value;
     private final User creator;
 
     public Position(User creator, String topic, Float value){
         this.creator = creator;
-        this.topic = new HistoryValue(topic);
-        this.value = new HistoryValue(value);
+        this.topic = new HistoryValue<>(topic);
+        this.value = new HistoryValue<>(value);
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
     public void setTopic(String topic){
         this.topic.set(topic);
     }
@@ -28,8 +29,11 @@ public class Position implements Serializable {
         this.value.set(value);
     }
 
+    public int getId() {
+        return id;
+    }
     public String getTopic(){
-        return (String) topic.get();
+        return topic.get();
     }
     public float getValue(){
         return (float) value.get();
