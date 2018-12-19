@@ -1,6 +1,5 @@
 package de.thm.ap.groupexpenses.view;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -16,6 +15,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import de.thm.ap.groupexpenses.R;
+import de.thm.ap.groupexpenses.fragment.ObjectListFragment;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.User;
@@ -132,5 +132,17 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
         }
     }
 
+    @Override
+    public void onFragmentObjectClick(Object event) {
+        Intent intent = new Intent(EventActivity.this, PositionActivity.class);
+        intent.putExtra("event", (Event)event);
 
+        startActivityForResult(intent, POSITION_CREATE_SUCCESS);
+    }
+
+    @Override
+    public void onCreateBtnClick() {
+        startActivityForResult(new Intent(EventActivity.this,
+                EventFormActivity.class), EVENT_CREATE_SUCCESS);
+    }
 }

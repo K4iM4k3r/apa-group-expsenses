@@ -1,26 +1,32 @@
 <RelativeLayout android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:background="?android:activatedBackgroundIndicator"
+android:minHeight="?android:listPreferredItemHeight"
+xmlns:android="http://schemas.android.com/apk/res/android">
+
+<TextView
+    android:id="@+id/name"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:activatedBackgroundIndicator"
-    android:minHeight="?android:listPreferredItemHeight"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:layout_marginStart="8dp"
+    android:layout_toStartOf="@id/balance"
+    android:textAppearance="?android:textAppearanceListItem" />
 
-    <TextView
-        android:id="@+id/name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_toStartOf="@id/balance"
-        android:layout_centerVertical="true"
-        android:text="TestName"
-        android:textAppearance="?android:textAppearanceListItem" />
+<TextView
+    android:id="@+id/creator"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:layout_below="@id/name"
+    android:textAppearance="?android:textAppearanceListItemSmall"
+    android:textColor="?android:textColorHint" />
 
-    <TextView
-        android:id="@+id/balance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:layout_marginEnd="8dp"
-        android:text="10.00€"
-        android:textAppearance="?android:textAppearanceListItem" />
+<TextView
+    android:id="@+id/balance"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentEnd="true"
+    android:layout_centerVertical="true"
+    android:layout_marginEnd="8dp"
+    android:textAppearance="?android:textAppearanceListItem" />
 </RelativeLayout>

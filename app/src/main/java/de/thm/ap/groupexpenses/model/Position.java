@@ -10,7 +10,7 @@ public class Position implements Serializable {
 
     private int id;
     private HistoryValue<String> topic;
-    private HistoryValue<Integer> value;
+    private HistoryValue<Float> value;
     private final User creator;
 
     public Position(User creator, String topic, Float value){
@@ -38,9 +38,6 @@ public class Position implements Serializable {
     public float getValue(){
         return (float) value.get();
     }
-    public float getId() {
-        return id;
-    }
     public User getCreator() {
         return creator;
     }
@@ -48,12 +45,12 @@ public class Position implements Serializable {
     public Map<Date, String> getTopicHistory() {
         return topic.getHistory();
     }
-    public Map<Date, Integer> getValueHistory() {
+    public Map<Date, Float> getValueHistory() {
         return value.getHistory();
     }
 
     public float getFactorizedValue(float factor){
-        return ((Float)value.get()*factor);
+        return (value.get()*factor);
     }
 
     @NonNull
