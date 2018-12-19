@@ -7,12 +7,12 @@ import java.util.Date;
 
 public class User implements Comparable<User>, Serializable {
 
-    int id;
+    private int id;
 
     // mandatory
-    String firstName;
-    String lastName;
-    String email;
+    private String firstName;
+    private String lastName;
+    private String email;
 
     // optional
     Date dateOfBirth;

@@ -14,26 +14,46 @@ public class Event implements Serializable {
     private String date;
     private String info;
     private final User creator;
-    private List<User> users;
+    private List<User> members;
     private List<Position> positions;
 
-    public Event(User creator, String name, String date, String info, List<User> user, List<Position> positions) {
+    public Event(User creator, String name, String date, String info, List<User> members, List<Position> positions) {
         this.name = name;
         this.date = date;
         this.info = info;
         this.creator = creator;
-        this.users = user;
+        this.members = members;
+
+        boolean creatorFound = false;
+        for(int idx = 0; idx < members.size(); ++idx){
+            if(members.get(idx).getId() == creator.getId()){
+                creatorFound = true;
+                break;
+            }
+        }
+        if(!creatorFound)
+            this.members.add(this.creator);
+
         this.positions = positions;
     }
 
-    public Event(User creator, String name, String date, String info, List<User> member) {
-        this.creator = creator;
+    public Event(User creator, String name, String date, String info, List<User> members) {
         this.name = name;
         this.date = date;
         this.info = info;
-        this.users = new ArrayList<>();
-        this.users.add(creator);
-        this.users.addAll(users);
+        this.creator = creator;
+        this.members = members;
+
+        boolean creatorFound = false;
+        for(int idx = 0; idx < members.size(); ++idx){
+            if(members.get(idx).getId() == creator.getId()){
+                creatorFound = true;
+                break;
+            }
+        }
+        if(!creatorFound)
+            this.members.add(this.creator);
+
         this.positions = new ArrayList<>();
     }
     public Event(User creator, String name, String date, String info) {
@@ -41,8 +61,8 @@ public class Event implements Serializable {
         this.name = name;
         this.date = date;
         this.info = info;
-        this.users = new ArrayList<>();
-        this.users.add(creator);
+        this.members = new ArrayList<>();
+        this.members.add(this.creator);
         this.positions = new ArrayList<>();
     }
 
@@ -67,11 +87,11 @@ public class Event implements Serializable {
     public void setInfo(String info) {
         this.info = info;
     }
-    public List<User> getUsers() {
-        return users;
+    public List<User> getMembers() {
+        return members;
     }
     public void addUser(User user) {
-        this.users.add(user);
+        this.members.add(user);
     }
     public List<Position> getPositions() {
         return positions;
@@ -86,8 +106,8 @@ public class Event implements Serializable {
     }
 
     public float getPositionFactor(boolean positive){
-        float posFactor = (float)(users.size()-1) / (float) users.size();
-        float negFactor = (float) (1.00/ users.size());
+        float posFactor = (float)(members.size()-1) / (float) members.size();
+        float negFactor = (float) (1.00/ members.size());
         return positive? posFactor: negFactor;
     }
 

@@ -13,7 +13,7 @@
         android:layout_centerVertical="true"
         android:layout_toStartOf="@id/object_balance_summary_val"
         android:textAppearance="?android:textAppearanceListItem"
-        android:text="@string/event_total_balance"/>
+        android:text="@string/total_balance"/>
 
 
     <TextView

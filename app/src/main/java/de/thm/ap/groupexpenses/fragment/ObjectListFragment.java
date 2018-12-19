@@ -1,4 +1,4 @@
-package de.thm.ap.groupexpenses.view;
+package de.thm.ap.groupexpenses.fragment;
 
 import android.app.Activity;
 import android.content.Context;
@@ -26,10 +26,10 @@ public class ObjectListFragment extends Fragment
 {
     private View view;
     private ListView object_listView;
-    private List<Object> objectList;
     private CustomCallLogListAdapter adapter;
     private RelativeLayout headerLayout;
     private View headerView;
+    private Event relatedEventToPosition;
 
     ItemClickListener itemClickListener;
 
@@ -59,12 +59,11 @@ public class ObjectListFragment extends Fragment
         return view;
     }
 
-    public void createFragmentObjects(List<Object> objects, String type){
-        objectList = objects;
+    public void createFragmentObjects(List<Object> objectList, String type){
         TextView noObjects_textView = view.findViewById(R.id.fragment_no_object_text);
 
-        if(!objects.isEmpty()){
-            init(objects, type);
+        if(!objectList.isEmpty()){
+            init(objectList, type);
         } else {
             switch (type){
                 case "Event":
@@ -79,47 +78,47 @@ public class ObjectListFragment extends Fragment
         createObjBtn.setOnClickListener(view -> createObjectBtnClicked());
     }
 
-    public void updateFragmentObjects(List<Object> objects, String type){
-        objectList = objects;
+    public void updateFragmentObjects(List<Object> objectList, String type){
 
-        if(objects.size() == 1){    // first object was just added to list
-            init(objects, type);
-        } else if(objects.size() > 0){
+        if(objectList.size() == 1){    // first object was just added to list
+            init(objectList, type);
+        } else if(objectList.size() > 0){
             //adapter.clear();
             //adapter.addAll(objects);
             // why does clear and add all not work? code below works (maybe because no database)
             adapter = new CustomCallLogListAdapter(getActivity(),
-                    R.layout.fragment_object_list_row, objectList);
+                    R.layout.fragment_object_list_row, objectList, type);
             object_listView = view.findViewById(R.id.fragment_listView);
             object_listView.setAdapter(adapter);
             object_listView.setOnItemClickListener((parent, view, position, id) ->
                     itemSelected(object_listView.getItemAtPosition(position)));
 
-            updateTotalBalance(objects, type);
+            updateTotalBalance(objectList, type);
         }
 
     }
 
-    private void init(List<Object> objects, String type){
+    private void init(List<Object> objectList, String type){
         view.findViewById(R.id.fragment_no_object_text).setVisibility(View.GONE);
         headerView = getLayoutInflater().inflate(R.layout.fragment_object_list_header, null);
         headerLayout = headerView.findViewById(R.id.object_list_header_layout);
-        TextView obj_name = headerView.findViewById(R.id.object_balance_summary_text);
 
         switch(type){   // init individual object strings and colors
             case "Event":
-                obj_name.setText(R.string.event_total_balance);
+                // empty
                 break;
             case "Position":
-                obj_name.setText(R.string.position_total_balance);
-                headerLayout.setBackgroundColor(Color
-                        .parseColor("#95aebc"));    // grey
+                // last el of list is related Event to this Position- save it locally and rm it
+                // from objectList
+                Event event = (Event)objectList.get(objectList.size() - 1);
+                relatedEventToPosition = event;
+                objectList.remove(objectList.size() - 1);
                 break;
         }
-        updateTotalBalance(objects, type);
+        updateTotalBalance(objectList, type);
 
         adapter = new CustomCallLogListAdapter(getActivity(),
-                R.layout.fragment_object_list_row, objectList);
+                R.layout.fragment_object_list_row, objectList, type);
         object_listView = view.findViewById(R.id.fragment_listView);
         object_listView.addHeaderView(headerView);
         object_listView.setAdapter(adapter);
@@ -127,30 +126,23 @@ public class ObjectListFragment extends Fragment
                 itemSelected(object_listView.getItemAtPosition(position)));
     }
 
-    private void updateTotalBalance(List<Object> objects, String type){
+    private void updateTotalBalance(List<Object> objectList, String type){
         TextView obj_val = headerView.findViewById(R.id.object_balance_summary_val);
-        float balance;
+        float balance = 0;
 
         switch (type){
             case "Event":
-                List<Event> eventList = (List<Event>)(List<?>) objects;
+                List<Event> eventList = (List<Event>)(List<?>) objectList;
                 balance = Stats.getBalance(eventList);
 
                 obj_val.setText(new DecimalFormat("0.00").format(balance)
                         + " " + getString(R.string.euro));
-
-                if(balance < 0)
-                    headerLayout.setBackgroundColor(Color
-                            .parseColor("#ef4545"));    // red
-                else
-                    headerLayout.setBackgroundColor(Color
-                            .parseColor("#20e599"));    // green
                 break;
 
             case "Position":
-                balance = 0;
-                for(int idx = 0; idx < objects.size(); ++idx)
-                    balance += ((Position)objects.get(idx)).getValue();
+                for(int idx = 0; idx < objectList.size(); ++idx)
+                    balance += Stats.getPositionBalance((Position)objectList.get(idx),
+                            relatedEventToPosition);
 
                 obj_val.setText(new DecimalFormat("0.00").format(balance)
                         + " " + getString(R.string.euro));
@@ -174,10 +166,12 @@ public class ObjectListFragment extends Fragment
         private Context context;
         private int resource;
         private View view;
+        String type;
         private Holder holder;
         private Object m_object;
-        public CustomCallLogListAdapter(Context context, int resource,List<Object> objects) {
+        public CustomCallLogListAdapter(Context context, int resource, List<Object> objects, String type) {
             super(context, resource, objects);
+            this.type = type;
             this.context = context;
             this.resource = resource;
             this.retrievedObjects = objects;
@@ -189,25 +183,43 @@ public class ObjectListFragment extends Fragment
             view = inflater.inflate(resource, parent,false);
             holder = new Holder();
             holder.object_name = view.findViewById(R.id.name);
+            holder.object_creator = view.findViewById(R.id.creator);
             holder.object_balance = view.findViewById(R.id.balance);
             m_object = retrievedObjects.get(index);
+            float balance = 0;
 
-            if(m_object instanceof Event){
-                Event event = (Event)m_object;
-                holder.object_name.setText(event.getName());
-                holder.object_balance.setText(new DecimalFormat("0.00")
-                        .format(Stats.getEventBalance(event)) + " " + getString(R.string.euro));
-            } else if(m_object instanceof Position){
-                Position position = (Position) m_object;
-                holder.object_name.setText(position.getTopic());
-                holder.object_balance.setText(new DecimalFormat("0.00")
-                        .format( position.getValue())+ " " + getString(R.string.euro));
+            switch(type){
+                case "Event":
+                    Event event = (Event)m_object;
+                    balance = Stats.getEventBalance(event);
+                    holder.object_name.setText(event.getName());
+                    holder.object_creator.setText(event.getCreator());
+                    holder.object_balance.setText(new DecimalFormat("0.00")
+                            .format(balance) + " " + getString(R.string.euro));
+                    break;
+                case "Position":
+                    Position position = (Position) m_object;
+                    balance = Stats.getPositionBalance(position, relatedEventToPosition);
+                    holder.object_name.setText(position.getTopic());
+                    holder.object_creator.setText(position.getCreator().toString());
+                    holder.object_balance.setText(new DecimalFormat("0.00")
+                            .format(balance)+ " " + getString(R.string.euro));
+                    break;
+                default:
+
             }
+            if(balance < 0)
+                holder.object_balance.setTextColor(Color
+                        .parseColor("#ef4545"));    // red
+            else
+                holder.object_balance.setTextColor(Color
+                        .parseColor("#2ba050"));    // green
             return view;
         }
 
         private class Holder {
             TextView object_name;
+            TextView object_creator;
             TextView object_balance;
         }
     }

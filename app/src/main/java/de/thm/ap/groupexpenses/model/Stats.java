@@ -39,28 +39,6 @@ public class Stats {
         return sum;
     }
 
-    public static float getPositionBalance(Position p, int members_size){
-        if (App.CurrentUser == null){
-            throw new IllegalStateException("User not specified!");
-        }
-        return getPositionBalance(App.CurrentUser, p, members_size);
-    }
-
-    public static float getPositionBalance(User appuser, Position p, int members_size){
-        float balance;
-
-        if (appuser.equals(p.getCreator()))
-            //The current user made the position - gets money
-            balance = p.getValue();
-        else {
-            // App user is participant - has to pay money
-            balance = p.getFactorizedValue(1 / (members_size - 1));
-        }
-        return balance;
-    }
-
-
-
     public static float getEventBalance(Event e){
         if (App.CurrentUser == null){
             throw new IllegalStateException("User not specified!");
@@ -79,6 +57,24 @@ public class Stats {
             // App user is participant - has to pay money
             balance -= pos.getFactorizedValue(e.getPositionFactor(false));
         }
+        return balance;
+    }
+
+    public static float getPositionBalance(Position p, Event e){
+        if (App.CurrentUser == null){
+            throw new IllegalStateException("User not specified!");
+        }
+        return getPositionBalance(App.CurrentUser, p, e);
+    }
+
+    public static float getPositionBalance(User appuser, Position p, Event e){
+        float balance;
+        //The current user made the position - gets money
+        if (appuser.equals(p.getCreator()))
+            balance = p.getFactorizedValue(e.getPositionFactor(true));
+            // App user is participant - has to pay money
+        else
+            balance = p.getFactorizedValue(e.getPositionFactor(false));
         return balance;
     }
 

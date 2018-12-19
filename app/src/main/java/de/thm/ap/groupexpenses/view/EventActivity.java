@@ -22,11 +22,7 @@ import de.thm.ap.groupexpenses.model.User;
 
 public class EventActivity extends BaseActivity implements ObjectListFragment.ItemClickListener{
 
-    //private TextView noEvents;
-    //private ListView eventList;
     private List<Object> events;
-    //private EventArrayAdapter eventAdapter;
-    //private View headerView;
 
     private static final int EVENT_CREATE_SUCCESS = 19438;
     private static final int POSITION_CREATE_SUCCESS = 26374;
@@ -45,12 +41,15 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
         ArrayList<User> userList = new ArrayList<>();
         User myUser = new User(1, "Lukas", "Hilfrich", "l.hilfrich@gmx.de");
         User myUser2 = new User(2, "Hendrik", "Kegel", "oof");
+        User myUser3 = new User(3, "Kai", "Schäfer", "oof2");
+        User myUser4 = new User(4, "David", "Omran", "oof3");
+        User myUser5 = new User(5, "Ulf", "Smolka", "ka");
         App.CurrentUser = myUser;
         userList.add(myUser);
         userList.add(myUser2);
-        userList.add(new User(3, "Kai", "Schäfer", "oof2"));
-        userList.add(new User(4, "David", "Omran", "oof3"));
-        userList.add(new User(5, "Ulf", "Smolka", "ka"));
+        userList.add(myUser3);
+        userList.add(myUser4);
+        userList.add(myUser5);
         //userList.add(new User(6, "Dominik", "Herz", "kjlkalsd"));
         //userList.add(new User(7, "Aris", "Christidis", "lolo"));
         //userList.add(new User(8, "KQC", "NA", "xD"));
@@ -74,13 +73,11 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
                 userList
         );
 
-        testEvent.addPosition(new Position(myUser, "TestPosition", 35.56f));
-        testEvent.addPosition(new Position(myUser, "TestPosition2", 30.f));
-        //testEvent.addPosition(new Position(myUser, "TestPosition3", -98));
+        testEvent.addPosition(new Position(myUser, "TestPosition", 50.f));
+        testEvent.addPosition(new Position(myUser, "TestPosition2", 20.f));
 
-        //testEvent2.addPosition(new Position(myUser2, "TestPosition4", 100.35f));
-        //testEvent2.addPosition(new Position(myUser, "TestPosition5", -17));
-        //testEvent2.addPosition(new Position(myUser, "TestPosition6", 128));
+        testEvent2.addPosition(new Position(myUser2, "TestPosition3", 100.f));
+        testEvent2.addPosition(new Position(myUser2, "TestPosition4", 100.f));
 
         events.add(testEvent);
         events.add(testEvent2);

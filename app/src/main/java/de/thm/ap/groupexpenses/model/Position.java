@@ -36,7 +36,7 @@ public class Position implements Serializable {
         return topic.get();
     }
     public float getValue(){
-        return (float) value.get();
+        return value.get();
     }
     public User getCreator() {
         return creator;

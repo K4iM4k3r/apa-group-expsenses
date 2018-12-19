@@ -46,6 +46,9 @@ public class PositionActivity extends AppCompatActivity implements ObjectListFra
             positionList = (List<Object>)(List<?>) selectedEvent.getPositions();
             objectListFragment = (ObjectListFragment)getSupportFragmentManager()
                     .findFragmentById(R.id.position_fragment);
+            // IMPORTANT: add event at the end of list to be used and subsequently deleted
+            // in ObjectListFragment
+            positionList.add(selectedEvent);
             objectListFragment.createFragmentObjects(positionList, "Position");
         } else
             finish();
@@ -79,8 +82,8 @@ public class PositionActivity extends AppCompatActivity implements ObjectListFra
                                 + getString(R.string.event_form_begin) + ": </b><br>" + selectedEvent.getDate()
                                 + "<br><br><b>"
                                 + getString(R.string.event_form_users) + "("
-                                + selectedEvent.getUsers().size() + "): " + "</b><br>" +
-                        App.listToHTMLString(selectedEvent.getUsers()))
+                                + selectedEvent.getMembers().size() + "): " + "</b><br>" +
+                        App.listToHTMLString(selectedEvent.getMembers()))
                 );
                 builder.show();
                 break;
