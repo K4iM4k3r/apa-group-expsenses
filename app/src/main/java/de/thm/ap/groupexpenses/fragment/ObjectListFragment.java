@@ -62,6 +62,8 @@ public class ObjectListFragment extends Fragment
         TextView noObjects_textView = view.findViewById(R.id.fragment_no_object_text);
 
         if(!objectList.isEmpty()){
+            if(type.equals("Position"))
+                setRelatedEventToPosition(objectList);
             init(objectList, type);
         } else {
             switch (type){
@@ -76,21 +78,32 @@ public class ObjectListFragment extends Fragment
     }
 
     public void updateFragmentObjects(List<Object> objectList, String type){
-        if(objectList.size() == 1){    // first object was just added to list
-            init(objectList, type);
-        } else if(objectList.size() > 0){   // there are already objects in list
-            //adapter.clear();
-            //adapter.addAll(objects);
-            // why does clear and add all not work? code below works (maybe because no database)
-            adapter = new CustomCallLogListAdapter(getActivity(),
-                    R.layout.fragment_object_list_row, objectList, type);
-            object_listView = view.findViewById(R.id.fragment_listView);
-            object_listView.setAdapter(adapter);
-            object_listView.setOnItemClickListener((parent, view, position, id) ->
-                    itemSelected(object_listView.getItemAtPosition(position)));
+        switch (type){
+            case "Position":
+                setRelatedEventToPosition(objectList);
+                // don't break here!
+            case "Event":
+                if(objectList.size() == 1){     // first Event/Position was just added to list
+                    init(objectList, type);
+                } else if(objectList.size() > 0){   // there are already objects in list
+                    //adapter.clear();
+                    //adapter.addAll(objects);
+                    // why does clear and add all not work? code below works (maybe because no database)
+                    adapter = new CustomCallLogListAdapter(getActivity(),
+                            R.layout.fragment_object_list_row, objectList, type);
+                    object_listView = view.findViewById(R.id.fragment_listView);
+                    object_listView.setAdapter(adapter);
+                    object_listView.setOnItemClickListener((parent, view, position, id) ->
+                            itemSelected(object_listView.getItemAtPosition(position)));
 
-            updateTotalBalance(objectList, type);
+                    updateTotalBalance(objectList, type);
+                }
+                break;
+
+                default:
+
         }
+
 
     }
 
@@ -98,19 +111,6 @@ public class ObjectListFragment extends Fragment
         view.findViewById(R.id.fragment_no_object_text).setVisibility(View.GONE);
         headerView = getLayoutInflater().inflate(R.layout.fragment_object_list_header, null);
         //headerLayout = headerView.findViewById(R.id.object_list_header_layout);
-
-        switch(type){   // init individual object strings and colors
-            case "Event":
-                // empty
-                break;
-            case "Position":
-                // last el of list is related Event to this Position- save it locally and rm it
-                // from objectList
-                Event event = (Event)objectList.get(objectList.size() - 1);
-                relatedEventToPosition = event;
-                objectList.remove(objectList.size() - 1);
-                break;
-        }
         updateTotalBalance(objectList, type);
 
         adapter = new CustomCallLogListAdapter(getActivity(),
@@ -147,6 +147,14 @@ public class ObjectListFragment extends Fragment
             default:
 
         }
+    }
+
+    private void setRelatedEventToPosition(List<Object> positionList){
+        // last el of list is the related Event to this Position- save it locally and
+        // rm it from positionList
+        int lastIdx = positionList.size() - 1;
+        relatedEventToPosition = (Event)positionList.get(lastIdx);
+        positionList.remove(lastIdx);
     }
 
     public void itemSelected(Object object){

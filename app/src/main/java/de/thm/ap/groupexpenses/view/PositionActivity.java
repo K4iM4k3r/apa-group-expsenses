@@ -49,7 +49,8 @@ public class PositionActivity extends AppCompatActivity implements ObjectListFra
                     .findFragmentById(R.id.position_fragment);
             // IMPORTANT: add event at the end of list to be used and subsequently deleted
             // in ObjectListFragment
-            positionList.add(selectedEvent);
+            if(!positionList.isEmpty())
+                positionList.add(selectedEvent);
             objectListFragment.createFragmentObjects(positionList, "Position");
         } else
             finish();
@@ -110,6 +111,7 @@ public class PositionActivity extends AppCompatActivity implements ObjectListFra
                 case POSITION_CREATE_SUCCESS:
                     Position position  = (Position) data.getExtras().getSerializable("createdPosition");
                     positionList.add(position);
+                    positionList.add(selectedEvent);
                     objectListFragment.updateFragmentObjects(positionList, "Position");
                     break;
             }

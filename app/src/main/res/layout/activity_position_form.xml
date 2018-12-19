@@ -22,7 +22,7 @@
         android:id="@+id/position_form_value_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/position_form_value" />
+        android:text="@string/position_form_value"/>
 
     <EditText
         android:id="@+id/position_form_value_edit"
