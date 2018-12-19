@@ -1,5 +1,6 @@
 package de.thm.ap.groupexpenses.view;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -38,6 +39,8 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
     private CircleImageView picture;
     protected FirebaseAuth auth;
     private FirebaseUser currentUser;
+    public ProgressDialog mProgressDialog;
+
 
 
     @Override
@@ -71,6 +74,8 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
+
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -155,6 +160,23 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
                 return false;
         }
     }
+
+    public void showProgressDialog() {
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(this);
+            mProgressDialog.setMessage(getString(R.string.loading));
+            mProgressDialog.setIndeterminate(true);
+        }
+
+        mProgressDialog.show();
+    }
+
+    public void hideProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
+    }
+
 
     public void checkLoginState(){
         // Check if user is signed in (non-null) and update UI accordingly.
