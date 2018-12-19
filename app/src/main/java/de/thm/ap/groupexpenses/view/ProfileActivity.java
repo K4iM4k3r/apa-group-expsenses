@@ -19,11 +19,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -36,19 +38,26 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.FileChannel;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import de.thm.ap.groupexpenses.R;
+import de.thm.ap.groupexpenses.database.Constants;
 
 import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 
 public class ProfileActivity extends BaseActivity {
     private TextView tvEmail;
     private EditText edName;
+    private EditText edFirst;
+    private EditText edLast;
     private CircleImageView profile_pic;
     private Button btnSave;
     private final int REQUEST_IMAGE_PICK = 1;
     private final String TAG = getClass().getName();
+    private FirebaseFirestore db;
+
 
 
     @Override
@@ -58,34 +67,65 @@ public class ProfileActivity extends BaseActivity {
 
         tvEmail = findViewById(R.id.tvProfileEmail);
         edName = findViewById(R.id.edName);
-        ImageButton btnName = findViewById(R.id.edit_profile_name);
+        edFirst = findViewById(R.id.edFirstname);
+        edLast = findViewById(R.id.edLastname);
+        Button btnEdit = findViewById(R.id.edit_button);
         btnSave = findViewById(R.id.btn_save_profile);
         profile_pic = findViewById(R.id.profile_pic);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        db = FirebaseFirestore.getInstance();
 
 
         FirebaseUser user = super.auth.getCurrentUser();
         if(user != null){
-            tvEmail.setText(user.getEmail());
-            edName.setText(user.getDisplayName());
+            DocumentReference docRef = db.collection(Constants.COLLECTION_USERS).document(user.getUid());
+            docRef.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+
+                        edFirst.setText(document.getString(Constants.DOC_USERS_FIRST_NAME));
+                        edLast.setText(document.getString(Constants.DOC_USERS_LAST_NAME));
+                        edName.setText(document.getString(Constants.DOC_USERS_NICKNAME));
+
+                        tvEmail.setText(user.getEmail());
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            });
+
+
         }
 
-        btnName.setOnClickListener(l -> {
+        btnEdit.setOnClickListener(l -> {
             edName.setEnabled(true);
+            edLast.setEnabled(true);
+            edFirst.setEnabled(true);
             btnSave.setVisibility(View.VISIBLE);
+            btnEdit.setVisibility(View.GONE);
         });
         btnSave.setOnClickListener(l ->{
-            if(TextUtils.isEmpty(edName.getText())){
-                edName.setError(getString(R.string.error_invalid_name));
-            }
-            else{
+            showProgressDialog();
+            if(isValidUserInput()){
+
+                Map<String, Object> userInfo= new HashMap<>();
+                userInfo.put(Constants.DOC_USERS_FIRST_NAME, edFirst.getText().toString());
+                userInfo.put(Constants.DOC_USERS_LAST_NAME, edLast.getText().toString());
+                userInfo.put(Constants.DOC_USERS_NICKNAME, edName.getText().toString());
+
+                updateUserInfoInDB(userInfo);
                 UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
                         .setDisplayName(edName.getText().toString())
                         .build();
                 if (user != null) {
                     user.updateProfile(profileUpdate);
                 }
+                hideProgressDialog();
                 finish();
             }
         });
@@ -120,6 +160,10 @@ public class ProfileActivity extends BaseActivity {
                             .setPhotoUri(downloadUri)
                             .build();
                     user.updateProfile(profileUpdate);
+
+                    Map<String, Object> userInfo = new HashMap<>();
+                    userInfo.put(Constants.DOC_USERS_PROFILE_PIC_URL, downloadUri.toString());
+                    updateUserInfoInDB(userInfo);
 //                        Log.i(TAG, user.getPhotoUrl().toString());
                 } else {
                     // Handle failures
@@ -131,6 +175,32 @@ public class ProfileActivity extends BaseActivity {
 
     }
 
+    private void updateUserInfoInDB(Map<String, Object> user) {
+        db.collection(Constants.COLLECTION_USERS)
+                .document(super.auth.getUid())
+                .update(user)
+                .addOnSuccessListener(l -> Log.d(TAG, "Userdata successfull written"))
+                .addOnFailureListener(f -> Log.d(TAG, "User data couldnt written"));
+
+
+    }
+
+    private boolean isValidUserInput(){
+        boolean valid = true;
+        if(TextUtils.isEmpty(edName.getText())){
+            edName.setError(getString(R.string.error_invalid_input));
+            valid = false;
+        }
+        if(TextUtils.isEmpty(edFirst.getText())){
+            edName.setError(getString(R.string.error_invalid_input));
+            valid = false;
+        }
+        if(TextUtils.isEmpty(edLast.getText())){
+            edName.setError(getString(R.string.error_invalid_input));
+            valid = false;
+        }
+        return valid;
+    }
 
     private void pickPhoto() {
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
