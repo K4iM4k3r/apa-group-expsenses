@@ -73,9 +73,10 @@ public class PositionActivity extends AppCompatActivity implements ObjectListFra
 
         switch(id){
             case R.id.position_menu_done:
-                // check for created positions
-
-
+                // return Event to EventActivity
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("inspectedEvent", selectedEvent);
+                setResult(Activity.RESULT_OK, returnIntent);
                 finish();
                 break;
 

@@ -18,30 +18,12 @@ public class Event implements Serializable {
     private List<Position> positions;
 
     public Event(User creator, String name, String date, String info, List<User> members, List<Position> positions) {
-        this.name = name;
-        this.date = date;
-        this.info = info;
-        this.creator = creator;
-        this.members = members;
-
-        boolean creatorFound = false;
-        for(int idx = 0; idx < members.size(); ++idx){
-            if(members.get(idx).getId() == creator.getId()){
-                creatorFound = true;
-                break;
-            }
-        }
-        if(!creatorFound)
-            this.members.add(this.creator);
-
+        this(creator, name, date, info, members);
         this.positions = positions;
     }
 
     public Event(User creator, String name, String date, String info, List<User> members) {
-        this.name = name;
-        this.date = date;
-        this.info = info;
-        this.creator = creator;
+        this(creator, name, date, info);
         this.members = members;
 
         boolean creatorFound = false;
@@ -53,10 +35,10 @@ public class Event implements Serializable {
         }
         if(!creatorFound)
             this.members.add(this.creator);
-
-        this.positions = new ArrayList<>();
     }
+
     public Event(User creator, String name, String date, String info) {
+        this.id = (int)(Math.random() * 10000 + 1);     // rand num between 0 - 10000
         this.creator = creator;
         this.name = name;
         this.date = date;
@@ -74,6 +56,10 @@ public class Event implements Serializable {
     }
     public String getCreator() {
         return creator.toString();
+    }
+    public int getId() { return id; }
+    public void setId(int id) {
+        this.id = id;
     }
     public String getDate() {
         return date;

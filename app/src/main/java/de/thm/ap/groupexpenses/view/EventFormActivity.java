@@ -46,44 +46,33 @@ public class EventFormActivity extends AppCompatActivity {
         addMembersBtn = findViewById(R.id.event_form_add_members_btn);
         eventUsersTextView = findViewById(R.id.event_form_users_textView);
 
-        addMembersBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivityForResult(new Intent(
-                        EventFormActivity.this, AddUsersActivity.class),
-                        USER_PICK_SUCCESS);
-            }
+        addMembersBtn.setOnClickListener(v -> startActivityForResult(new Intent(
+                EventFormActivity.this, AddUsersActivity.class),
+                USER_PICK_SUCCESS));
+
+        eventDateEditText.setOnFocusChangeListener((view, hasFocus) -> {
+            if (hasFocus && !fromDateSet) {
+                Calendar cal = Calendar.getInstance();
+                int year = cal.get(Calendar.YEAR);
+                int month = cal.get(Calendar.MONTH);
+                int day = cal.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog dialog = new DatePickerDialog(
+                        EventFormActivity.this,
+                        R.style.Theme_AppCompat_DayNight_Dialog,
+                        dateSetListener,
+                        year, month, day);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+                dialog.show();
+            } else if(fromDateSet)
+                fromDateSet = false;
         });
 
-        eventDateEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if (hasFocus && !fromDateSet) {
-                    Calendar cal = Calendar.getInstance();
-                    int year = cal.get(Calendar.YEAR);
-                    int month = cal.get(Calendar.MONTH);
-                    int day = cal.get(Calendar.DAY_OF_MONTH);
-
-                    DatePickerDialog dialog = new DatePickerDialog(
-                            EventFormActivity.this,
-                            R.style.Theme_AppCompat_DayNight_Dialog,
-                            dateSetListener,
-                            year, month, day);
-                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-                    dialog.show();
-                } else if(fromDateSet)
-                    fromDateSet = false;
-            }
-        });
-
-        dateSetListener = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int day) {
-                month = month + 1;
-                String date = day + "." + month + "." + year;
-                eventDateEditText.setText(date);
-                fromDateSet = true;
-            }
+        dateSetListener = (view, year, month, day) -> {
+            month = month + 1;
+            String date = day + "." + month + "." + year;
+            eventDateEditText.setText(date);
+            fromDateSet = true;
         };
     }
 

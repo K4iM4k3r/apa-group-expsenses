@@ -1,12 +1,12 @@
 package de.thm.ap.groupexpenses.view;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +25,10 @@ import de.thm.ap.groupexpenses.model.User;
 public class EventActivity extends BaseActivity implements ObjectListFragment.ItemClickListener{
 
     private List<Object> events;
+    private ObjectListFragment objectListFragment;
 
     private static final int EVENT_CREATE_SUCCESS = 19438;
-    private static final int POSITION_CREATE_SUCCESS = 26374;
+    private static final int EVENT_INSPECT_SUCCESS = 26374;
 
     private static final String TAG = "EventActivity";
 
@@ -85,7 +86,7 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
         events.add(testEvent2);
 
 
-        ObjectListFragment objectListFragment = (ObjectListFragment)getSupportFragmentManager()
+        objectListFragment = (ObjectListFragment)getSupportFragmentManager()
                 .findFragmentById(R.id.event_fragment);
         objectListFragment.createFragmentObjects(events, "Event");
 
@@ -103,6 +104,38 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
         super.onResume();
         if(!events.isEmpty()){
             // do nothing?
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == Activity.RESULT_OK){
+            Event event;
+            switch(requestCode) {
+                case EVENT_CREATE_SUCCESS:
+                    event = (Event) data.getExtras().getSerializable("createdEvent");
+                    events.add(event);
+                    objectListFragment.updateFragmentObjects(events, "Event");
+                    break;
+
+                case EVENT_INSPECT_SUCCESS: // get inspected Event and update it (its positions)
+                    event = (Event) data.getExtras().getSerializable("inspectedEvent");
+                    boolean eventFound = false;
+
+                    for(int idx = 0; idx < events.size(); ++idx) {
+                        if (event.getId() == ((Event) events.get(idx)).getId()) {
+                            events.set(idx, event);
+                            eventFound = true;
+                            break;
+                        }
+                    }
+
+                    if(!eventFound)
+                        throw new IllegalStateException("Inspected Event not found!");
+                    else
+                        objectListFragment.updateFragmentObjects(events, "Event");
+                    break;
+            }
         }
     }
 
@@ -143,6 +176,6 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
         Intent intent = new Intent(EventActivity.this, PositionActivity.class);
         intent.putExtra("event", (Event)event);
 
-        startActivityForResult(intent, POSITION_CREATE_SUCCESS);
+        startActivityForResult(intent, EVENT_INSPECT_SUCCESS);
     }
 }
