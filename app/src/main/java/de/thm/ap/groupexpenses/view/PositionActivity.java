@@ -3,6 +3,7 @@ package de.thm.ap.groupexpenses.view;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
@@ -52,6 +53,12 @@ public class PositionActivity extends AppCompatActivity implements ObjectListFra
             objectListFragment.createFragmentObjects(positionList, "Position");
         } else
             finish();
+
+        FloatingActionButton createPositionBtn = findViewById(R.id.create_position_btn);
+        createPositionBtn.setOnClickListener(v -> startActivityForResult(new Intent(PositionActivity.this,
+                PositionFormActivity.class), POSITION_CREATE_SUCCESS)
+        );
+
     }
 
     @Override
@@ -111,11 +118,5 @@ public class PositionActivity extends AppCompatActivity implements ObjectListFra
     @Override
     public void onFragmentObjectClick(Object object) {
         int doNothing = 0;
-    }
-
-    @Override
-    public void onCreateBtnClick() {
-        startActivityForResult(new Intent(PositionActivity.this,
-                PositionFormActivity.class), POSITION_CREATE_SUCCESS);
     }
 }

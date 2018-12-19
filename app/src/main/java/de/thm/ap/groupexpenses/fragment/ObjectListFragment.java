@@ -27,7 +27,7 @@ public class ObjectListFragment extends Fragment
     private View view;
     private ListView object_listView;
     private CustomCallLogListAdapter adapter;
-    private RelativeLayout headerLayout;
+    //private RelativeLayout headerLayout;
     private View headerView;
     private Event relatedEventToPosition;
 
@@ -35,7 +35,6 @@ public class ObjectListFragment extends Fragment
 
     public interface ItemClickListener {
         void onFragmentObjectClick(Object object);
-        void onCreateBtnClick();
     }
 
     @Override
@@ -74,15 +73,12 @@ public class ObjectListFragment extends Fragment
                     break;
             }
         }
-        FloatingActionButton createObjBtn = view.findViewById(R.id.create_object_btn);
-        createObjBtn.setOnClickListener(view -> createObjectBtnClicked());
     }
 
     public void updateFragmentObjects(List<Object> objectList, String type){
-
         if(objectList.size() == 1){    // first object was just added to list
             init(objectList, type);
-        } else if(objectList.size() > 0){
+        } else if(objectList.size() > 0){   // there are already objects in list
             //adapter.clear();
             //adapter.addAll(objects);
             // why does clear and add all not work? code below works (maybe because no database)
@@ -101,7 +97,7 @@ public class ObjectListFragment extends Fragment
     private void init(List<Object> objectList, String type){
         view.findViewById(R.id.fragment_no_object_text).setVisibility(View.GONE);
         headerView = getLayoutInflater().inflate(R.layout.fragment_object_list_header, null);
-        headerLayout = headerView.findViewById(R.id.object_list_header_layout);
+        //headerLayout = headerView.findViewById(R.id.object_list_header_layout);
 
         switch(type){   // init individual object strings and colors
             case "Event":
@@ -155,10 +151,6 @@ public class ObjectListFragment extends Fragment
 
     public void itemSelected(Object object){
         itemClickListener.onFragmentObjectClick(object);
-    }
-
-    public void createObjectBtnClicked(){
-        itemClickListener.onCreateBtnClick();
     }
 
     private class CustomCallLogListAdapter extends ArrayAdapter<Object> {

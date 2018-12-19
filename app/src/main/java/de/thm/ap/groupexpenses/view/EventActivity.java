@@ -2,9 +2,11 @@ package de.thm.ap.groupexpenses.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,6 +88,13 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
         ObjectListFragment objectListFragment = (ObjectListFragment)getSupportFragmentManager()
                 .findFragmentById(R.id.event_fragment);
         objectListFragment.createFragmentObjects(events, "Event");
+
+        FloatingActionButton createEventBtn = findViewById(R.id.create_event_btn);
+        createEventBtn.setOnClickListener(v -> startActivityForResult(
+                new Intent(EventActivity.this, EventFormActivity.class),
+                EVENT_CREATE_SUCCESS)
+        );
+
         auth = FirebaseAuth.getInstance();
     }
 
@@ -135,11 +144,5 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
         intent.putExtra("event", (Event)event);
 
         startActivityForResult(intent, POSITION_CREATE_SUCCESS);
-    }
-
-    @Override
-    public void onCreateBtnClick() {
-        startActivityForResult(new Intent(EventActivity.this,
-                EventFormActivity.class), EVENT_CREATE_SUCCESS);
     }
 }
