@@ -14,6 +14,8 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.text.DecimalFormat;
 import java.util.List;
 
@@ -27,7 +29,6 @@ public class ObjectListFragment extends Fragment
     private View view;
     private ListView object_listView;
     private CustomCallLogListAdapter adapter;
-    //private RelativeLayout headerLayout;
     private View headerView;
     private Event relatedEventToPosition;
 
@@ -110,7 +111,6 @@ public class ObjectListFragment extends Fragment
     private void init(List<Object> objectList, String type){
         view.findViewById(R.id.fragment_no_object_text).setVisibility(View.GONE);
         headerView = getLayoutInflater().inflate(R.layout.fragment_object_list_header, null);
-        //headerLayout = headerView.findViewById(R.id.object_list_header_layout);
         updateTotalBalance(objectList, type);
 
         adapter = new CustomCallLogListAdapter(getActivity(),
@@ -147,6 +147,12 @@ public class ObjectListFragment extends Fragment
             default:
 
         }
+
+        TextView headerVal = headerView.findViewById(R.id.object_balance_summary_val);
+        if(balance < 0)
+            headerVal.setTextColor(Color.parseColor("#ef4545"));    // red
+        else
+            headerVal.setTextColor(Color.parseColor("#2ba050"));    // green
     }
 
     private void setRelatedEventToPosition(List<Object> positionList){

@@ -18,7 +18,7 @@ import de.thm.ap.groupexpenses.fragment.ObjectListFragment;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 
-public class PositionActivity extends AppCompatActivity implements ObjectListFragment.ItemClickListener{
+public class PositionActivity extends BaseActivity implements ObjectListFragment.ItemClickListener{
 
     private Event selectedEvent;
     private List<Object> positionList;

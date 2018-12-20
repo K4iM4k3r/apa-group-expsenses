@@ -8,7 +8,7 @@ xmlns:android="http://schemas.android.com/apk/res/android">
     android:id="@+id/name"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="8dp"
+    android:layout_marginStart="@dimen/app_margin"
     android:layout_toStartOf="@id/balance"
     android:textAppearance="?android:textAppearanceListItem" />
 
@@ -16,7 +16,7 @@ xmlns:android="http://schemas.android.com/apk/res/android">
     android:id="@+id/creator"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="8dp"
+    android:layout_marginStart="@dimen/app_margin"
     android:layout_below="@id/name"
     android:textAppearance="?android:textAppearanceListItemSmall"
     android:textColor="?android:textColorHint" />
@@ -27,6 +27,6 @@ xmlns:android="http://schemas.android.com/apk/res/android">
     android:layout_height="wrap_content"
     android:layout_alignParentEnd="true"
     android:layout_centerVertical="true"
-    android:layout_marginEnd="8dp"
+    android:layout_marginEnd="@dimen/app_margin"
     android:textAppearance="?android:textAppearanceListItem" />
 </RelativeLayout>

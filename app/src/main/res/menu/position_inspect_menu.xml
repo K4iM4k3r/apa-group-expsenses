@@ -18,4 +18,9 @@
         android:icon="@drawable/ic_delete_forever_white_24dp"
         app:showAsAction="always"
         />
+    <item
+        android:id="@+id/position_inspect_done"
+        android:title="@string/done"
+        app:showAsAction="always"
+        />
 </menu>

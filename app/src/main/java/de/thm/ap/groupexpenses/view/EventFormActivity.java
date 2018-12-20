@@ -25,7 +25,7 @@ import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.User;
 
-public class EventFormActivity extends AppCompatActivity {
+public class EventFormActivity extends BaseActivity {
 
     private EditText eventNameEditText, eventDateEditText, eventInfoEditText;
     private TextView eventUsersTextView;

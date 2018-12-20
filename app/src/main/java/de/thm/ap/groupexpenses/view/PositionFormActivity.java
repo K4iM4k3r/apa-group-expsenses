@@ -14,7 +14,7 @@ import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.User;
 
-public class PositionFormActivity extends AppCompatActivity {
+public class PositionFormActivity extends BaseActivity {
 
     private EditText positionNameEditText, positionValEditText;
 

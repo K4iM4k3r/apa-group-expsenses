@@ -27,7 +27,7 @@ import java.util.List;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.model.User;
 
-public class AddUsersActivity extends AppCompatActivity {
+public class AddUsersActivity extends BaseActivity {
 
     private EditText userPickEditText;
     private ListView eventUserList;
