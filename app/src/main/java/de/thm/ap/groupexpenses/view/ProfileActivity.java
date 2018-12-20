@@ -56,7 +56,6 @@ public class ProfileActivity extends BaseActivity {
     private Button btnSave;
     private final int REQUEST_IMAGE_PICK = 1;
     private final String TAG = getClass().getName();
-    private FirebaseFirestore db;
 
 
 
@@ -74,7 +73,6 @@ public class ProfileActivity extends BaseActivity {
         profile_pic = findViewById(R.id.profile_pic);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        db = FirebaseFirestore.getInstance();
 
 
         FirebaseUser user = super.auth.getCurrentUser();
