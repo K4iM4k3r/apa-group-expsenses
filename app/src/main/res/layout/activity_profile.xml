@@ -1,82 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profile_pic"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_gravity="center"
-        android:layout_margin="@dimen/app_margin"
-        android:cropToPadding="true"
-        android:src="@drawable/ic_user_image_with_black_background" />
 
-    <TextView
-        android:id="@+id/labelProfileEmail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/labelProfileEmail" />
-
-    <TextView
-        android:id="@+id/tvProfileEmail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="" />
-
-    <TextView
-        android:id="@+id/labelProfileName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="@dimen/app_margin"
-        android:text="@string/labelProfileName" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="4">
-
-        <EditText
-            android:id="@+id/edName"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="3"
-            android:ems="10"
-            android:enabled="false"
-            android:inputType="textPersonName"
-            android:layout_marginStart="@dimen/app_margin"
-            android:layout_marginEnd="@dimen/app_margin"
-            android:text="" />
+            android:orientation="vertical">
 
-        <ImageButton
-            android:id="@+id/edit_profile_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="@dimen/app_margin"
-            android:src="@drawable/ic_edit"
-            android:contentDescription="@string/edit_profile_name" />
-    </LinearLayout>
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profile_pic"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/app_margin"
+                android:cropToPadding="true"
+                android:src="@drawable/ic_user_image_with_black_background" />
+
+            <TextView
+                android:id="@+id/labelProfileEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/labelProfileEmail" />
+
+            <TextView
+                android:id="@+id/tvProfileEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="" />
+
+            <TextView
+                android:id="@+id/labelProfileName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/app_margin"
+                android:text="@string/labelProfileName" />
 
 
-    <Button
-        android:id="@+id/btn_save_profile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone"
-        android:layout_margin="@dimen/app_margin"
-        android:drawableStart="@drawable/ic_save"
-        android:text="@string/btn_save_profile"
-        />
+            <EditText
+                android:id="@+id/edName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/app_margin"
+                android:layout_marginEnd="@dimen/app_margin"
+                android:ems="10"
+                android:enabled="false"
+                android:hint="@string/displayname"
+                android:inputType="textPersonName"
+                android:text="" />
+
+            <TextView
+                android:id="@+id/labelLastName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/labelLastName" />
+
+            <EditText
+                android:id="@+id/edLastname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/app_margin"
+                android:layout_marginEnd="@dimen/app_margin"
+                android:ems="10"
+                android:enabled="false"
+                android:hint="@string/lastname"
+                android:inputType="textPersonName" />
+
+            <TextView
+                android:id="@+id/labelFirstName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/labelFirstName" />
+
+            <EditText
+                android:id="@+id/edFirstname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/app_margin"
+                android:layout_marginEnd="@dimen/app_margin"
+                android:ems="10"
+                android:enabled="false"
+                android:hint="@string/firstname"
+                android:inputType="textPersonName" />
+
+            <Button
+                android:id="@+id/edit_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/app_margin"
+                android:contentDescription="@string/edit_profile_name"
+                android:drawableStart="@drawable/ic_edit"
+                android:text="@string/enableEditMode" />
+
+            <Button
+                android:id="@+id/btn_save_profile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/app_margin"
+                android:drawableStart="@drawable/ic_save"
+                android:text="@string/btn_save_profile"
+                android:visibility="gone" />
+
+        </LinearLayout>
 
 
-</LinearLayout>
+
+</ScrollView>
