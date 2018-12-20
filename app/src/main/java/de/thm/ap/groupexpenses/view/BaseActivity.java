@@ -217,7 +217,7 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
             if(pic.exists()){
                 picture.setImageURI(Uri.fromFile(pic));
             }
-            name.setText(currentUser.getDisplayName());
+//            name.setText(currentUser.getDisplayName());
         }
     }
 }
