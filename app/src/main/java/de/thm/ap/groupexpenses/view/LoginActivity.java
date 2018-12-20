@@ -26,6 +26,8 @@ import java.util.Map;
 
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.Constants;
+import de.thm.ap.groupexpenses.database.DatabaseHandler;
+import de.thm.ap.groupexpenses.model.User;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "LoginActivity";
@@ -101,7 +103,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         Snackbar.make(tvStatus, getString(R.string.create_account_successful), Snackbar.LENGTH_LONG).show();
 
                         assert user != null;
-                        createUserInDB(user.getUid());
+                        User createUser = new User(user.getUid(), user.getEmail());
+                        DatabaseHandler.createUserWithFeedback(createUser, l -> Log.d(TAG, "Userdata successfull written"), f -> Log.d(TAG, "User data couldnt written"));
+
                         updateUI(user);
                     } else {
                         // If sign in fails, display a message to the user.
@@ -242,26 +246,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             findViewById(R.id.emailPasswordFields).setVisibility(View.VISIBLE);
             layoutSignedIn.setVisibility(View.GONE);
         }
-    }
-
-    private void createUserInDB(String uid){
-
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-
-        Map<String, Object> user = new HashMap<>();
-        user.put(Constants.DOC_USERS_FIRST_NAME, "");
-        user.put(Constants.DOC_USERS_LAST_NAME, "");
-        user.put(Constants.DOC_USERS_NICKNAME, "");
-        user.put(Constants.DOC_USERS_PROFILE_PIC_URL, "");
-
-        db.collection(Constants.COLLECTION_USERS)
-                .document(uid)
-                .set(user)
-                .addOnSuccessListener(l -> Log.d(TAG, "Userdata successfull written"))
-                .addOnFailureListener(f -> Log.d(TAG, "User data couldnt written"));
-
-
     }
 
     public void showProgressDialog() {
