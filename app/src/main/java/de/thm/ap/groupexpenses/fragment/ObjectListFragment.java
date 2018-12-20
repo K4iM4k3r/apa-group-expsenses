@@ -6,6 +6,9 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +22,7 @@ import org.w3c.dom.Text;
 import java.text.DecimalFormat;
 import java.util.List;
 
+import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
@@ -193,13 +197,24 @@ public class ObjectListFragment extends Fragment
             holder.object_balance = view.findViewById(R.id.balance);
             m_object = retrievedObjects.get(index);
             float balance = 0;
+            String fromPart = getString(R.string.from);;
+            String creatorPart;
+            String wholePart;
+            Spannable spannable;
 
             switch(type){
                 case "Event":
                     Event event = (Event)m_object;
                     balance = Stats.getEventBalance(event);
                     holder.object_name.setText(event.getName());
-                    holder.object_creator.setText(event.getCreator());
+                    if(event.getCreator().getId() == App.CurrentUser.getId())
+                        creatorPart = getString(R.string.you);
+                    else creatorPart = event.getCreator().toString();
+                    wholePart = fromPart + " " + creatorPart;
+                    spannable = new SpannableString(wholePart);
+                    spannable.setSpan(new ForegroundColorSpan(Color.parseColor("#3a90e0")),
+                            fromPart.length(), wholePart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    holder.object_creator.setText(spannable, TextView.BufferType.SPANNABLE);
                     holder.object_balance.setText(new DecimalFormat("0.00")
                             .format(balance) + " " + getString(R.string.euro));
                     break;
@@ -207,7 +222,14 @@ public class ObjectListFragment extends Fragment
                     Position position = (Position) m_object;
                     balance = Stats.getPositionBalance(position, relatedEventToPosition);
                     holder.object_name.setText(position.getTopic());
-                    holder.object_creator.setText(position.getCreator().toString());
+                    if(position.getCreator().getId() == App.CurrentUser.getId())
+                        creatorPart = getString(R.string.you);
+                    else creatorPart = position.getCreator().toString();
+                    wholePart = fromPart + " " + creatorPart;
+                    spannable = new SpannableString(wholePart);
+                    spannable.setSpan(new ForegroundColorSpan(Color.parseColor("#3a90e0")),
+                            fromPart.length(), wholePart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    holder.object_creator.setText(spannable, TextView.BufferType.SPANNABLE);
                     holder.object_balance.setText(new DecimalFormat("0.00")
                             .format(balance)+ " " + getString(R.string.euro));
                     break;

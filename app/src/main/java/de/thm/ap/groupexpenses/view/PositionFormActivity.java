@@ -16,7 +16,7 @@ import de.thm.ap.groupexpenses.model.User;
 
 public class PositionFormActivity extends BaseActivity {
 
-    private EditText positionNameEditText, positionValEditText;
+    private EditText positionNameEditText, positionInfoEditText, positionValEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +24,7 @@ public class PositionFormActivity extends BaseActivity {
         setContentView(R.layout.activity_position_form);
         getSupportActionBar().setTitle(R.string.position_form_create_position);
         positionNameEditText = findViewById(R.id.position_form_name_edit);
+        positionInfoEditText = findViewById(R.id.position_form_info_edit);
         positionValEditText = findViewById(R.id.position_form_value_edit);
     }
 
@@ -53,6 +54,9 @@ public class PositionFormActivity extends BaseActivity {
                 Position position = new Position(creator, positionName,
                         Float.parseFloat(positionValEditText.getText().toString())
                 );
+                String positionInfo = positionInfoEditText.getText().toString();
+                if(!positionInfo.isEmpty())
+                    position.setInfo(positionInfo);
 
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("createdPosition", position);

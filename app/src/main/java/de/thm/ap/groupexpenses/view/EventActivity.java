@@ -69,7 +69,7 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
         );
 
         Event testEvent2 = new Event(
-                new User(1, "Hendrik", "Kegel", "dontknow"),
+                new User(2, "Hendrik", "Kegel", "dontknow"),
                 "TestEvent2",
                 "01.12.2033",
                 "Eventinfo blblbablablabla",

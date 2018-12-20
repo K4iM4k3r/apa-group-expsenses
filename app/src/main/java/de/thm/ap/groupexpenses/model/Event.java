@@ -54,9 +54,7 @@ public class Event implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-    public String getCreator() {
-        return creator.toString();
-    }
+    public User getCreator() { return this.creator; }
     public int getId() { return id; }
     public void setId(int id) {
         this.id = id;

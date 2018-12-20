@@ -36,7 +36,7 @@
         android:id="@+id/event_form_info_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/event_form_info" />
+        android:text="@string/info" />
 
     <EditText
         android:id="@+id/event_form_info_edit"

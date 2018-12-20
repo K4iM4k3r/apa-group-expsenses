@@ -19,6 +19,21 @@
         android:maxLength="50" />
 
     <TextView
+        android:id="@+id/position_form_info_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/info" />
+
+    <EditText
+        android:id="@+id/position_form_info_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textMultiLine"
+        android:singleLine="false"
+        android:maxLength="500" />
+
+    <TextView
         android:id="@+id/position_form_value_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
