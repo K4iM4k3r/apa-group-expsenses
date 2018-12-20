@@ -29,6 +29,7 @@
         <activity android:name=".view.EventFormActivity" />
         <activity android:name=".view.PositionActivity" />
         <activity android:name=".view.PositionFormActivity"></activity>
+        <activity android:name=".view.PositionInspectActivity"></activity>
         <activity android:name=".view.AddUsersActivity"></activity>
         <activity
             android:name=".view.FriendsActivity"

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/position_inspect_pos_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Position"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <fragment
+        android:id="@+id/position_inspect_fragment"
+        android:name="de.thm.ap.groupexpenses.fragment.ObjectListFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/position_inspect_pay_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/position_inspect_clear_position" />
+
+</LinearLayout>

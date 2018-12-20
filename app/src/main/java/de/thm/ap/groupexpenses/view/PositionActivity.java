@@ -24,6 +24,7 @@ public class PositionActivity extends AppCompatActivity implements ObjectListFra
     private List<Object> positionList;
     private ObjectListFragment objectListFragment;
     private static final int POSITION_CREATE_SUCCESS = 11215;
+    private static final int POSITION_INSPECT_SUCCESS = 42562;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +121,10 @@ public class PositionActivity extends AppCompatActivity implements ObjectListFra
 
     @Override
     public void onFragmentObjectClick(Object object) {
-        int doNothing = 0;
+        Intent intent = new Intent(PositionActivity.this, PositionInspectActivity.class);
+        intent.putExtra("event", selectedEvent);
+        intent.putExtra("position", (Position)object);
+
+        startActivityForResult(intent, POSITION_INSPECT_SUCCESS);
     }
 }
