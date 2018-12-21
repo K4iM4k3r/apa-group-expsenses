@@ -31,6 +31,7 @@ import android.widget.TextView;
 
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
@@ -148,9 +149,11 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
        private AlertDialog.Builder positionDialog;
        private Position position;
        private View view;
+       private TextView positionInfo;
        private Button valueEditBtn, payBtn;
        private TextView dept_val, positionDepts;
        private boolean changes_made;
+       private AtomicBoolean clickable;
 
        PositionAlertDialog(Position object){
            positionDialog = new AlertDialog.Builder(PositionActivity.this);
@@ -160,6 +163,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
            valueEditBtn = view.findViewById(R.id.position_dialog_edit_btn);
            dept_val = view.findViewById(R.id.position_dialog_dept_val);
            changes_made = false;
+           clickable = new AtomicBoolean(true);
            createDialog();
        }
 
@@ -168,7 +172,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
            TextView positionName = view.findViewById(R.id.position_dialog_name);
            positionDepts = view.findViewById(R.id.position_dialog_your_depts);
            TextView positionCreatorAndDate = view.findViewById(R.id.position_dialog_creator_and_date);
-           TextView positionInfo = view.findViewById(R.id.position_dialog_info);
+           positionInfo = view.findViewById(R.id.position_dialog_info);
 
            String creator;
            String positionDeptValue;
@@ -182,18 +186,30 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                dept_val.setTextColor(Color.parseColor("#2ba050"));  //green
                payBtn.setText(getString(R.string.position_inspect_release_dept_claim));
                valueEditBtn.setVisibility(View.VISIBLE);
-
-               valueEditBtn.setOnClickListener(v -> valueEditBtnClicked()); // value edit btn clicked
-
-               payBtn.setOnClickListener(v2 -> releaseDeptBtnClicked()); // release dept btn clicked
+               valueEditBtn.setOnClickListener(v -> {
+                   // value edit btn clicked
+                   positionInfo.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+                           0,0);
+                   clickable.set(false);
+                   valueEditBtnClicked();
+               });
+               payBtn.setOnClickListener(v2 -> {
+                   // release dept btn clicked
+                   positionInfo.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+                           0,0);
+                   clickable.set(false);
+                   releaseDeptBtnClicked();
+               });
 
                // info edit btn clicked
                positionInfo.setOnTouchListener(new RightDrawableOnTouchListener(positionInfo) {
                    @Override
                    public boolean onDrawableTouch(final MotionEvent event) {
-                       return infoEditBtnClicked(event);
+                       return clickable.get() && infoEditBtnClicked(event);
                    }
                });
+
+
            } else {
                creator = position.getCreator().toString();
                positionDeptValue = getResources().getString(R.string.your_depts) + ":";
@@ -354,6 +370,9 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
            saveBtn.setVisibility(View.GONE);
            cancelBtn.setVisibility(View.GONE);
            valueEditBtn.setVisibility(View.VISIBLE);
+           positionInfo.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+                   R.drawable.ic_edit_grey_24dp,0);
+           clickable.set(true);
 
            switch(type){
                case "edit_info":
