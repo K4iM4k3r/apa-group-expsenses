@@ -2,10 +2,8 @@ package de.thm.ap.groupexpenses.view;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -13,18 +11,12 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
-import android.text.Editable;
 import android.text.Html;
-import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.TextWatcher;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
-import android.util.AttributeSet;
-import android.util.DisplayMetrics;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,7 +28,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -54,7 +45,6 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
     private List<Object> positionList;
     private ObjectListFragment objectListFragment;
     private static final int POSITION_CREATE_SUCCESS = 11215;
-    private static final int POSITION_EDIT_SUCCESS = 42562;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -257,9 +247,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                        .format(Stats.getPositionBalance(position, selectedEvent))+ " " + getString(R.string.euro));
                changes_made = true;
            });
-           cancelBtn.setOnClickListener(v3 ->{
-               resetBackToNormal("edit_value");
-           });
+           cancelBtn.setOnClickListener(v3 -> resetBackToNormal("edit_value"));
        }
        @SuppressLint("SetTextI18n")
        private void releaseDeptBtnClicked() {
@@ -351,9 +339,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                resetBackToNormal("edit_info");
            });
 
-           cancelBtn.setOnClickListener(v -> {
-               resetBackToNormal("edit_info");
-           });
+           cancelBtn.setOnClickListener(v -> resetBackToNormal("edit_info"));
 
            event.setAction(MotionEvent.ACTION_CANCEL);
            return false;
@@ -410,7 +396,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
            RightDrawableOnTouchListener(TextView view) {
                super();
                final Drawable[] drawables = view.getCompoundDrawables();
-               if (drawables != null && drawables.length == 4)
+               if (drawables.length == 4)
                    this.drawable = drawables[2];
            }
            @Override
