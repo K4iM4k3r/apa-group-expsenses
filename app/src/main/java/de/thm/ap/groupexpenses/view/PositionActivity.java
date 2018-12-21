@@ -13,8 +13,8 @@ import android.text.style.ForegroundColorSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.textclassifier.TextClassification;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
@@ -33,7 +33,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
     private List<Object> positionList;
     private ObjectListFragment objectListFragment;
     private static final int POSITION_CREATE_SUCCESS = 11215;
-    private static final int POSITION_INSPECT_SUCCESS = 42562;
+    private static final int POSITION_EDIT_SUCCESS = 42562;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,10 +66,9 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
             finish();
 
         FloatingActionButton createPositionBtn = findViewById(R.id.create_position_btn);
-        createPositionBtn.setOnClickListener(v -> startActivityForResult(new Intent(PositionActivity.this,
-                PositionFormActivity.class), POSITION_CREATE_SUCCESS)
-        );
-
+        createPositionBtn.setOnClickListener(v ->
+                startActivityForResult(new Intent(PositionActivity.this,
+                PositionFormActivity.class), POSITION_CREATE_SUCCESS));
     }
 
     @Override
@@ -131,43 +130,112 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
     @Override
     public void onFragmentObjectClick(Object object) {
         // show a custom alert dialog with position information
-        AlertDialog.Builder positionDialog = new AlertDialog.Builder(PositionActivity.this);
-        View view = getLayoutInflater().inflate(R.layout.dialog_position_view, null);
-        Button payBtn = view.findViewById(R.id.position_dialog_pay_btn);
-        TextView positionName = view.findViewById(R.id.position_dialog_name);
-        TextView positionDepts = view.findViewById(R.id.position_dialog_your_depts);
-        TextView positionCreatorAndDate = view.findViewById(R.id.position_dialog_creator_and_date);
-        TextView positionInfo = view.findViewById(R.id.position_dialog_info);
-        TextView dept_val = view.findViewById(R.id.position_dialog_dept_val);
-        Position position = (Position)object;
-        String creator;
-        String positionDeptValue;
-
-        if(App.CurrentUser.getId() == position.getCreator().getId()){
-            // user is creator
-            creator = getString(R.string.you);
-            positionDeptValue = getResources().getString(R.string.your_dept_claim) + ":";
-            dept_val.setTextColor(Color.parseColor("#2ba050"));
-            payBtn.setText(getString(R.string.position_inspect_release_dept_claim));
-            Button editBtn = view.findViewById(R.id.position_dialog_edit_btn);
-            editBtn.setVisibility(View.VISIBLE);
-        } else {
-            creator = position.getCreator().toString();
-            positionDeptValue = getResources().getString(R.string.your_depts) + ":";
-        }
-        positionName.setText(position.getTopic());
-        String creatorAndDate = getResources().getString(R.string.creator_and_date, creator, position.getDate());
-        Spannable spannable = new SpannableString(creatorAndDate);
-        spannable.setSpan(new ForegroundColorSpan(Color.parseColor("#3a90e0")),
-                13, 13 + creator.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        positionCreatorAndDate.setText(spannable, TextView.BufferType.SPANNABLE);
-        positionDepts.setText(positionDeptValue);
-        dept_val.setText(new DecimalFormat("0.00")
-                .format(Stats.getPositionBalance(position, selectedEvent))+ " " + getString(R.string.euro));
-        String positionInfoString = position.getInfo();
-        if(!positionInfoString.isEmpty()) positionInfo.setText(positionInfoString);
-        positionDialog.setView(view);
-        AlertDialog dialog = positionDialog.create();
-        dialog.show();
+        new PositionAlertDialog((Position)object);
     }
+
+   private class PositionAlertDialog {
+       private AlertDialog.Builder positionDialog;
+       private Position position;
+       private View view;
+       private Button valueEditBtn, payBtn;
+       private TextView dept_val;
+       private boolean changes_made;
+
+       PositionAlertDialog(Position object){
+           positionDialog = new AlertDialog.Builder(PositionActivity.this);
+           position = object;
+           view = getLayoutInflater().inflate(R.layout.dialog_position_view, null);
+           payBtn = view.findViewById(R.id.position_dialog_pay_btn);
+           valueEditBtn = view.findViewById(R.id.position_dialog_edit_btn);
+           dept_val = view.findViewById(R.id.position_dialog_dept_val);
+           changes_made = false;
+           createDialog();
+       }
+
+       private void createDialog(){
+           TextView positionName = view.findViewById(R.id.position_dialog_name);
+           TextView positionDepts = view.findViewById(R.id.position_dialog_your_depts);
+           TextView positionCreatorAndDate = view.findViewById(R.id.position_dialog_creator_and_date);
+           TextView positionInfo = view.findViewById(R.id.position_dialog_info);
+
+           String creator;
+           String positionDeptValue;
+
+           if(App.CurrentUser.getId() == position.getCreator().getId()){
+               // user is creator
+               creator = getString(R.string.you);
+               positionDeptValue = getResources().getString(R.string.your_dept_claim) + ":";
+               dept_val.setTextColor(Color.parseColor("#2ba050"));
+               payBtn.setText(getString(R.string.position_inspect_release_dept_claim));
+               valueEditBtn.setVisibility(View.VISIBLE);
+               valueEditBtn.setOnClickListener(v -> {
+                   valueEditBtnClicked();
+               });
+           } else {
+               creator = position.getCreator().toString();
+               positionDeptValue = getResources().getString(R.string.your_depts) + ":";
+           }
+           positionName.setText(position.getTopic());
+           String creatorAndDate = getResources().getString(R.string.creator_and_date, creator, position.getDate());
+           Spannable spannable = new SpannableString(creatorAndDate);
+           spannable.setSpan(new ForegroundColorSpan(Color.parseColor("#3a90e0")),
+                   13, 13 + creator.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+           positionCreatorAndDate.setText(spannable, TextView.BufferType.SPANNABLE);
+           positionDepts.setText(positionDeptValue);
+           dept_val.setText(new DecimalFormat("0.00")
+                   .format(Stats.getPositionBalance(position, selectedEvent))+ " " + getString(R.string.euro));
+           String positionInfoString = position.getInfo();
+           if(!positionInfoString.isEmpty()) positionInfo.setText(positionInfoString);
+           positionDialog.setView(view);
+           AlertDialog dialog = positionDialog.create();
+           dialog.show();
+           dialog.setOnDismissListener(dialog1 -> {
+               if(changes_made){
+                   for(int idx = 0; idx < positionList.size(); ++idx){
+                       if(position.getId() == ((Position)positionList.get(idx)).getId()){
+                           positionList.set(idx, position);
+                           positionList.add(selectedEvent);
+                           objectListFragment.updateFragmentObjects(positionList, "Position");
+                           break;
+                       }
+                   }
+               }
+           });
+       }
+
+       private void valueEditBtnClicked(){
+           EditText quickEditField = view.findViewById(R.id.position_dialog_quick_edit_field);
+           Button saveBtn = view.findViewById(R.id.position_dialog_save_btn);
+           Button cancelBtn = view.findViewById(R.id.position_dialog_cancel_btn);
+           saveBtn.setVisibility(View.VISIBLE);
+           cancelBtn.setVisibility(View.VISIBLE);
+           valueEditBtn.setVisibility(View.GONE);
+           payBtn.setVisibility(View.GONE);
+           dept_val.setVisibility(View.GONE);
+           quickEditField.setVisibility(View.VISIBLE);
+           saveBtn.setOnClickListener(v2->{
+               // click on save
+               saveBtn.setVisibility(View.GONE);
+               cancelBtn.setVisibility(View.GONE);
+               quickEditField.setVisibility(View.GONE);
+               dept_val.setVisibility(View.VISIBLE);
+               valueEditBtn.setVisibility(View.VISIBLE);
+               payBtn.setVisibility(View.VISIBLE);
+
+               position.setValue(Float.parseFloat(quickEditField.getText().toString()));
+               dept_val.setText(new DecimalFormat("0.00")
+                       .format(Stats.getPositionBalance(position, selectedEvent))+ " " + getString(R.string.euro));
+               changes_made = true;
+           });
+           cancelBtn.setOnClickListener(v3 ->{
+               // click on cancel
+               saveBtn.setVisibility(View.GONE);
+               cancelBtn.setVisibility(View.GONE);
+               quickEditField.setVisibility(View.GONE);
+               dept_val.setVisibility(View.VISIBLE);
+               valueEditBtn.setVisibility(View.VISIBLE);
+               payBtn.setVisibility(View.VISIBLE);
+           });
+       }
+   }
 }

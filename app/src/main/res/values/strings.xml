@@ -67,6 +67,7 @@
     <string name="labelProfileName">Name</string>
     <string name="edit_profile_name">Edit Name</string>
     <string name="btn_save_profile">Speichern</string>
+    <string name="cancel">Abbrechen</string>
     <string name="error_invalid_name">invalid</string>
     <string name="file_provider_authority">de.thm.ap.groupexpenses.fileprovider</string>
     <string name="error_file_not_found">File not found</string>

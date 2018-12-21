@@ -8,12 +8,17 @@
         android:id="@+id/event_form_name_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/app_margin"
+        android:layout_marginStart="@dimen/app_margin"
+        android:layout_marginTop="@dimen/app_margin"
         android:text="@string/event_form_name" />
 
     <EditText
         android:id="@+id/event_form_name_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/app_margin"
+        android:layout_marginStart="@dimen/app_margin"
         android:ems="10"
         android:inputType="text"
         android:maxLength="50" />
@@ -22,12 +27,16 @@
         android:id="@+id/event_form_date_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/app_margin"
+        android:layout_marginStart="@dimen/app_margin"
         android:text="@string/event_form_date" />
 
     <EditText
         android:id="@+id/event_form_date_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/app_margin"
+        android:layout_marginStart="@dimen/app_margin"
         android:ems="10"
         android:inputType="text" />
 
@@ -36,12 +45,16 @@
         android:id="@+id/event_form_info_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/app_margin"
+        android:layout_marginStart="@dimen/app_margin"
         android:text="@string/info" />
 
     <EditText
         android:id="@+id/event_form_info_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/app_margin"
+        android:layout_marginStart="@dimen/app_margin"
         android:ems="10"
         android:inputType="textMultiLine"
         android:singleLine="false"
@@ -51,12 +64,16 @@
         android:id="@+id/event_form_info_view2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/app_margin"
+        android:layout_marginStart="@dimen/app_margin"
         android:text="@string/event_form_users" />
 
     <TextView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/event_form_users_textView"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:layout_marginEnd="@dimen/app_margin"
+        android:layout_marginStart="@dimen/app_margin"
         android:textAlignment="textStart"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="18sp"></TextView>
@@ -65,6 +82,8 @@
         android:id="@+id/event_form_add_members_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/app_margin"
+        android:layout_marginStart="@dimen/app_margin"
         android:text="@string/event_form_add_members" />
 
 </LinearLayout>

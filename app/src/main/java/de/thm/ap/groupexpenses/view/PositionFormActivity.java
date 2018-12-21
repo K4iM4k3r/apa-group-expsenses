@@ -26,6 +26,24 @@ public class PositionFormActivity extends BaseActivity {
         positionNameEditText = findViewById(R.id.position_form_name_edit);
         positionInfoEditText = findViewById(R.id.position_form_info_edit);
         positionValEditText = findViewById(R.id.position_form_value_edit);
+
+        Position position;
+
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if(extras == null) {
+                return;
+            } else {
+                position = (Position) extras.getSerializable("position");
+            }
+        } else {
+            position = (Position) savedInstanceState.getSerializable("position");
+        }
+        if(position != null){
+            positionNameEditText.setText(position.getTopic());
+            positionInfoEditText.setText(position.getInfo());
+            positionValEditText.setText(Float.toString(position.getValue()));
+        }
     }
 
     @Override
