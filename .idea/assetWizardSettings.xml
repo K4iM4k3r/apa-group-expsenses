@@ -28,8 +28,8 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="ic_edit_white_24dp" />
+                            <entry key="color" value="868686" />
+                            <entry key="outputName" value="ic_edit_grey_24dp" />
                             <entry key="sourceFile" value="C:\Users\Lukas" />
                           </map>
                         </option>

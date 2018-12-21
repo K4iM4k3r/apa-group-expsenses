@@ -30,6 +30,7 @@
         android:textSize="15sp" />
 
     <View
+        android:id="@+id/position_dialog_line1"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginEnd="50dp"
@@ -49,6 +50,7 @@
         android:textSize="15sp" />
 
     <View
+        android:id="@+id/position_dialog_line2"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginEnd="50dp"
@@ -100,6 +102,7 @@
         android:layout_marginBottom="@dimen/app_margin"
         android:layout_marginEnd="@dimen/app_margin"
         android:layout_marginStart="@dimen/app_margin"
+        android:layout_marginTop="@dimen/app_margin"
         android:text="@string/btn_save_profile"
         android:visibility="gone" />
 

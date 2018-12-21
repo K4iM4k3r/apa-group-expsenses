@@ -1,21 +1,42 @@
 package de.thm.ap.groupexpenses.view;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Rect;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
 import android.text.Html;
+import android.text.InputFilter;
+import android.text.InputType;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.TextWatcher;
+import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
+import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -138,7 +159,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
        private Position position;
        private View view;
        private Button valueEditBtn, payBtn;
-       private TextView dept_val;
+       private TextView dept_val, positionDepts;
        private boolean changes_made;
 
        PositionAlertDialog(Position object){
@@ -152,9 +173,10 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
            createDialog();
        }
 
+       @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
        private void createDialog(){
            TextView positionName = view.findViewById(R.id.position_dialog_name);
-           TextView positionDepts = view.findViewById(R.id.position_dialog_your_depts);
+           positionDepts = view.findViewById(R.id.position_dialog_your_depts);
            TextView positionCreatorAndDate = view.findViewById(R.id.position_dialog_creator_and_date);
            TextView positionInfo = view.findViewById(R.id.position_dialog_info);
 
@@ -164,12 +186,23 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
            if(App.CurrentUser.getId() == position.getCreator().getId()){
                // user is creator
                creator = getString(R.string.you);
+               positionInfo.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+                       R.drawable.ic_edit_grey_24dp,0);
                positionDeptValue = getResources().getString(R.string.your_dept_claim) + ":";
-               dept_val.setTextColor(Color.parseColor("#2ba050"));
+               dept_val.setTextColor(Color.parseColor("#2ba050"));  //green
                payBtn.setText(getString(R.string.position_inspect_release_dept_claim));
                valueEditBtn.setVisibility(View.VISIBLE);
-               valueEditBtn.setOnClickListener(v -> {
-                   valueEditBtnClicked();
+
+               valueEditBtn.setOnClickListener(v -> valueEditBtnClicked()); // value edit btn clicked
+
+               payBtn.setOnClickListener(v2 -> releaseDeptBtnClicked()); // release dept btn clicked
+
+               // info edit btn clicked
+               positionInfo.setOnTouchListener(new RightDrawableOnTouchListener(positionInfo) {
+                   @Override
+                   public boolean onDrawableTouch(final MotionEvent event) {
+                       return infoEditBtnClicked(event);
+                   }
                });
            } else {
                creator = position.getCreator().toString();
@@ -203,6 +236,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
            });
        }
 
+       @SuppressLint("SetTextI18n")
        private void valueEditBtnClicked(){
            EditText quickEditField = view.findViewById(R.id.position_dialog_quick_edit_field);
            Button saveBtn = view.findViewById(R.id.position_dialog_save_btn);
@@ -213,14 +247,10 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
            payBtn.setVisibility(View.GONE);
            dept_val.setVisibility(View.GONE);
            quickEditField.setVisibility(View.VISIBLE);
+           quickEditField.setText("");  // clear input (could be polluted by info edit)
            saveBtn.setOnClickListener(v2->{
                // click on save
-               saveBtn.setVisibility(View.GONE);
-               cancelBtn.setVisibility(View.GONE);
-               quickEditField.setVisibility(View.GONE);
-               dept_val.setVisibility(View.VISIBLE);
-               valueEditBtn.setVisibility(View.VISIBLE);
-               payBtn.setVisibility(View.VISIBLE);
+               resetBackToNormal("edit_value");
 
                position.setValue(Float.parseFloat(quickEditField.getText().toString()));
                dept_val.setText(new DecimalFormat("0.00")
@@ -228,14 +258,176 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                changes_made = true;
            });
            cancelBtn.setOnClickListener(v3 ->{
-               // click on cancel
-               saveBtn.setVisibility(View.GONE);
-               cancelBtn.setVisibility(View.GONE);
-               quickEditField.setVisibility(View.GONE);
-               dept_val.setVisibility(View.VISIBLE);
-               valueEditBtn.setVisibility(View.VISIBLE);
-               payBtn.setVisibility(View.VISIBLE);
+               resetBackToNormal("edit_value");
            });
+       }
+       @SuppressLint("SetTextI18n")
+       private void releaseDeptBtnClicked() {
+           Button saveBtn = view.findViewById(R.id.position_dialog_save_btn);
+           Button cancelBtn = view.findViewById(R.id.position_dialog_cancel_btn);
+           ColorStateList oldColors =  positionDepts.getTextColors();
+           saveBtn.setVisibility(View.VISIBLE);
+           cancelBtn.setVisibility(View.VISIBLE);
+           valueEditBtn.setVisibility(View.GONE);
+           payBtn.setVisibility(View.GONE);
+           dept_val.setTextColor(Color.parseColor("#ef4545"));  //red
+           positionDepts.setTextColor(Color.parseColor("#ef4545"));
+           positionDepts.setText(getString(R.string.position_inspect_release_dept_claim_ask).toUpperCase());
+           positionDepts.setTypeface(Typeface.DEFAULT_BOLD);
+           saveBtn.setText(getString(R.string.confirm));
+           saveBtn.setOnClickListener(v -> {
+               // delete position and close dialog
+           });
+
+           cancelBtn.setOnClickListener(v2 -> {
+               resetBackToNormal("release_dept");
+               positionDepts.setTextColor(oldColors);
+           });
+       }
+
+       @SuppressLint("SetTextI18n")
+       private boolean infoEditBtnClicked(MotionEvent event) {
+           EditText quickEditField = view.findViewById(R.id.position_dialog_quick_edit_field);
+           Button saveBtn = view.findViewById(R.id.position_dialog_save_btn);
+           Button cancelBtn = view.findViewById(R.id.position_dialog_cancel_btn);
+           positionDepts = view.findViewById(R.id.position_dialog_your_depts);
+           TextView positionCreatorAndDate = view.findViewById(R.id.position_dialog_creator_and_date);
+           TextView positionInfo = view.findViewById(R.id.position_dialog_info);
+           saveBtn.setVisibility(View.VISIBLE);
+           cancelBtn.setVisibility(View.VISIBLE);
+           valueEditBtn.setVisibility(View.GONE);
+           payBtn.setVisibility(View.GONE);
+           quickEditField.setVisibility(View.VISIBLE);
+           positionDepts.setVisibility(View.GONE);
+           dept_val.setVisibility(View.GONE);
+           positionInfo.setVisibility(View.GONE);
+           view.findViewById(R.id.position_dialog_line1).setVisibility(View.GONE);
+           view.findViewById(R.id.position_dialog_line2).setVisibility(View.GONE);
+           positionCreatorAndDate.setText(getString(R.string.position_inspect_position_info) + ":");
+
+           LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams)quickEditField.getLayoutParams();
+           lp.width = ViewGroup.LayoutParams.MATCH_PARENT;
+           lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+           int appMargin = (int) (getResources().getDimension(R.dimen.app_margin)
+                   / getResources().getDisplayMetrics().density);
+           lp.rightMargin = appMargin;
+           lp.leftMargin = appMargin;
+           quickEditField.setSingleLine(false);
+           quickEditField.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
+           quickEditField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+           quickEditField.setVerticalScrollBarEnabled(true);
+           quickEditField.setMovementMethod(ScrollingMovementMethod.getInstance());
+           quickEditField.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
+           quickEditField.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
+           quickEditField.setText(position.getInfo());
+           quickEditField.setOnKeyListener((v, keyCode, event1) -> {
+               // if enter is pressed start calculating
+               if (keyCode == KeyEvent.KEYCODE_ENTER && event1.getAction() == KeyEvent.ACTION_UP) {
+                   // get EditText text
+                   String text = ((EditText) v).getText().toString();
+                   // find how many rows it contains
+                   int editTextRowCount = text.split("\\n").length;
+                   // user has input more than limited - lets do something about that
+                   if (editTextRowCount >= 12) {
+                       // find the last break
+                       int lastBreakIndex = text.lastIndexOf("\n");
+                       // compose new text
+                       String newText = text.substring(0, lastBreakIndex);
+                       // add new text - delete old one and append new one
+                       // (append because I want the cursor to be at the end)
+                       ((EditText) v).setText("");
+                       ((EditText) v).append(newText);
+                   }
+               }
+               return false;
+           });
+
+           saveBtn.setOnClickListener(v -> {
+               String input = quickEditField.getText().toString();
+               if(!input.isEmpty()){
+                   position.setInfo(input);
+                   positionInfo.setText(input);
+               }
+               resetBackToNormal("edit_info");
+           });
+
+           cancelBtn.setOnClickListener(v -> {
+               resetBackToNormal("edit_info");
+           });
+
+           event.setAction(MotionEvent.ACTION_CANCEL);
+           return false;
+       }
+
+       @SuppressLint("SetTextI18n")
+       private void resetBackToNormal(String type){
+           EditText quickEditField = view.findViewById(R.id.position_dialog_quick_edit_field);
+           Button saveBtn = view.findViewById(R.id.position_dialog_save_btn);
+           Button cancelBtn = view.findViewById(R.id.position_dialog_cancel_btn);
+           TextView positionInfo = view.findViewById(R.id.position_dialog_info);
+           saveBtn.setVisibility(View.GONE);
+           cancelBtn.setVisibility(View.GONE);
+           valueEditBtn.setVisibility(View.VISIBLE);
+
+           switch(type){
+               case "edit_info":
+                   payBtn.setVisibility(View.VISIBLE);
+                   positionDepts.setVisibility(View.VISIBLE);
+                   dept_val.setVisibility(View.VISIBLE);
+                   positionInfo.setVisibility(View.VISIBLE);
+                   view.findViewById(R.id.position_dialog_line1).setVisibility(View.VISIBLE);
+                   view.findViewById(R.id.position_dialog_line2).setVisibility(View.VISIBLE);
+                   LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams)quickEditField.getLayoutParams();
+                   lp.width = 120 / (int)getResources().getDisplayMetrics().density;
+                   lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                   int appMargin = (int) (getResources().getDimension(R.dimen.app_margin)
+                           / getResources().getDisplayMetrics().density);
+                   lp.rightMargin = appMargin;
+                   lp.leftMargin = appMargin;
+                   quickEditField.setSingleLine(true);
+                   quickEditField.setInputType(InputType.TYPE_CLASS_NUMBER);
+                   quickEditField.setVerticalScrollBarEnabled(false);
+                   quickEditField.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                   quickEditField.setVisibility(View.GONE);
+                   break;
+               case "release_dept":
+                   payBtn.setVisibility(View.VISIBLE);
+                   positionDepts.setText(getResources().getString(R.string.your_dept_claim) + ":");
+                   dept_val.setTextColor(Color.parseColor("#2ba050"));  //green
+                   break;
+               case "edit_value":
+                   quickEditField.setVisibility(View.GONE);
+                   dept_val.setVisibility(View.VISIBLE);
+                   payBtn.setVisibility(View.VISIBLE);
+                   break;
+           }
+       }
+
+       private abstract class RightDrawableOnTouchListener implements View.OnTouchListener {
+           Drawable drawable;
+           private final int FUZZ = 10;
+
+           RightDrawableOnTouchListener(TextView view) {
+               super();
+               final Drawable[] drawables = view.getCompoundDrawables();
+               if (drawables != null && drawables.length == 4)
+                   this.drawable = drawables[2];
+           }
+           @Override
+           public boolean onTouch(final View v, final MotionEvent event) {
+               if (event.getAction() == MotionEvent.ACTION_DOWN && drawable != null) {
+                   final int x = (int) event.getX();
+                   final int y = (int) event.getY();
+                   final Rect bounds = drawable.getBounds();
+                   if (x >= (v.getRight() - bounds.width() - FUZZ) && x <= (v.getRight() - v.getPaddingRight() + FUZZ)
+                           && y >= (v.getPaddingTop() - FUZZ) && y <= (v.getHeight() - v.getPaddingBottom()) + FUZZ) {
+                       return onDrawableTouch(event);
+                   }
+               }
+               return false;
+           }
+           public abstract boolean onDrawableTouch(final MotionEvent event);
+
        }
    }
 }
