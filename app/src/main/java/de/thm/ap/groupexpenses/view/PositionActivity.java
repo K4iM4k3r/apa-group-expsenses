@@ -150,6 +150,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
        private Position position;
        private View view;
        private TextView positionInfo;
+       private Spannable creatorAndDateDefaultVal;
        private Button valueEditBtn, payBtn;
        private TextView dept_val, positionDepts;
        private boolean changes_made;
@@ -180,8 +181,8 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
            if(App.CurrentUser.getId() == position.getCreator().getId()){
                // user is creator
                creator = getString(R.string.you);
-               positionInfo.setCompoundDrawablesWithIntrinsicBounds(0, 0,
-                       R.drawable.ic_edit_grey_24dp,0);
+               positionInfo.setCompoundDrawablesWithIntrinsicBounds(0,0,
+                       R.drawable.ic_edit_grey_24dp, 0);
                positionDeptValue = getResources().getString(R.string.your_dept_claim) + ":";
                dept_val.setTextColor(Color.parseColor("#2ba050"));  //green
                payBtn.setText(getString(R.string.position_inspect_release_dept_claim));
@@ -216,10 +217,10 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
            }
            positionName.setText(position.getTopic());
            String creatorAndDate = getResources().getString(R.string.creator_and_date, creator, position.getDate());
-           Spannable spannable = new SpannableString(creatorAndDate);
-           spannable.setSpan(new ForegroundColorSpan(Color.parseColor("#3a90e0")),
+           creatorAndDateDefaultVal = new SpannableString(creatorAndDate);
+           creatorAndDateDefaultVal.setSpan(new ForegroundColorSpan(Color.parseColor("#3a90e0")),
                    13, 13 + creator.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-           positionCreatorAndDate.setText(spannable, TextView.BufferType.SPANNABLE);
+           positionCreatorAndDate.setText(creatorAndDateDefaultVal, TextView.BufferType.SPANNABLE);
            positionDepts.setText(positionDeptValue);
            dept_val.setText(new DecimalFormat("0.00")
                    .format(Stats.getPositionBalance(position, selectedEvent))+ " " + getString(R.string.euro));
@@ -382,6 +383,9 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                    positionInfo.setVisibility(View.VISIBLE);
                    view.findViewById(R.id.position_dialog_line1).setVisibility(View.VISIBLE);
                    view.findViewById(R.id.position_dialog_line2).setVisibility(View.VISIBLE);
+                   ((TextView)view.findViewById(R.id.position_dialog_creator_and_date)).setText(
+                           creatorAndDateDefaultVal, TextView.BufferType.SPANNABLE
+                   );
                    LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams)quickEditField.getLayoutParams();
                    lp.width = 120 / (int)getResources().getDisplayMetrics().density;
                    lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
