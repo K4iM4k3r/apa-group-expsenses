@@ -84,6 +84,10 @@ public class ObjectListFragment extends Fragment
 
     public void updateFragmentObjects(List<Object> objectList, String type){
         switch (type){
+            case "Removal":
+                updateListView(objectList, type);
+                updateTotalBalance(objectList, type);
+                break;
             case "Position":
                 setRelatedEventToPosition(objectList);
                 // don't break here!
@@ -91,16 +95,7 @@ public class ObjectListFragment extends Fragment
                 if(objectList.size() == 1){     // first Event/Position was just added to list
                     init(objectList, type);
                 } else if(objectList.size() > 0){   // there are already objects in list
-                    //adapter.clear();
-                    //adapter.addAll(objects);
-                    // why does clear and add all not work? code below works (maybe because no database)
-                    adapter = new CustomCallLogListAdapter(getActivity(),
-                            R.layout.fragment_object_list_row, objectList, type);
-                    object_listView = view.findViewById(R.id.fragment_listView);
-                    object_listView.setAdapter(adapter);
-                    object_listView.setOnItemClickListener((parent, view, position, id) ->
-                            itemSelected(object_listView.getItemAtPosition(position)));
-
+                    updateListView(objectList, type);
                     updateTotalBalance(objectList, type);
                 }
                 break;
@@ -121,6 +116,18 @@ public class ObjectListFragment extends Fragment
                 R.layout.fragment_object_list_row, objectList, type);
         object_listView = view.findViewById(R.id.fragment_listView);
         object_listView.addHeaderView(headerView);
+        object_listView.setAdapter(adapter);
+        object_listView.setOnItemClickListener((parent, view, position, id) ->
+                itemSelected(object_listView.getItemAtPosition(position)));
+    }
+
+    private void updateListView(List<Object> objectList, String type){
+        //adapter.clear();
+        //adapter.addAll(objects);
+        // why does clear and add all not work? code below works (maybe because no database)
+        adapter = new CustomCallLogListAdapter(getActivity(),
+                R.layout.fragment_object_list_row, objectList, type);
+        object_listView = view.findViewById(R.id.fragment_listView);
         object_listView.setAdapter(adapter);
         object_listView.setOnItemClickListener((parent, view, position, id) ->
                 itemSelected(object_listView.getItemAtPosition(position)));

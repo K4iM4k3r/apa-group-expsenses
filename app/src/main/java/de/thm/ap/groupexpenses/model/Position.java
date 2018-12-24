@@ -17,6 +17,7 @@ public class Position implements Serializable {
     private final User creator;
 
     public Position(User creator, String topic, Float value){
+        this.id = (int)(Math.random() * 10000 + 1);     // rand num between 0 - 10000
         this.creator = creator;
         this.topic = new HistoryValue<>(topic);
         this.value = new HistoryValue<>(value);

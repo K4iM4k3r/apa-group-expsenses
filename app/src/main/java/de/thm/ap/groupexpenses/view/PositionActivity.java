@@ -147,13 +147,14 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
 
    private class PositionAlertDialog {
        private AlertDialog.Builder positionDialog;
+       private AlertDialog dialog;
        private Position position;
        private View view;
        private TextView positionInfo;
        private Spannable creatorAndDateDefaultVal;
        private Button valueEditBtn, payBtn;
        private TextView dept_val, positionDepts;
-       private boolean changes_made;
+       private boolean position_edited, position_deleted;
        private AtomicBoolean clickable;
 
        PositionAlertDialog(Position object){
@@ -163,7 +164,6 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
            payBtn = view.findViewById(R.id.position_dialog_pay_btn);
            valueEditBtn = view.findViewById(R.id.position_dialog_edit_btn);
            dept_val = view.findViewById(R.id.position_dialog_dept_val);
-           changes_made = false;
            clickable = new AtomicBoolean(true);
            createDialog();
        }
@@ -227,10 +227,10 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
            String positionInfoString = position.getInfo();
            if(!positionInfoString.isEmpty()) positionInfo.setText(positionInfoString);
            positionDialog.setView(view);
-           AlertDialog dialog = positionDialog.create();
+           dialog = positionDialog.create();
            dialog.show();
            dialog.setOnDismissListener(dialog1 -> {
-               if(changes_made){
+               if(position_edited){
                    for(int idx = 0; idx < positionList.size(); ++idx){
                        if(position.getId() == ((Position)positionList.get(idx)).getId()){
                            positionList.set(idx, position);
@@ -239,7 +239,10 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                            break;
                        }
                    }
+                   position_edited = false;
                }
+               if(position_deleted)
+                   objectListFragment.updateFragmentObjects(positionList, "Removal");
            });
        }
 
@@ -262,7 +265,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                position.setValue(Float.parseFloat(quickEditField.getText().toString()));
                dept_val.setText(new DecimalFormat("0.00")
                        .format(Stats.getPositionBalance(position, selectedEvent))+ " " + getString(R.string.euro));
-               changes_made = true;
+               position_edited = true;
            });
            cancelBtn.setOnClickListener(v3 -> resetBackToNormal("edit_value"));
        }
@@ -282,6 +285,19 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
            saveBtn.setText(getString(R.string.confirm));
            saveBtn.setOnClickListener(v -> {
                // delete position and close dialog
+               boolean positionFound = false;
+               for(int idx = 0; idx < positionList.size(); ++idx){
+                   if(((Position)positionList.get(idx)).getId() == position.getId()){
+                       positionList.remove(idx);
+                       positionFound = true;
+                       position_deleted = true;
+                       break;
+                   }
+               }
+               if(!positionFound) throw new IllegalStateException("Position " + position.toString()
+                       +  "not found, cannot be removed!");
+               else
+                   dialog.dismiss();
            });
 
            cancelBtn.setOnClickListener(v2 -> {
@@ -371,13 +387,13 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
            saveBtn.setVisibility(View.GONE);
            cancelBtn.setVisibility(View.GONE);
            valueEditBtn.setVisibility(View.VISIBLE);
+           payBtn.setVisibility(View.VISIBLE);
            positionInfo.setCompoundDrawablesWithIntrinsicBounds(0, 0,
                    R.drawable.ic_edit_grey_24dp,0);
            clickable.set(true);
 
            switch(type){
                case "edit_info":
-                   payBtn.setVisibility(View.VISIBLE);
                    positionDepts.setVisibility(View.VISIBLE);
                    dept_val.setVisibility(View.VISIBLE);
                    positionInfo.setVisibility(View.VISIBLE);
@@ -400,14 +416,12 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                    quickEditField.setVisibility(View.GONE);
                    break;
                case "release_dept":
-                   payBtn.setVisibility(View.VISIBLE);
                    positionDepts.setText(getResources().getString(R.string.your_dept_claim) + ":");
                    dept_val.setTextColor(Color.parseColor("#2ba050"));  //green
                    break;
                case "edit_value":
                    quickEditField.setVisibility(View.GONE);
                    dept_val.setVisibility(View.VISIBLE);
-                   payBtn.setVisibility(View.VISIBLE);
                    break;
            }
        }
