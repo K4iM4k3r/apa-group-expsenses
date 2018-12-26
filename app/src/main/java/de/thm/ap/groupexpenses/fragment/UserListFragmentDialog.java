@@ -1,20 +1,16 @@
-package de.thm.ap.groupexpenses.view;
+package de.thm.ap.groupexpenses.fragment;
 
-import android.app.Activity;
+import android.app.DialogFragment;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.ImageView;
@@ -26,22 +22,29 @@ import java.util.List;
 
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.model.User;
+import de.thm.ap.groupexpenses.view.EventFormActivity;
 
-public class AddUsersActivity extends BaseActivity {
+public class UserListFragmentDialog extends DialogFragment {
 
-    private EditText userPickEditText;
-    private ListView eventUserList;
+    private View view;
+    private EditText userSearch;
+    private ListView userListView;
+    private Button addBtn;
+    private UserArrayAdapter userArrayAdapter;
     ArrayList<User> usersInContactList;
     ArrayList<User> selectedUsers;
-    private UserArrayAdapter userArrayAdapter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_users);
-
-        userPickEditText = findViewById(R.id.add_user_editText);
-        eventUserList = findViewById(R.id.add_user_user_list);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        if(view == null) {
+            view = inflater.inflate(R.layout.fragment_user_list, container,false);
+        }else {
+            ViewGroup parent = (ViewGroup) view.getParent();
+            parent.removeView(view);
+        }
+        userSearch = view.findViewById(R.id.fragment_user_list_search_editText);
+        userListView = view.findViewById(R.id.fragment_user_list_listView);
+        addBtn = view.findViewById(R.id.fragment_user_list_btn);
 
         selectedUsers = new ArrayList<>();
         usersInContactList = new ArrayList<>();
@@ -58,24 +61,21 @@ public class AddUsersActivity extends BaseActivity {
         usersInContactList.add(new User(10, "Max", "Muster", "maybe@fdm"));
         usersInContactList.add(new User(11, "Rainer", "Rein", "lalalala"));
 
-        userArrayAdapter = new UserArrayAdapter(this, usersInContactList);
-        eventUserList.setAdapter(userArrayAdapter);
+        userArrayAdapter = new UserArrayAdapter(getActivity(), usersInContactList);
+        userListView.setAdapter(userArrayAdapter);
 
+        userListView.setOnItemClickListener((parent, view, position, id) -> {
+            User selectedUser = (User) userListView.getItemAtPosition(position);
 
-        eventUserList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                User selectedUser = (User) eventUserList.getItemAtPosition(position);
+            if(selectedUsers.contains(selectedUser))
+                selectedUsers.remove(selectedUser);
+            else
+                selectedUsers.add(selectedUser);
 
-                if(selectedUsers.contains(selectedUser))
-                    selectedUsers.remove(selectedUser);
-                else
-                    selectedUsers.add(selectedUser);
-
-                userArrayAdapter.notifyDataSetChanged();
-            }
+            userArrayAdapter.notifyDataSetChanged();
         });
 
-        userPickEditText.addTextChangedListener(new TextWatcher() {
+        userSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
 
@@ -87,26 +87,15 @@ public class AddUsersActivity extends BaseActivity {
             @Override
             public void afterTextChanged(Editable s) {}
         });
+
+        addBtn.setOnClickListener(v -> {
+            ((EventFormActivity)getActivity()).setEventMembers(selectedUsers);
+            getDialog().dismiss();
+        });
+
+        return view;
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.add_users_menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.add_users_finish_btn) {
-            Intent returnIntent = new Intent();
-            returnIntent.putExtra("selectedUsers", selectedUsers);
-            setResult(Activity.RESULT_OK,returnIntent);
-            finish();
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     private class UserArrayAdapter extends ArrayAdapter<User> {
         private Context mContext;
@@ -124,19 +113,19 @@ public class AddUsersActivity extends BaseActivity {
             View listItem = convertView;
 
             if (listItem == null)
-                listItem = LayoutInflater.from(mContext).inflate(R.layout.list_item_layout, parent,
+                listItem = LayoutInflater.from(mContext).inflate(R.layout.fragment_user_list_row, parent,
                         false);
 
             User currentUser = usersList.get(position);
 
-            ImageView image = listItem.findViewById(R.id.add_user_imageView);
+            ImageView image = listItem.findViewById(R.id.fragment_user_list_row_image_tick);
 
             if(selectedUsers.contains(currentUser))
                 image.setVisibility(View.VISIBLE);
             else
                 image.setVisibility(View.INVISIBLE);
 
-            TextView name = listItem.findViewById(R.id.add_user_textView);
+            TextView name = listItem.findViewById(R.id.fragment_user_list_row_name);
             name.setText(currentUser.toString());
 
             return listItem;
@@ -145,7 +134,7 @@ public class AddUsersActivity extends BaseActivity {
         @Override
         public Filter getFilter() {
             if (filter == null)
-                filter = new AppFilter<User>(usersList);
+                filter = new AppFilter<>(usersList);
             return filter;
         }
 
@@ -197,7 +186,5 @@ public class AddUsersActivity extends BaseActivity {
             }
 
         }
-
-
     }
 }

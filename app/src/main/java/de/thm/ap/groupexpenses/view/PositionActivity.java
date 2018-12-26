@@ -105,6 +105,12 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
             case R.id.position_menu_info:
                 // display event info, date and members
 
+                int debug = 0;
+
+
+
+
+                /*
                 AlertDialog.Builder builder = new AlertDialog.Builder( PositionActivity.this);
                 builder.setTitle(R.string.info);
                 builder.setMessage(
@@ -116,6 +122,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                         App.listToHTMLString(selectedEvent.getMembers()))
                 );
                 builder.show();
+                */
                 break;
         }
 

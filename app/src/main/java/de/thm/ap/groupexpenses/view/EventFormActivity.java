@@ -5,13 +5,10 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -22,6 +19,7 @@ import java.util.regex.Pattern;
 
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
+import de.thm.ap.groupexpenses.fragment.UserListFragmentDialog;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.User;
 
@@ -33,7 +31,6 @@ public class EventFormActivity extends BaseActivity {
     private Button addMembersBtn;
     private DatePickerDialog.OnDateSetListener dateSetListener;
     private boolean fromDateSet;
-    private static final int USER_PICK_SUCCESS = 27478;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,9 +43,10 @@ public class EventFormActivity extends BaseActivity {
         addMembersBtn = findViewById(R.id.event_form_add_members_btn);
         eventUsersTextView = findViewById(R.id.event_form_users_textView);
 
-        addMembersBtn.setOnClickListener(v -> startActivityForResult(new Intent(
-                EventFormActivity.this, AddUsersActivity.class),
-                USER_PICK_SUCCESS));
+        addMembersBtn.setOnClickListener(v -> {
+            UserListFragmentDialog dialog = new UserListFragmentDialog();
+            dialog.show(getFragmentManager(), "test");
+        });
 
         eventDateEditText.setOnFocusChangeListener((view, hasFocus) -> {
             if (hasFocus && !fromDateSet) {
@@ -122,22 +120,17 @@ public class EventFormActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode == Activity.RESULT_OK){
-            switch (requestCode){
-                case USER_PICK_SUCCESS:
-                    eventUsersList = (ArrayList<User>) data.getExtras().getSerializable("selectedUsers");
-                    this.eventUsersTextView.setText(App.listToString(eventUsersList));
-                    break;
-            }
-        }
-    }
-
     private static boolean isValidDate(String inputDate) {
         final String MODULE_NAME_PATTERN = "^([1-9]|0[1-9]|[12][0-9]|3[01])[-\\.]([1-9]|0[1-9]|1[012])[-\\.]\\d{4}$";
         Pattern pattern = Pattern.compile(MODULE_NAME_PATTERN);
         Matcher matcher = pattern.matcher(inputDate);
         return matcher.matches();
     }
+
+
+    public void setEventMembers(ArrayList<User> userList){
+        eventUsersList = userList;
+        eventUsersTextView.setText(App.listToString(eventUsersList));
+    }
+
 }

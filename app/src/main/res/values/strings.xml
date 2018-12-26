@@ -4,7 +4,9 @@
     <string name="title_activity_position">PositionActivity</string>
     <string name="event_form_name">Name des Events</string>
     <string name="event_form_date">Datum</string>
-    <string name="event_form_add_members">Teilnehmer hinzufügen</string>
+    <string name="add">Hinzufügen</string>
+    <string name="event_form_add_members">Hinzufügen</string>
+    <string name="search_name_hint">Name suchen</string>
     <string name="info">Info</string>
     <string name="you">Dir</string>
     <string name="no_position_info">Keine Positionsinfo vorhanden!</string>
