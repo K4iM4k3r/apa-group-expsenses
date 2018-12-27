@@ -44,7 +44,7 @@ public class EventFormActivity extends BaseActivity {
         eventUsersTextView = findViewById(R.id.event_form_users_textView);
 
         addMembersBtn.setOnClickListener(v -> {
-            UserListFragmentDialog dialog = new UserListFragmentDialog();
+            UserListFragmentDialog dialog = UserListFragmentDialog.newInstance(eventUsersList);
             dialog.show(getFragmentManager(), "test");
         });
 

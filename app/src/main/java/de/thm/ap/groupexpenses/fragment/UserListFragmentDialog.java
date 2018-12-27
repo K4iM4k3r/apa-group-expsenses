@@ -34,6 +34,14 @@ public class UserListFragmentDialog extends DialogFragment {
     ArrayList<User> usersInContactList;
     ArrayList<User> selectedUsers;
 
+    public static UserListFragmentDialog newInstance(ArrayList<User> selectedUsers) {
+        UserListFragmentDialog f = new UserListFragmentDialog();
+        Bundle args = new Bundle();
+        args.putSerializable("selectedUsers", selectedUsers);
+        f.setArguments(args);
+        return f;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if(view == null) {
@@ -46,7 +54,11 @@ public class UserListFragmentDialog extends DialogFragment {
         userListView = view.findViewById(R.id.fragment_user_list_listView);
         addBtn = view.findViewById(R.id.fragment_user_list_btn);
 
-        selectedUsers = new ArrayList<>();
+        selectedUsers = (ArrayList<User>) getArguments().getSerializable("selectedUsers");
+        if(selectedUsers == null)
+            selectedUsers = new ArrayList<>();
+
+
         usersInContactList = new ArrayList<>();
 
         usersInContactList.add(new User(1, "Lukas", "Hilfrich", "l.hilfrich@gmx.de"));
@@ -67,10 +79,15 @@ public class UserListFragmentDialog extends DialogFragment {
         userListView.setOnItemClickListener((parent, view, position, id) -> {
             User selectedUser = (User) userListView.getItemAtPosition(position);
 
-            if(selectedUsers.contains(selectedUser))
-                selectedUsers.remove(selectedUser);
-            else
-                selectedUsers.add(selectedUser);
+            boolean userFound = false;
+            for(int idx = 0; idx < selectedUsers.size(); ++idx){
+                if(selectedUser.getId() == selectedUsers.get(idx).getId()){
+                    selectedUsers.remove(idx);
+                    userFound = true;
+                    break;
+                }
+            }
+            if(!userFound)selectedUsers.add(selectedUser);
 
             userArrayAdapter.notifyDataSetChanged();
         });
@@ -101,6 +118,7 @@ public class UserListFragmentDialog extends DialogFragment {
         private Context mContext;
         private List<User> usersList;
         private Filter filter;
+        private boolean userFound;
 
         public UserArrayAdapter(@NonNull Context context, ArrayList<User> list) {
             super(context, 0, list);
@@ -120,10 +138,15 @@ public class UserListFragmentDialog extends DialogFragment {
 
             ImageView image = listItem.findViewById(R.id.fragment_user_list_row_image_tick);
 
-            if(selectedUsers.contains(currentUser))
-                image.setVisibility(View.VISIBLE);
-            else
-                image.setVisibility(View.INVISIBLE);
+            userFound = false;
+            for(int idx = 0; idx < selectedUsers.size(); ++idx){
+                if(currentUser.getId() == selectedUsers.get(idx).getId()){
+                    userFound = true;
+                    break;
+                }
+            }
+            if(userFound)image.setVisibility(View.VISIBLE);
+            else image.setVisibility(View.INVISIBLE);
 
             TextView name = listItem.findViewById(R.id.fragment_user_list_row_name);
             name.setText(currentUser.toString());
