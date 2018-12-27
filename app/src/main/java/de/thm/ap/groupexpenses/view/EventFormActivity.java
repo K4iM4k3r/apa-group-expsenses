@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,7 +46,7 @@ public class EventFormActivity extends BaseActivity {
 
         addMembersBtn.setOnClickListener(v -> {
             UserListFragmentDialog dialog = UserListFragmentDialog.newInstance(eventUsersList);
-            dialog.show(getFragmentManager(), "test");
+            dialog.show(getFragmentManager(), "create_event");
         });
 
         eventDateEditText.setOnFocusChangeListener((view, hasFocus) -> {
@@ -128,8 +129,8 @@ public class EventFormActivity extends BaseActivity {
     }
 
 
-    public void setEventMembers(ArrayList<User> userList){
-        eventUsersList = userList;
+    public void setEventMembers(List<User> userList){
+        eventUsersList = (ArrayList<User>) userList;
         eventUsersTextView.setText(App.listToString(eventUsersList));
     }
 

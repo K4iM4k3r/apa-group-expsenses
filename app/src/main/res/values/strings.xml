@@ -8,6 +8,7 @@
     <string name="event_form_add_members">Teilnehmer hinzufügen</string>
     <string name="search_name_hint">Name suchen</string>
     <string name="info">Info</string>
+    <string name="inspect_users">Teilnehmer inspizieren</string>
     <string name="you">Dir</string>
     <string name="no_position_info">Keine Positionsinfo vorhanden!</string>
     <string name="your_depts">Deine Schulden</string>

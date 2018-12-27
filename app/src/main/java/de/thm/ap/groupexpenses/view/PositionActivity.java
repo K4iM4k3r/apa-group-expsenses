@@ -36,6 +36,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.fragment.ObjectListFragment;
+import de.thm.ap.groupexpenses.fragment.UserListFragmentDialog;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.Stats;
@@ -94,12 +95,9 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
         int id = item.getItemId();
 
         switch(id){
-            case R.id.position_menu_done:
-                // return Event to EventActivity
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("inspectedEvent", selectedEvent);
-                setResult(Activity.RESULT_OK, returnIntent);
-                finish();
+            case R.id.position_menu_inspect_users:
+                UserListFragmentDialog dialog = UserListFragmentDialog.newInstance(selectedEvent.getMembers());
+                dialog.show(getFragmentManager(), "edit_event");
                 break;
 
             case R.id.position_menu_info:
@@ -124,10 +122,14 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                 builder.show();
                 */
                 break;
-        }
 
-        if (id == R.id.position_menu_done) {
-
+            case R.id.position_menu_done:
+                // return Event to EventActivity
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("inspectedEvent", selectedEvent);
+                setResult(Activity.RESULT_OK, returnIntent);
+                finish();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
