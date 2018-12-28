@@ -1,26 +1,51 @@
 package de.thm.ap.groupexpenses.database;
 
-import android.util.Log;
-
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import de.thm.ap.groupexpenses.model.User;
 
 public class DatabaseHandler {
 
-    public static void createUser(User user){
+    public interface Callback{
+        void onResult(User user);
+    }
+
+    /**
+     * Update User Data if it exists, else create new User
+     * @param user User with all Data
+     */
+    public static void updateUser(User user){
         FirebaseFirestore.getInstance().collection(Constants.COLLECTION_USERS)
                 .document(user.getUid())
                 .set(user);
     }
-    
-    public static void createUserWithFeedback(User user, OnSuccessListener<Void> successListener, OnFailureListener failureListener){
+
+    /**
+     * Update User Data if it exists, else create new User and further you can add Listener
+     * @param user User with all Data
+     * @param successListener Successful run
+     * @param failureListener Failure occurred
+     */
+    public static void updateUserWithFeedback(User user, OnSuccessListener<Void> successListener, OnFailureListener failureListener){
         FirebaseFirestore.getInstance().collection(Constants.COLLECTION_USERS)
                 .document(user.getUid())
                 .set(user).addOnSuccessListener(successListener)
                 .addOnFailureListener(failureListener);
     }
 
+    /**
+     * Looks if an User with uid exits and than call the callback
+     * @param uid UserId of the User
+     * @param callback is called when user exits
+     */
+    public static void queryUser(String uid, Callback callback){
+        DocumentReference docRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_USERS).document(uid);
+        docRef.get().addOnSuccessListener(documentSnapshot -> callback.onResult(documentSnapshot.toObject(User.class)));
+    }
+
 }
+
+
