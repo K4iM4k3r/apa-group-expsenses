@@ -30,54 +30,53 @@ public class App extends Application {
     }
 
     public static class TestValues {
-
-        public static User USER = new User(0, "Nils", "Müller", "nMueller@mail.de");
+        public static User USER = new User("0", "Nils", "Müller", "nicki", "nMueller@mail.de", null, null);
 
         public static User[] USERS = new User[]{
-                new User(1, "Jan", "Müller", "jMueller@mail.de"),
-                new User(2, "Tom", "Müller", "tMueller@mail.de"),
-                new User(3, "Sina", "Müller", "sMueller@mail.de"),
-                new User(4, "Mia", "Müller", "mMueller@mail.de")
+                new User("1", "Jan", "Müller", "", "jMueller@mail.de", null, null),
+                new User("2", "Tom", "Müller", "", "tMueller@mail.de", null, null),
+                new User("3", "Sina", "Müller", "", "sMueller@mail.de", null, null),
+                new User("4", "Mia", "Müller", "", "mMueller@mail.de", null, null)
         };
 
-        public static User[] MANY_USERS = new User[]{
-                new User(1, "Jan", "Müller", "jMueller@mail.de"),
-                new User(2, "Tom", "Müller", "tMueller@mail.de"),
-                new User(3, "Sina", "Müller", "sMueller@mail.de"),
-                new User(4, "Mia", "Müller", "mMueller@mail.de"),
-                new User(5, "Jan", "Müller", "jMueller@mail.de"),
-                new User(6, "Tom", "Müller", "tMueller@mail.de"),
-                new User(7, "Sina", "Müller", "sMueller@mail.de"),
-                new User(8, "Mia", "Müller", "mMueller@mail.de"),
-                new User(9, "Jan", "Müller", "jMueller@mail.de"),
-                new User(10, "Tom", "Müller", "tMueller@mail.de"),
-                new User(11, "Sina", "Müller", "sMueller@mail.de"),
-                new User(124, "Mia", "Müller", "mMueller@mail.de"),
-                new User(1241, "Jan", "Müller", "jMueller@mail.de"),
-                new User(1232, "Tom", "Müller", "tMueller@mail.de"),
-                new User(1233, "Sina", "Müller", "sMueller@mail.de"),
-                new User(534, "Mia", "Müller", "mMueller@mail.de"),
-                new User(6431, "Jan", "Müller", "jMueller@mail.de"),
-                new User(472, "Tom", "Müller", "tMueller@mail.de"),
-                new User(933, "Sina", "Müller", "sMueller@mail.de"),
-                new User(2344, "Mia", "Müller", "mMueller@mail.de"),
-                new User(211, "Jan", "Müller", "jMueller@mail.de"),
-                new User(432, "Tom", "Müller", "tMueller@mail.de"),
-                new User(633, "Sina", "Müller", "sMueller@mail.de"),
-                new User(124, "Mia", "Müller", "mMueller@mail.de"),
-                new User(42311, "Jan", "Müller", "jMueller@mail.de"),
-                new User(122, "Tom", "Müller", "tMueller@mail.de"),
-                new User(53533, "Sina", "Müller", "sMueller@mail.de"),
-                new User(124, "Mia", "Müller", "mMueller@mail.de"),
-                new User(31, "Jan", "Müller", "jMueller@mail.de"),
-                new User(23, "Tom", "Müller", "tMueller@mail.de"),
-                new User(113, "Sina", "Müller", "sMueller@mail.de"),
-                new User(44353, "Mia", "Müller", "mMueller@mail.de"),
-                new User(6431, "Jan", "Müller", "jMueller@mail.de"),
-                new User(852, "Tom", "Müller", "tMueller@mail.de"),
-                new User(3546, "Sina", "Müller", "sMueller@mail.de"),
-                new User(3454, "Mia", "Müller", "mMueller@mail.de")
-        };
+//        public static User[] MANY_USERS = new User[]{
+//                new User(1, "Jan", "Müller", "jMueller@mail.de"),
+//                new User(2, "Tom", "Müller", "tMueller@mail.de"),
+//                new User(3, "Sina", "Müller", "sMueller@mail.de"),
+//                new User(4, "Mia", "Müller", "mMueller@mail.de"),
+//                new User(5, "Jan", "Müller", "jMueller@mail.de"),
+//                new User(6, "Tom", "Müller", "tMueller@mail.de"),
+//                new User(7, "Sina", "Müller", "sMueller@mail.de"),
+//                new User(8, "Mia", "Müller", "mMueller@mail.de"),
+//                new User(9, "Jan", "Müller", "jMueller@mail.de"),
+//                new User(10, "Tom", "Müller", "tMueller@mail.de"),
+//                new User(11, "Sina", "Müller", "sMueller@mail.de"),
+//                new User(124, "Mia", "Müller", "mMueller@mail.de"),
+//                new User(1241, "Jan", "Müller", "jMueller@mail.de"),
+//                new User(1232, "Tom", "Müller", "tMueller@mail.de"),
+//                new User(1233, "Sina", "Müller", "sMueller@mail.de"),
+//                new User(534, "Mia", "Müller", "mMueller@mail.de"),
+//                new User(6431, "Jan", "Müller", "jMueller@mail.de"),
+//                new User(472, "Tom", "Müller", "tMueller@mail.de"),
+//                new User(933, "Sina", "Müller", "sMueller@mail.de"),
+//                new User(2344, "Mia", "Müller", "mMueller@mail.de"),
+//                new User(211, "Jan", "Müller", "jMueller@mail.de"),
+//                new User(432, "Tom", "Müller", "tMueller@mail.de"),
+//                new User(633, "Sina", "Müller", "sMueller@mail.de"),
+//                new User(124, "Mia", "Müller", "mMueller@mail.de"),
+//                new User(42311, "Jan", "Müller", "jMueller@mail.de"),
+//                new User(122, "Tom", "Müller", "tMueller@mail.de"),
+//                new User(53533, "Sina", "Müller", "sMueller@mail.de"),
+//                new User(124, "Mia", "Müller", "mMueller@mail.de"),
+//                new User(31, "Jan", "Müller", "jMueller@mail.de"),
+//                new User(23, "Tom", "Müller", "tMueller@mail.de"),
+//                new User(113, "Sina", "Müller", "sMueller@mail.de"),
+//                new User(44353, "Mia", "Müller", "mMueller@mail.de"),
+//                new User(6431, "Jan", "Müller", "jMueller@mail.de"),
+//                new User(852, "Tom", "Müller", "tMueller@mail.de"),
+//                new User(3546, "Sina", "Müller", "sMueller@mail.de"),
+//                new User(3454, "Mia", "Müller", "mMueller@mail.de")
+//        };
 
 
         public static Position[] POSITIONS_1 = new Position[]{
