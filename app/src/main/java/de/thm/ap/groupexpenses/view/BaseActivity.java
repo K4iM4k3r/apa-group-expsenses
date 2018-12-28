@@ -1,5 +1,6 @@
 package de.thm.ap.groupexpenses.view;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -32,6 +33,7 @@ import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.Constants;
 
 
+@SuppressLint("Registered")
 public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuItemClickListener, View.OnClickListener{
     private final String TAG = this.getClass().getName();
     private FrameLayout view_stub; //This is the framelayout to keep the content view
@@ -55,7 +57,7 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
         headerView = navigation_view.getHeaderView(0);
         DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, 0, 0);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         name = headerView.findViewById(R.id.header_name);
         picture = headerView.findViewById(R.id.header_pic);
@@ -96,6 +98,7 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
 
     }
 
+    @SuppressWarnings("unused")
     public void hideKeyboard(View view) {
         final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null) {
@@ -179,6 +182,9 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
                 return true;
             case R.id.menu_item_logout:
                 auth.signOut();
+                File pic = new File(getExternalFilesDir(null), "profilePic.jpg");
+                //noinspection ResultOfMethodCallIgnored
+                pic.delete();
                 startActivity(new Intent(this, LoginActivity.class));
                 return true;
             case R.id.menu_item_main:
@@ -217,7 +223,6 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
             if(pic.exists()){
                 picture.setImageURI(Uri.fromFile(pic));
             }
-//            name.setText(currentUser.getDisplayName());
         }
     }
 }
