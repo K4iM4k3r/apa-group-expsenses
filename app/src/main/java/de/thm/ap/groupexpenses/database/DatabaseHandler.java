@@ -5,6 +5,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.User;
 
 public class DatabaseHandler {
@@ -46,6 +47,29 @@ public class DatabaseHandler {
         docRef.get().addOnSuccessListener(documentSnapshot -> callback.onResult(documentSnapshot.toObject(User.class)));
     }
 
+    /**
+     * Create a Event with all Information
+     * @param event Container of data
+     */
+    public static void createEvent(Event event){
+        DocumentReference documentReference = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS).document();
+        event.setEid(documentReference.getId());
+        documentReference.set(event);
+    }
+
+    /**
+     * Create a Event with all Information and further you can give custom listener
+     * @param event Container of data
+     * @param successListener Successful added Event
+     * @param failureListener Failure while adding
+     */
+    public static void createWithFeedbackEvent(Event event, OnSuccessListener<Void> successListener, OnFailureListener failureListener){
+        DocumentReference documentReference = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS).document();
+        event.setEid(documentReference.getId());
+        documentReference.set(event)
+                .addOnSuccessListener(successListener)
+                .addOnFailureListener(failureListener);
+    }
 }
 
 
