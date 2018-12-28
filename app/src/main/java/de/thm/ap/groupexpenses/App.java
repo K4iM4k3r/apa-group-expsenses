@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
@@ -92,15 +93,17 @@ public class App extends Application {
                 new Position(USERS[0], "Tee", 15),
                 new Position(USERS[0], "Reinigung", 15)
         };
+                        //TODO add Postions
+        public static Event EVENT = new Event("dVsX2SD6uWhQd1BV0RgE2haxW923", "Festival", "Morgen", "", Arrays.stream(USERS).map(User::getUid).collect(Collectors.toList()), null);
+        public static Event EVENT1 = new Event("dVsX2SD6uWhQd1BV0RgE2haxW923", "Festival", "Morgen", "", Arrays.asList("TovwCQ2uT5YjxjkrnZkN1hV59uo1"), null);
 
-        public static Event EVENT = new Event(USER, "Festival", "Morgen", "", Arrays.asList(USERS), Arrays.asList(POSITIONS_1));
-
-        public static Event[] EVENTS = new Event[]{
-                new Event(USER, "Festival: Herzberg", "11.01.2020", "", Arrays.asList(USERS), Arrays.asList(POSITIONS_1)),
-                new Event(USER, "Urlaub: Spanien", "13.02.2020", "", Arrays.asList(USERS), Arrays.asList(POSITIONS_2)),
-                new Event(USER, "Urlaub: Schweiz", "31.12.2020", "", Arrays.asList(USERS)),
-                new Event(USER, "Festival: Tomorrowland", "16.07.2020", "", Arrays.asList(USERS))
-        };
+//
+//        public static Event[] EVENTS = new Event[]{
+//                new Event(USER, "Festival: Herzberg", "11.01.2020", "", Arrays.asList(USERS), Arrays.asList(POSITIONS_1)),
+//                new Event(USER, "Urlaub: Spanien", "13.02.2020", "", Arrays.asList(USERS), Arrays.asList(POSITIONS_2)),
+//                new Event(USER, "Urlaub: Schweiz", "31.12.2020", "", Arrays.asList(USERS)),
+//                new Event(USER, "Festival: Tomorrowland", "16.07.2020", "", Arrays.asList(USERS))
+//        };
 
     }
 }

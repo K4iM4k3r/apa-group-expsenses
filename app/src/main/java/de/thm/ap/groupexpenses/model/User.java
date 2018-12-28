@@ -3,6 +3,7 @@ package de.thm.ap.groupexpenses.model;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -94,6 +95,10 @@ public class User implements Comparable<User> {
     }
 
     public void addEvent(String event){
+
+        if(this.events == null){
+            this.events = new ArrayList<>();
+        }
         this.events.add(event);
     }
 

@@ -5,13 +5,17 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
+
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.User;
 
 public class DatabaseHandler {
 
-    public interface Callback{
-        void onResult(User user);
+    public interface Callback<T>{
+        void onResult(T result);
     }
 
     /**
@@ -42,7 +46,7 @@ public class DatabaseHandler {
      * @param uid UserId of the User
      * @param callback is called when user exits
      */
-    public static void queryUser(String uid, Callback callback){
+    public static void queryUser(String uid, Callback<User> callback){
         DocumentReference docRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_USERS).document(uid);
         docRef.get().addOnSuccessListener(documentSnapshot -> callback.onResult(documentSnapshot.toObject(User.class)));
     }
@@ -54,22 +58,49 @@ public class DatabaseHandler {
     public static void createEvent(Event event){
         DocumentReference documentReference = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS).document();
         event.setEid(documentReference.getId());
-        documentReference.set(event);
+        documentReference.set(event).addOnCompleteListener(c ->{
+            queryUser(event.getCreatorId(), creator -> {
+                if(creator != null){
+                    creator.addEvent(event.getEid());
+                    updateUser(creator);
+                }
+            });
+
+            event.getMember().forEach(m -> queryUser(m, member -> {
+                if(member != null){
+                    member.addEvent(event.getEid());
+                    updateUser(member);
+                }
+            }));
+        });
     }
 
     /**
-     * Create a Event with all Information and further you can give custom listener
-     * @param event Container of data
-     * @param successListener Successful added Event
-     * @param failureListener Failure while adding
+     * Looks if an Event with eid exits and than call the callback with the result
+     * @param eid Event Id
+     * @param callback Callback
      */
-    public static void createWithFeedbackEvent(Event event, OnSuccessListener<Void> successListener, OnFailureListener failureListener){
-        DocumentReference documentReference = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS).document();
-        event.setEid(documentReference.getId());
-        documentReference.set(event)
-                .addOnSuccessListener(successListener)
-                .addOnFailureListener(failureListener);
+    public static void queryEvent(String eid, Callback<Event> callback){
+        DocumentReference docRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS).document(eid);
+        docRef.get().addOnSuccessListener(documentSnapshot -> callback.onResult(documentSnapshot.toObject(Event.class)));
     }
+
+
+    public static void getAllUserEvents(String uid, Callback<List<Event>> callback){
+        List<Event> result = new ArrayList<>();
+        queryUser(uid, user -> {
+            final int lengthEvents = user.getEvents().size();
+            user.getEvents().forEach(eid -> {
+                queryEvent(eid, event -> {
+                    result.add(event);
+                    if(result.size() == lengthEvents){
+                        callback.onResult(result);
+                    }
+                });
+            });
+        });
+    }
+
 }
 
 

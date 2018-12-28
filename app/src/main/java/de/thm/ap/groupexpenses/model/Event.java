@@ -7,44 +7,50 @@ import java.util.List;
 
 public class Event {
 
-    private int id;
-
+    private String eid;
     private String name;
     private String date;
     private String info;
-    private final User creator;
-    private List<User> member;
+    private String creatorId;
+    private List<String> member;
     private List<Position> positions;
 
-    public Event(User creator, String name, String date, String info, List<User> member, List<Position> positions) {
+    public Event(){}
+
+    public Event(String creatorId, String name, String date, String info, List<String> member, List<Position> positions) {
         this.name = name;
         this.date = date;
         this.info = info;
-        this.creator = creator;
+        this.creatorId = creatorId;
         this.member = member;
         this.positions = positions;
     }
 
-    public Event(User creator, String name, String date, String info, List<User> member) {
-        this.creator = creator;
+    public Event(String creatorId, String name, String date, String info, List<String> member) {
+        this.creatorId = creatorId;
         this.name = name;
         this.date = date;
         this.info = info;
         this.member = new ArrayList<>();
-        this.member.add(creator);
+        this.member.add(creatorId);
         this.member.addAll(member);
         this.positions = new ArrayList<>();
     }
-    public Event(User creator, String name, String date, String info) {
-        this.creator = creator;
+    public Event(String creatorId, String name, String date, String info) {
+        this.creatorId = creatorId;
         this.name = name;
         this.date = date;
         this.info = info;
         this.member = new ArrayList<>();
-        this.member.add(creator);
+        this.member.add(creatorId);
         this.positions = new ArrayList<>();
     }
-
+    public String getEid() {
+        return eid;
+    }
+    public void setEid(String eid) {
+        this.eid = eid;
+    }
     public String getName() {
         return name;
     }
@@ -63,10 +69,10 @@ public class Event {
     public void setInfo(String info) {
         this.info = info;
     }
-    public List<User> getMember() {
+    public List<String> getMember() {
         return member;
     }
-    public void addMember(User user) {
+    public void addMember(String user) {
         this.member.add(user);
     }
     public List<Position> getPositions() {
@@ -91,5 +97,10 @@ public class Event {
     @Override
     public String toString() {
         return name;
+    }
+
+
+    public String getCreatorId() {
+        return creatorId;
     }
 }
