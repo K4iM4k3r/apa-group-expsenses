@@ -104,7 +104,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                         assert user != null;
                         User createUser = new User(user.getUid(), user.getEmail());
-                        DatabaseHandler.createUserWithFeedback(createUser, l -> Log.d(TAG, "Userdata successfull written"), f -> Log.d(TAG, "User data couldnt written"));
+                        DatabaseHandler.updateUserWithFeedback(createUser, l -> Log.d(TAG, "Userdata successfull written"), f -> Log.d(TAG, "User data couldnt written"));
 
                         updateUI(user);
                     } else {

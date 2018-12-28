@@ -23,9 +23,6 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -38,24 +35,24 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.FileChannel;
-import java.util.HashMap;
-import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import de.thm.ap.groupexpenses.R;
-import de.thm.ap.groupexpenses.database.Constants;
+import de.thm.ap.groupexpenses.database.DatabaseHandler;
+import de.thm.ap.groupexpenses.model.User;
 
 import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 
 public class ProfileActivity extends BaseActivity {
     private TextView tvEmail;
-    private EditText edName;
+    private EditText edNickname;
     private EditText edFirst;
     private EditText edLast;
     private CircleImageView profile_pic;
     private Button btnSave;
     private final int REQUEST_IMAGE_PICK = 1;
     private final String TAG = getClass().getName();
+    private User user;
 
 
 
@@ -65,63 +62,56 @@ public class ProfileActivity extends BaseActivity {
         setContentView(R.layout.activity_profile);
 
         tvEmail = findViewById(R.id.tvProfileEmail);
-        edName = findViewById(R.id.edName);
+        edNickname = findViewById(R.id.edName);
         edFirst = findViewById(R.id.edFirstname);
         edLast = findViewById(R.id.edLastname);
         Button btnEdit = findViewById(R.id.edit_button);
         btnSave = findViewById(R.id.btn_save_profile);
         profile_pic = findViewById(R.id.profile_pic);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if(getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
+        edFirst.setSelectAllOnFocus(true);
+        edLast.setSelectAllOnFocus(true);
+        edNickname.setSelectAllOnFocus(true);
 
-        FirebaseUser user = super.auth.getCurrentUser();
-        if(user != null){
-            DocumentReference docRef = db.collection(Constants.COLLECTION_USERS).document(user.getUid());
-            docRef.get().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
+        FirebaseUser currentUser = super.auth.getCurrentUser();
+        if(currentUser != null){
 
-                        edFirst.setText(document.getString(Constants.DOC_USERS_FIRST_NAME));
-                        edLast.setText(document.getString(Constants.DOC_USERS_LAST_NAME));
-                        edName.setText(document.getString(Constants.DOC_USERS_NICKNAME));
+            DatabaseHandler.queryUser(currentUser.getUid(), us -> {
+                user = us;
+                edFirst.setText(us.getFirstName());
+                edLast.setText(us.getLastName());
+                edNickname.setText(us.getNickname());
 
-                        tvEmail.setText(user.getEmail());
-                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                    } else {
-                        Log.d(TAG, "No such document");
-                    }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
-                }
+                tvEmail.setText(currentUser.getEmail());
             });
-
-
         }
 
         btnEdit.setOnClickListener(l -> {
-            edName.setEnabled(true);
+            edNickname.setEnabled(true);
             edLast.setEnabled(true);
             edFirst.setEnabled(true);
             btnSave.setVisibility(View.VISIBLE);
             btnEdit.setVisibility(View.GONE);
+
         });
         btnSave.setOnClickListener(l ->{
             showProgressDialog();
             if(isValidUserInput()){
 
-                Map<String, Object> userInfo= new HashMap<>();
-                userInfo.put(Constants.DOC_USERS_FIRST_NAME, edFirst.getText().toString());
-                userInfo.put(Constants.DOC_USERS_LAST_NAME, edLast.getText().toString());
-                userInfo.put(Constants.DOC_USERS_NICKNAME, edName.getText().toString());
+                user.setFirstName(edFirst.getText().toString());
+                user.setLastName(edLast.getText().toString());
+                user.setNickname(edNickname.getText().toString());
+                DatabaseHandler.updateUser(user);
 
-                updateUserInfoInDB(userInfo);
                 UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
-                        .setDisplayName(edName.getText().toString())
+                        .setDisplayName(edNickname.getText().toString())
                         .build();
-                if (user != null) {
-                    user.updateProfile(profileUpdate);
+                if (currentUser != null) {
+                    currentUser.updateProfile(profileUpdate);
                 }
                 hideProgressDialog();
                 finish();
@@ -136,8 +126,8 @@ public class ProfileActivity extends BaseActivity {
         profile_pic.setOnClickListener(l ->{
             pickPhoto();
             FirebaseStorage storage = FirebaseStorage.getInstance();
-            assert user != null;
-            StorageReference storageRef = storage.getReference().child("ProfilePictures").child(user.getUid()+".jpg");
+            assert currentUser != null;
+            StorageReference storageRef = storage.getReference().child("ProfilePictures").child(currentUser.getUid()+".jpg");
             File file = new File(getExternalFilesDir(null), "profilePic.jpg");
             Uri uriFile = Uri.fromFile(file);
 
@@ -157,12 +147,10 @@ public class ProfileActivity extends BaseActivity {
                     UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
                             .setPhotoUri(downloadUri)
                             .build();
-                    user.updateProfile(profileUpdate);
+                    currentUser.updateProfile(profileUpdate);
 
-                    Map<String, Object> userInfo = new HashMap<>();
-                    userInfo.put(Constants.DOC_USERS_PROFILE_PIC_URL, downloadUri.toString());
-                    updateUserInfoInDB(userInfo);
-//                        Log.i(TAG, user.getPhotoUrl().toString());
+                    user.setProfilePic(downloadUri);
+                    DatabaseHandler.updateUser(user);
                 } else {
                     // Handle failures
                     Log.i(TAG, "Error:" + task.toString());
@@ -173,28 +161,18 @@ public class ProfileActivity extends BaseActivity {
 
     }
 
-    private void updateUserInfoInDB(Map<String, Object> user) {
-        db.collection(Constants.COLLECTION_USERS)
-                .document(super.auth.getUid())
-                .update(user)
-                .addOnSuccessListener(l -> Log.d(TAG, "Userdata successfull written"))
-                .addOnFailureListener(f -> Log.d(TAG, "User data couldnt written"));
-
-
-    }
-
     private boolean isValidUserInput(){
         boolean valid = true;
-        if(TextUtils.isEmpty(edName.getText())){
-            edName.setError(getString(R.string.error_invalid_input));
+        if(TextUtils.isEmpty(edNickname.getText())){
+            edNickname.setError(getString(R.string.error_invalid_input));
             valid = false;
         }
         if(TextUtils.isEmpty(edFirst.getText())){
-            edName.setError(getString(R.string.error_invalid_input));
+            edNickname.setError(getString(R.string.error_invalid_input));
             valid = false;
         }
         if(TextUtils.isEmpty(edLast.getText())){
-            edName.setError(getString(R.string.error_invalid_input));
+            edNickname.setError(getString(R.string.error_invalid_input));
             valid = false;
         }
         return valid;
@@ -236,6 +214,7 @@ public class ProfileActivity extends BaseActivity {
 
         compressPicture();
     }
+
     private void compressPicture() {
         File pic = new File(getExternalFilesDir(null), "profilePic.jpg");
 
@@ -278,6 +257,7 @@ public class ProfileActivity extends BaseActivity {
             Snackbar.make(tvEmail, getString(R.string.error_file_not_found), Snackbar.LENGTH_LONG).show();
         }
     }
+
     private String getFromURIFilePath(Uri uri) throws IOException {
         String[] projection = { MediaStore.Images.Media.DATA };
         Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
