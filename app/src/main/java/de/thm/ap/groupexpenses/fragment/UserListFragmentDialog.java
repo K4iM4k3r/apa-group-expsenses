@@ -174,11 +174,9 @@ public class UserListFragmentDialog extends DialogFragment {
                                 }
                                 if(!userFound)addableUsers.add(currentUser);
                             }
-                            int size2 = addableUsers.size();
                             userArrayAdapter = new UserArrayAdapter(getActivity(), addableUsers);
                             userListView.setAdapter(userArrayAdapter);
                             userArrayAdapter.notifyDataSetChanged();
-                            int size4 = addableUsers.size();
                             userListView.setOnItemClickListener((parent, view, position, id) -> {
                                 User selectedUser = (User) userListView.getItemAtPosition(position);
                                 userFound = false;
@@ -196,11 +194,11 @@ public class UserListFragmentDialog extends DialogFragment {
 
                         case EDIT_STATE_ADD_USERS: // add btn was pressed in edit state
                             edit_state = EDIT_STATE_INSPECT_USERS;
-                            for(int idx = 0; idx < addableUsersSelected.size(); ++idx){
-                                selectedUsers.add(addableUsersSelected.get(idx));
-                            }
+                            selectedUsers.addAll(addableUsersSelected);
                             userArrayAdapter = new UserArrayAdapter(getActivity(), (ArrayList<User>)selectedUsers);
                             userListView.setAdapter(userArrayAdapter);
+                            doneBtn.setText(R.string.done);
+                            addBtn.setText(R.string.event_form_add_members);
                             break;
 
                         case EDIT_STATE_DELETE_USERS:
@@ -238,9 +236,10 @@ public class UserListFragmentDialog extends DialogFragment {
                         false);
 
             User currentUser = usersList.get(position);
-            ImageView image = listItem.findViewById(R.id.fragment_user_list_row_image_tick);
+            ImageView image;
             switch(TAG){
                 case "add_event":
+                    image = listItem.findViewById(R.id.fragment_user_list_row_image_tick);
                     userFound = false;
                     for(int idx = 0; idx < selectedUsers.size(); ++idx){
                         if(currentUser.getId() == selectedUsers.get(idx).getId()){
@@ -255,10 +254,25 @@ public class UserListFragmentDialog extends DialogFragment {
                 case "edit_event":
                     switch(edit_state){
                         case EDIT_STATE_INSPECT_USERS:
-                            // do nothing, maybe see profile here ?!
+                            image = listItem.findViewById(R.id.fragment_user_list_row_image_delete);
+                            image.setVisibility(View.VISIBLE);
+                            userFound = false;
+                            image.setOnClickListener(v -> {
+                                for(int idx = 0; idx < selectedUsers.size(); ++idx){
+                                    if(currentUser.getId() == selectedUsers.get(idx).getId()){
+                                        userFound = true;
+                                        selectedUsers.remove(idx);
+                                        break;
+                                    }
+                                }
+                                if(userFound) notifyDataSetChanged();
+                                else new IllegalAccessError("User '" + currentUser +
+                                        "' not found, cannot be deleted!");
+                            });
                             break;
 
                         case EDIT_STATE_ADD_USERS:
+                            image = listItem.findViewById(R.id.fragment_user_list_row_image_tick);
                             userFound = false;
                             for(int idx = 0; idx < addableUsersSelected.size(); ++idx){
                                 if(currentUser.getId() == addableUsersSelected.get(idx).getId()){
