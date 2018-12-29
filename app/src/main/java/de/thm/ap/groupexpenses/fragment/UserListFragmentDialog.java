@@ -102,7 +102,7 @@ public class UserListFragmentDialog extends DialogFragment {
         userListView.setOnItemClickListener((parent, view, position, id) -> {
             User selectedUser = (User) userListView.getItemAtPosition(position);
             switch (TAG){
-                case "add_event":
+                case "create_event":
                     userFound = false;
                     for(int idx = 0; idx < selectedUsers.size(); ++idx){
                         if(selectedUser.getId() == selectedUsers.get(idx).getId()){
@@ -149,7 +149,7 @@ public class UserListFragmentDialog extends DialogFragment {
 
         addBtn.setOnClickListener(v -> {
             switch (TAG){
-                case "add_event":
+                case "create_event":
                     ((EventFormActivity)getActivity()).setEventMembers(selectedUsers);
                     getDialog().dismiss();
                     break;
@@ -238,7 +238,7 @@ public class UserListFragmentDialog extends DialogFragment {
             User currentUser = usersList.get(position);
             ImageView image;
             switch(TAG){
-                case "add_event":
+                case "create_event":
                     image = listItem.findViewById(R.id.fragment_user_list_row_image_tick);
                     userFound = false;
                     for(int idx = 0; idx < selectedUsers.size(); ++idx){
@@ -248,7 +248,7 @@ public class UserListFragmentDialog extends DialogFragment {
                         }
                     }
                     if(userFound)image.setVisibility(View.VISIBLE);
-                    else image.setVisibility(View.INVISIBLE);
+                    else image.setVisibility(View.GONE);
                     break;
 
                 case "edit_event":
@@ -281,7 +281,7 @@ public class UserListFragmentDialog extends DialogFragment {
                                 }
                             }
                             if(userFound)image.setVisibility(View.VISIBLE);
-                            else image.setVisibility(View.INVISIBLE);
+                            else image.setVisibility(View.GONE);
                             break;
 
                         case EDIT_STATE_DELETE_USERS:
