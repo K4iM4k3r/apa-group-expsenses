@@ -2,15 +2,8 @@ package de.thm.ap.groupexpenses.fragment;
 
 import android.app.DialogFragment;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.LightingColorFilter;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -34,13 +27,19 @@ import de.thm.ap.groupexpenses.view.EventFormActivity;
 public class UserListFragmentDialog extends DialogFragment {
 
     private View view;
-    private EditText userSearch;
+    private EditText userSearchEditText;
+    private TextView headerTextView;
     private ListView userListView;
-    private Button addBtn;
+    private Button addBtn, doneBtn;
     private UserArrayAdapter userArrayAdapter;
-    private ArrayList<User> usersInContactList;
+    private ArrayList<User> usersInContactList, addableUsers, addableUsersSelected;
     private List<User> selectedUsers;
     private String TAG;
+    private boolean userFound;
+    private static int edit_state;
+    private static final int EDIT_STATE_INSPECT_USERS = 1;
+    private static final int EDIT_STATE_ADD_USERS = 2;
+    private static final int EDIT_STATE_DELETE_USERS = 3;
 
     public static UserListFragmentDialog newInstance(List<User> selectedUsers) {
         UserListFragmentDialog f = new UserListFragmentDialog();
@@ -58,9 +57,10 @@ public class UserListFragmentDialog extends DialogFragment {
             ViewGroup parent = (ViewGroup) view.getParent();
             parent.removeView(view);
         }
-        userSearch = view.findViewById(R.id.fragment_user_list_search_editText);
+        userSearchEditText = view.findViewById(R.id.fragment_user_list_search_editText);
         userListView = view.findViewById(R.id.fragment_user_list_listView);
-        addBtn = view.findViewById(R.id.fragment_user_list_btn);
+        addBtn = view.findViewById(R.id.fragment_user_list_add_btn);
+        doneBtn = view.findViewById(R.id.fragment_user_list_done_btn);
         TAG = getTag();
 
 
@@ -82,9 +82,17 @@ public class UserListFragmentDialog extends DialogFragment {
         usersInContactList.add(new User(9, "Adam", "Bdam", "dontEvenknow"));
         usersInContactList.add(new User(10, "Max", "Muster", "maybe@fdm"));
         usersInContactList.add(new User(11, "Rainer", "Rein", "lalalala"));
+        usersInContactList.add(new User(12, "Reimann", "Rolf", "2345"));
+        usersInContactList.add(new User(13, "Nikolaus", "Santa", "geshcnk@gmx.de"));
+        usersInContactList.add(new User(14, "Rentier", "Rot", "ren@s.c"));
+        usersInContactList.add(new User(15, "Grinch", "Grinch", "kb"));
+        usersInContactList.add(new User(16, "Rübe", "Nase", "hund@gmx.com"));
 
         if(TAG.equals("edit_event")){
-            view.findViewById(R.id.fragment_user_list_users_textView).setVisibility(View.VISIBLE);
+            edit_state = EDIT_STATE_INSPECT_USERS;
+            addBtn.setText(R.string.event_form_add_members);
+            headerTextView = view.findViewById(R.id.fragment_user_list_users_textView);
+            headerTextView.setVisibility(View.VISIBLE);
             userArrayAdapter = new UserArrayAdapter(getActivity(), (ArrayList<User>) selectedUsers);
         } else {
             userArrayAdapter = new UserArrayAdapter(getActivity(), usersInContactList);
@@ -92,11 +100,10 @@ public class UserListFragmentDialog extends DialogFragment {
         userListView.setAdapter(userArrayAdapter);
 
         userListView.setOnItemClickListener((parent, view, position, id) -> {
+            User selectedUser = (User) userListView.getItemAtPosition(position);
             switch (TAG){
                 case "add_event":
-                    User selectedUser = (User) userListView.getItemAtPosition(position);
-
-                    boolean userFound = false;
+                    userFound = false;
                     for(int idx = 0; idx < selectedUsers.size(); ++idx){
                         if(selectedUser.getId() == selectedUsers.get(idx).getId()){
                             selectedUsers.remove(idx);
@@ -105,18 +112,29 @@ public class UserListFragmentDialog extends DialogFragment {
                         }
                     }
                     if(!userFound)selectedUsers.add(selectedUser);
-
                     userArrayAdapter.notifyDataSetChanged();
                     break;
 
                 case "edit_event":
+                    switch (edit_state){
+                        case EDIT_STATE_INSPECT_USERS:
+                            // do nothing, maybe see profile here ?!
+                            break;
 
+                        case EDIT_STATE_ADD_USERS:
+
+                            break;
+
+                        case EDIT_STATE_DELETE_USERS:
+                            // empty yet
+                            break;
+                    }
                     break;
             }
 
         });
 
-        userSearch.addTextChangedListener(new TextWatcher() {
+        userSearchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
 
@@ -130,7 +148,70 @@ public class UserListFragmentDialog extends DialogFragment {
         });
 
         addBtn.setOnClickListener(v -> {
-            ((EventFormActivity)getActivity()).setEventMembers(selectedUsers);
+            switch (TAG){
+                case "add_event":
+                    ((EventFormActivity)getActivity()).setEventMembers(selectedUsers);
+                    getDialog().dismiss();
+                    break;
+
+                case "edit_event":
+                    switch (edit_state){
+                        case EDIT_STATE_INSPECT_USERS: // add btn was pressed in inspect state
+                            edit_state = EDIT_STATE_ADD_USERS;
+                            headerTextView.setText(R.string.event_form_add_members);
+                            addBtn.setText(R.string.add);
+                            doneBtn.setText(R.string.cancel);
+                            addableUsers = new ArrayList<>();
+                            addableUsersSelected = new ArrayList<>();
+                            for(int idx = 0; idx < usersInContactList.size(); ++idx){
+                                userFound = false;
+                                User currentUser = usersInContactList.get(idx);
+                                for(int idx2 = 0; idx2 < selectedUsers.size(); ++idx2) {
+                                    if (currentUser.getId() == selectedUsers.get(idx2).getId()) {
+                                        userFound = true;
+                                        break;
+                                    }
+                                }
+                                if(!userFound)addableUsers.add(currentUser);
+                            }
+                            int size2 = addableUsers.size();
+                            userArrayAdapter = new UserArrayAdapter(getActivity(), addableUsers);
+                            userListView.setAdapter(userArrayAdapter);
+                            userArrayAdapter.notifyDataSetChanged();
+                            int size4 = addableUsers.size();
+                            userListView.setOnItemClickListener((parent, view, position, id) -> {
+                                User selectedUser = (User) userListView.getItemAtPosition(position);
+                                userFound = false;
+                                for(int idx = 0; idx < addableUsersSelected.size(); ++idx){
+                                    if(selectedUser.getId() == addableUsersSelected.get(idx).getId()){
+                                        addableUsersSelected.remove(idx);
+                                        userFound = true;
+                                        break;
+                                    }
+                                }
+                                if(!userFound)addableUsersSelected.add(selectedUser);
+                                userArrayAdapter.notifyDataSetChanged();
+                            });
+                            break;
+
+                        case EDIT_STATE_ADD_USERS: // add btn was pressed in edit state
+                            edit_state = EDIT_STATE_INSPECT_USERS;
+                            for(int idx = 0; idx < addableUsersSelected.size(); ++idx){
+                                selectedUsers.add(addableUsersSelected.get(idx));
+                            }
+                            userArrayAdapter = new UserArrayAdapter(getActivity(), (ArrayList<User>)selectedUsers);
+                            userListView.setAdapter(userArrayAdapter);
+                            break;
+
+                        case EDIT_STATE_DELETE_USERS:
+                            // empty yet
+                            break;
+                    }
+                    break;
+            }
+        });
+
+        doneBtn.setOnClickListener(v -> {
             getDialog().dismiss();
         });
 
@@ -141,7 +222,6 @@ public class UserListFragmentDialog extends DialogFragment {
         private Context mContext;
         private List<User> usersList;
         private Filter filter;
-        private boolean userFound;
 
         public UserArrayAdapter(@NonNull Context context, ArrayList<User> list) {
             super(context, 0, list);
@@ -158,11 +238,9 @@ public class UserListFragmentDialog extends DialogFragment {
                         false);
 
             User currentUser = usersList.get(position);
-
+            ImageView image = listItem.findViewById(R.id.fragment_user_list_row_image_tick);
             switch(TAG){
                 case "add_event":
-                    ImageView image = listItem.findViewById(R.id.fragment_user_list_row_image_tick);
-
                     userFound = false;
                     for(int idx = 0; idx < selectedUsers.size(); ++idx){
                         if(currentUser.getId() == selectedUsers.get(idx).getId()){
@@ -175,6 +253,27 @@ public class UserListFragmentDialog extends DialogFragment {
                     break;
 
                 case "edit_event":
+                    switch(edit_state){
+                        case EDIT_STATE_INSPECT_USERS:
+                            // do nothing, maybe see profile here ?!
+                            break;
+
+                        case EDIT_STATE_ADD_USERS:
+                            userFound = false;
+                            for(int idx = 0; idx < addableUsersSelected.size(); ++idx){
+                                if(currentUser.getId() == addableUsersSelected.get(idx).getId()){
+                                    userFound = true;
+                                    break;
+                                }
+                            }
+                            if(userFound)image.setVisibility(View.VISIBLE);
+                            else image.setVisibility(View.INVISIBLE);
+                            break;
+
+                        case EDIT_STATE_DELETE_USERS:
+
+                            break;
+                    }
 
                     break;
             }
@@ -195,7 +294,7 @@ public class UserListFragmentDialog extends DialogFragment {
         private class AppFilter<T> extends Filter {
             private ArrayList<T> sourceObjects;
 
-            public AppFilter(List<T> objects) {
+            private AppFilter(List<T> objects) {
                 sourceObjects = new ArrayList<T>();
                 synchronized (this) {
                     sourceObjects.addAll(objects);
