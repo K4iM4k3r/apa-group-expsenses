@@ -11,7 +11,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
-import android.text.Html;
 import android.text.InputType;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -102,26 +101,8 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                 break;
 
             case R.id.position_menu_info:
-                // display event info, date and members
-
-                int debug = 0;
-
-
-
-
-                /*
-                AlertDialog.Builder builder = new AlertDialog.Builder( PositionActivity.this);
-                builder.setTitle(R.string.info);
-                builder.setMessage(
-                        Html.fromHtml(selectedEvent.getInfo() + "<br><br>" + "<b>"
-                                + getString(R.string.event_form_begin) + ": </b><br>" + selectedEvent.getDate()
-                                + "<br><br><b>"
-                                + getString(R.string.event_form_users) + "("
-                                + selectedEvent.getMembers().size() + "): " + "</b><br>" +
-                        App.listToHTMLString(selectedEvent.getMembers()))
-                );
-                builder.show();
-                */
+                // display event info including a cash check btn
+                new EventInfoDialog(selectedEvent);
                 break;
 
             case R.id.position_menu_done:
@@ -193,7 +174,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                creator = getString(R.string.you);
                positionInfo.setCompoundDrawablesWithIntrinsicBounds(0,0,
                        R.drawable.ic_edit_grey_24dp, 0);
-               positionDeptValue = getResources().getString(R.string.your_dept_claim) + ":";
+               positionDeptValue = getResources().getString(R.string.your_dept_claim);
                dept_val.setTextColor(Color.parseColor("#2ba050"));  //green
                payBtn.setText(getString(R.string.position_inspect_release_dept_claim));
                valueEditBtn.setVisibility(View.VISIBLE);
@@ -223,10 +204,10 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
 
            } else {
                creator = position.getCreator().toString();
-               positionDeptValue = getResources().getString(R.string.your_depts) + ":";
+               positionDeptValue = getResources().getString(R.string.your_depts);
            }
            positionName.setText(position.getTopic());
-           String creatorAndDate = getResources().getString(R.string.creator_and_date, creator, position.getDate());
+           String creatorAndDate = getResources().getString(R.string.creator_and_date_position, creator, position.getDate());
            creatorAndDateDefaultVal = new SpannableString(creatorAndDate);
            creatorAndDateDefaultVal.setSpan(new ForegroundColorSpan(Color.parseColor("#3a90e0")),
                    13, 13 + creator.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -463,4 +444,64 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
 
        }
    }
+
+    private class EventInfoDialog {
+        private AlertDialog.Builder eventDialog;
+        private AlertDialog dialog;
+        private Event event;
+        private View view;
+        private TextView eventInfo, eventDepts;
+        private Button cash_check_btn;
+        private TextView dept_val;
+
+        EventInfoDialog(Event object){
+            eventDialog = new AlertDialog.Builder(PositionActivity.this);
+            event = object;
+            view = getLayoutInflater().inflate(R.layout.dialog_event_view, null);
+            cash_check_btn = view.findViewById(R.id.event_dialog_cach_check_btn);
+            dept_val = view.findViewById(R.id.event_dialog_dept_val);
+            createDialog();
+        }
+
+        @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
+        private void createDialog(){
+            ((TextView)view.findViewById(R.id.event_dialog_name)).setText(event.getName());
+            eventDepts = view.findViewById(R.id.event_dialog_your_depts);
+            TextView positionCreatorAndDate = view.findViewById(R.id.event_dialog_creator_and_date);
+            eventInfo = view.findViewById(R.id.event_dialog_info);
+
+            String creator;
+
+            if(App.CurrentUser.getId() == event.getCreator().getId()){
+                // user is creator
+                creator = getString(R.string.you);
+            } else {
+                creator = event.getCreator().toString();
+            }
+            String creatorAndDate = getResources().getString(R.string.creator_and_date_event, creator, event.getDate());
+            Spannable creatorAndDateDefaultVal = new SpannableString(creatorAndDate);
+            creatorAndDateDefaultVal.setSpan(new ForegroundColorSpan(Color.parseColor("#3a90e0")),
+                    13, 13 + creator.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            positionCreatorAndDate.setText(creatorAndDateDefaultVal, TextView.BufferType.SPANNABLE);
+
+            float balance = Stats.getEventBalance(event);
+            if(balance >= 0){
+                eventDepts.setText(R.string.your_dept_claim_event);
+                dept_val.setTextColor(Color.parseColor("#2ba050")); // green
+            }
+            dept_val.setText(new DecimalFormat("0.00")
+                    .format(balance)+ " " + getString(R.string.euro));
+            String eventInfoString = event.getInfo();
+            if(!eventInfoString.isEmpty()) eventInfo.setText(eventInfoString);
+            cash_check_btn.setOnClickListener(v -> {
+                // do cash check here
+            });
+            eventDialog.setView(view);
+            dialog = eventDialog.create();
+            dialog.show();
+            dialog.setOnDismissListener(dialog1 -> {
+                // nothing
+            });
+        }
+    }
 }
