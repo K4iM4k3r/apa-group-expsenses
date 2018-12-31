@@ -48,6 +48,7 @@ public class UserListFragmentDialog extends DialogFragment {
         Bundle args = new Bundle();
         args.putSerializable("selectedUsers", (ArrayList<User>) selectedUsers);
         f.setArguments(args);
+        isCreator = false;
         return f;
     }
 
