@@ -303,7 +303,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                        break;
                    }
                }
-               if(!positionFound) throw new IllegalStateException("Position " + position.toString()
+               if(!positionFound) new IllegalAccessError("Position " + position.toString()
                        +  "not found, cannot be removed!");
                else
                    dialog.dismiss();
