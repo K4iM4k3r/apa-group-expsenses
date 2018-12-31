@@ -21,6 +21,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.model.User;
 import de.thm.ap.groupexpenses.view.EventFormActivity;
@@ -28,7 +29,6 @@ import de.thm.ap.groupexpenses.view.EventFormActivity;
 public class UserListFragmentDialog extends DialogFragment {
 
     private View view;
-    private EditText userSearchEditText;
     private TextView headerTextView;
     private ListView userListView;
     private Button addBtn, doneBtn;
@@ -36,6 +36,7 @@ public class UserListFragmentDialog extends DialogFragment {
     private ArrayList<User> usersInContactList, addableUsers, addableUsersSelected;
     private List<User> selectedUsers;
     private String TAG;
+    private static boolean isCreator;
     private static int edit_state;
     private static int previous_edit_state;
     private static final int EDIT_STATE_INSPECT_USERS = 1;
@@ -50,6 +51,12 @@ public class UserListFragmentDialog extends DialogFragment {
         return f;
     }
 
+    public static UserListFragmentDialog newInstance(List<User> selectedUsers, User creator) {
+        UserListFragmentDialog f = newInstance(selectedUsers);
+        if(App.CurrentUser.getId() == creator.getId()) isCreator = true;
+        return f;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if(view == null) {
@@ -58,7 +65,7 @@ public class UserListFragmentDialog extends DialogFragment {
             ViewGroup parent = (ViewGroup) view.getParent();
             parent.removeView(view);
         }
-        userSearchEditText = view.findViewById(R.id.fragment_user_list_search_editText);
+        EditText userSearchEditText = view.findViewById(R.id.fragment_user_list_search_editText);
         userListView = view.findViewById(R.id.fragment_user_list_listView);
         addBtn = view.findViewById(R.id.fragment_user_list_add_btn);
         doneBtn = view.findViewById(R.id.fragment_user_list_done_btn);
@@ -91,7 +98,10 @@ public class UserListFragmentDialog extends DialogFragment {
 
         if(TAG.equals("edit_event")){
             setEditState(EDIT_STATE_INSPECT_USERS);
-            addBtn.setText(R.string.add_remove);
+
+            if(isCreator) addBtn.setText(R.string.add_remove);
+            else addBtn.setVisibility(View.GONE);
+
             headerTextView = view.findViewById(R.id.fragment_user_list_users_textView);
             headerTextView.setVisibility(View.VISIBLE);
             userArrayAdapter = new UserArrayAdapter(getActivity(), (ArrayList<User>) selectedUsers);
@@ -117,11 +127,9 @@ public class UserListFragmentDialog extends DialogFragment {
                             break;
 
                         case EDIT_STATE_ADD_USERS:
-
                             break;
 
                         case EDIT_STATE_DELETE_USERS:
-                            // empty yet
                             break;
                     }
                     break;
@@ -155,6 +163,7 @@ public class UserListFragmentDialog extends DialogFragment {
                             setEditState(EDIT_STATE_DELETE_USERS);
                             userArrayAdapter.notifyDataSetChanged();
                             addBtn.setText(R.string.event_form_add_members);
+                            doneBtn.setText(R.string.confirm);
                             break;
 
                         case EDIT_STATE_ADD_USERS: // add btn was pressed in edit state
@@ -172,14 +181,14 @@ public class UserListFragmentDialog extends DialogFragment {
 
                             userArrayAdapter = new UserArrayAdapter(getActivity(), (ArrayList<User>)selectedUsers);
                             userListView.setAdapter(userArrayAdapter);
-                            doneBtn.setText(R.string.done);
+                            doneBtn.setText(R.string.confirm);
                             addBtn.setText(R.string.event_form_add_members);
                             break;
 
                         case EDIT_STATE_DELETE_USERS:
                             setEditState(EDIT_STATE_ADD_USERS);
                             headerTextView.setText(R.string.event_form_add_members);
-                            addBtn.setText(R.string.confirm);
+                            addBtn.setText(R.string.add);
                             doneBtn.setText(R.string.cancel);
                             addableUsers = new ArrayList<>();
                             if(addableUsersSelected == null) addableUsersSelected = new ArrayList<>();
@@ -213,6 +222,7 @@ public class UserListFragmentDialog extends DialogFragment {
                 case EDIT_STATE_DELETE_USERS:
                     setEditState(EDIT_STATE_INSPECT_USERS);
                     addBtn.setText(R.string.add_remove);
+                    doneBtn.setText(R.string.done);
                     userArrayAdapter.notifyDataSetChanged();
                     break;
 
@@ -234,7 +244,7 @@ public class UserListFragmentDialog extends DialogFragment {
         private List<User> usersList;
         private Filter filter;
 
-        public UserArrayAdapter(@NonNull Context context, ArrayList<User> list) {
+        private UserArrayAdapter(@NonNull Context context, ArrayList<User> list) {
             super(context, 0, list);
             mContext = context;
             usersList = list;
@@ -323,7 +333,7 @@ public class UserListFragmentDialog extends DialogFragment {
             private ArrayList<T> sourceObjects;
 
             private AppFilter(List<T> objects) {
-                sourceObjects = new ArrayList<T>();
+                sourceObjects = new ArrayList<>();
                 synchronized (this) {
                     sourceObjects.addAll(objects);
                 }
@@ -334,8 +344,8 @@ public class UserListFragmentDialog extends DialogFragment {
                 String filterSeq = chars.toString().toLowerCase();
                 FilterResults result = new FilterResults();
 
-                if (filterSeq != null && filterSeq.length() > 0) {
-                    ArrayList<T> filter = new ArrayList<T>();
+                if (filterSeq.length() > 0) {
+                    ArrayList<T> filter = new ArrayList<>();
                     for (T object : sourceObjects) {
                         // the filtering itself:
                         if (object.toString().toLowerCase().contains(filterSeq))
