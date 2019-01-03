@@ -285,7 +285,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                        break;
                    }
                }
-               if(!positionFound) new IllegalAccessError("Position " + position.toString()
+               if(!positionFound) throw new IllegalAccessError("Position " + position.toString()
                        +  "not found, cannot be removed!");
                else
                    dialog.dismiss();
@@ -418,7 +418,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
        }
 
        private abstract class RightDrawableOnTouchListener implements View.OnTouchListener {
-           Drawable drawable;
+           private Drawable drawable;
            private final int FUZZ = 10;
 
            RightDrawableOnTouchListener(TextView view) {

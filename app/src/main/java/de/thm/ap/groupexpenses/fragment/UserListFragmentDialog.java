@@ -1,7 +1,9 @@
 package de.thm.ap.groupexpenses.fragment;
 
+import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -33,7 +35,7 @@ public class UserListFragmentDialog extends DialogFragment {
     private ListView userListView;
     private Button addBtn, doneBtn;
     private UserArrayAdapter userArrayAdapter;
-    private ArrayList<User> usersInContactList, addableUsers, addableUsersSelected;
+    private ArrayList<User> usersInContactList, addableUsers, addableUsersSelected, usersDeleted;
     private List<User> selectedUsers;
     private String TAG;
     private static boolean isCreator;
@@ -165,6 +167,7 @@ public class UserListFragmentDialog extends DialogFragment {
                             userArrayAdapter.notifyDataSetChanged();
                             addBtn.setText(R.string.event_form_add_members);
                             doneBtn.setText(R.string.confirm);
+                            if(usersDeleted == null) usersDeleted = new ArrayList<>();
                             break;
 
                         case EDIT_STATE_ADD_USERS: // add btn was pressed in edit state
@@ -240,6 +243,64 @@ public class UserListFragmentDialog extends DialogFragment {
         return view;
     }
 
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+
+        if(isCreator){
+            if(usersDeleted != null && addableUsersSelected != null){
+                showConfirmDialog(addableUsersSelected.size(), usersDeleted.size());
+            } else if(usersDeleted != null){
+                showConfirmDialog(0, usersDeleted.size());
+            }
+        }
+    }
+
+    private void showConfirmDialog(int addedSize, int deletedSize) {
+        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+        View promptView = layoutInflater.inflate(R.layout.dialog_confirm_member_changes, null);
+        final AlertDialog confirmDialogBuilder = new AlertDialog.Builder(getContext()).create();
+        TextView add_header = promptView.findViewById(R.id.dialog_user_changes_add_header_textView);
+        TextView remove_header = promptView.findViewById(R.id.dialog_user_changes_remove_header_textView);
+        TextView add_users = promptView.findViewById(R.id.dialog_user_changes_add_users_textView);
+        TextView remove_users = promptView.findViewById(R.id.dialog_user_changes_remove_users_textView);
+        Button confirmBtn = promptView.findViewById(R.id.dialog_user_changes_confirm_btn);
+        Button cancelBtn = promptView.findViewById(R.id.dialog_user_changes_cancel_btn);
+
+        String addString = getResources().getString(R.string.add_with_num, addedSize);
+        add_header.setText(addString);
+
+        String rmvString = getResources().getString(R.string.remove_with_num, deletedSize);
+        remove_header.setText(rmvString);
+
+        if(addedSize > 0){
+            add_users.setTextColor(Color.parseColor("#3a90e0"));
+            add_users.setText(App.listToString(addableUsersSelected));
+        }
+
+        if(deletedSize > 0){
+            remove_users.setTextColor(Color.parseColor("#3a90e0"));
+            remove_users.setText(App.listToString(usersDeleted));
+        }
+
+        cancelBtn.setOnClickListener(v -> {
+            if(deletedSize > 0)
+                selectedUsers.addAll(usersDeleted);
+            if(addedSize > 0){
+                for(int idx = 0; idx < addableUsersSelected.size(); ++idx)
+                    removeUserById(addableUsersSelected.get(idx).getId(), selectedUsers);
+            }
+            confirmDialogBuilder.dismiss();
+        });
+
+        confirmBtn.setOnClickListener(v -> {
+            confirmDialogBuilder.dismiss();
+        });
+
+        confirmDialogBuilder.setView(promptView);
+        confirmDialogBuilder.show();
+    }
+
     private class UserArrayAdapter extends ArrayAdapter<User> {
         private Context mContext;
         private List<User> usersList;
@@ -305,13 +366,18 @@ public class UserListFragmentDialog extends DialogFragment {
                                 }
                             }
                             image.setOnClickListener(v -> {
+                                boolean newUser = false;
                                 if(!removeUserById(userId, selectedUsers))
                                     throw new IllegalAccessError("User '" + currentUser +
                                             "' not found, cannot be deleted!");
 
                                 // remove (- if exists) from addable list if user was just added in this dialog
                                 if(addableUsersSelected != null)
-                                    removeUserById(userId, addableUsersSelected);
+                                    newUser = removeUserById(userId, addableUsersSelected);
+
+                                // add to users removed list if user was not just added in this dialog
+                                if(!newUser)
+                                    usersDeleted.add(currentUser);
 
                                 notifyDataSetChanged();
                             });

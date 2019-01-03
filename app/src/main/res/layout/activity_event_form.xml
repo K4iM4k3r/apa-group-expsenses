@@ -75,7 +75,7 @@
         android:layout_marginEnd="@dimen/app_margin"
         android:layout_marginStart="@dimen/app_margin"
         android:textAlignment="textStart"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="#3a90e0"
         android:textSize="18sp"></TextView>
 
     <Button
