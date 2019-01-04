@@ -22,30 +22,30 @@ public class HistoryValue<T> {
 
     public void set(T value){
         this.value = value;
-        history.put(getCurrentTime(), value);
-    }
+         history.put(getCurrentTime(), value);
+         }
 
-    public T get(){
+public T get(){
         return value;
-    }
+        }
 
-    public Map<Date, T> getHistory() {
+public Map<Date, T> getHistory() {
         return history;
-    }
+        }
 
-    public Date getCreationDate(){
+public Date getCreationDate(){
         return creationDate;
-    }
+        }
 
-    private Date getCurrentTime(){
+private Date getCurrentTime(){
         return Calendar.getInstance().getTime();
-    }
+        }
 
-    @Override
-    @NonNull
-    public String toString(){
+@Override
+@NonNull
+public String toString(){
         return value.toString();
-    }
+        }
 
 
-}
+        }

@@ -52,7 +52,7 @@ public class Stats {
         float balance = 0;
         for (Position pos: e.getPositions()) {
             //The current user made the position - gets money
-            if (appuser.equals(pos.getCreator())){
+            if (appuser.equals(pos.getcreatorId())){
                 balance += pos.getFactorizedValue(e.getPositionFactor(true));
                 continue;
             }

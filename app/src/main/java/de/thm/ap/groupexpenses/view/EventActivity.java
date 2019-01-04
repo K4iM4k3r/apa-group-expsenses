@@ -44,11 +44,15 @@ public class EventActivity extends BaseActivity {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
 
-                String uid = FirebaseAuth.getInstance().getUid();
-                DatabaseHandler.getAllUserEvents(uid, result -> {
-
-                    Log.d(TAG, result.toString());
-                });
+//                DatabaseHandler.createEvent(App.TestValues.EVENT1);
+//                DatabaseHandler.queryEvent("n3YmRXOCPmZtCU1BsJq5", event ->{
+//                    Log.d(TAG, event.toString());
+//                });
+//                String uid = FirebaseAuth.getInstance().getUid();
+//                DatabaseHandler.getAllUserEvents(uid, result -> {
+//
+//                    Log.d(TAG, result.toString());
+//                });
             }
         });
 
