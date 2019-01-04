@@ -16,11 +16,11 @@ public class App extends Application {
 
     private static App instance;
 
-    public static App getInstance(){
+    public static App getInstance() {
         return instance;
     }
 
-    public static Context getContext(){
+    public static Context getContext() {
         return instance.getApplicationContext();
     }
 
@@ -106,4 +106,23 @@ public class App extends Application {
 //        };
 
     }
+
+
+    public static String listToHTMLString(List<?> list) {
+        String result = "";
+        for (int i = 0; i < list.size(); ++i) {
+            result += list.get(i) + (i == list.size()-1 ? "" : ", ");
+        }
+        result += "\b";
+        return result;
+    }
+
+    public static String listToString(List<?> list) {
+        String result = "";
+        for (int i = 0; i < list.size(); ++i) {
+            result += list.get(i) + (i == list.size()-1 ? "" : ", ");
+        }
+        return result;
+    }
+
 }

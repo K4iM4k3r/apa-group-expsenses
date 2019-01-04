@@ -26,10 +26,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.EventFormActivity" />
-        <activity
-            android:name=".view.PositionActivity"
-            android:label="@string/title_activity_position" />
-        <activity android:name=".view.PositionFormActivity" />
+        <activity android:name=".view.PositionActivity" />
+        <activity android:name=".view.PositionFormActivity"></activity>
+        <activity android:name=".view.PositionInspectActivity"></activity>
+        <activity android:name=".view.AddUsersActivity"></activity>
         <activity
             android:name=".view.FriendsActivity"
             android:label="@string/title_activity_friends"

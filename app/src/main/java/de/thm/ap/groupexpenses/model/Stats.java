@@ -13,13 +13,13 @@ public class Stats {
 
     private static final String TAG = Stats.class.getName();
 
-    public Map<Event, Float> calculateAll(List<Event> events){
+    public static Map<Event, Float> calculateAll(List<Event> events){
         if (App.CurrentUser == null)
             throw new IllegalStateException("User not specified!");
         return calculateAll(App.CurrentUser, events);
     }
 
-    public Map<Event, Float> calculateAll(User appuser, List<Event> events){
+    public static Map<Event, Float> calculateAll(User appuser, List<Event> events){
         Map<Event, Float> result = new HashMap<>();
         for (Event event: events){
             result.put(event, getEventBalance(appuser, event));
@@ -27,28 +27,25 @@ public class Stats {
         return result;
     }
 
-    public float getBalance(@NonNull List<Event> events){
+    public static float getBalance(@NonNull List<Event> events){
         if (App.CurrentUser == null)
             throw new IllegalStateException("User not specified!");
         return getBalance(App.CurrentUser, events);
     }
 
-    public float getBalance(@NonNull User creator, @NonNull List<Event> events){
+    public static float getBalance(@NonNull User creator, @NonNull List<Event> events){
         float sum = 0.00f;
         for(Event e: events) sum += getEventBalance(creator, e);
         return sum;
     }
 
-
-
-    public float getEventBalance(Event e){
-        if (App.CurrentUser == null){
+    public static float getEventBalance(Event e){
+        if (App.CurrentUser == null)
             throw new IllegalStateException("User not specified!");
-        }
         return getEventBalance(App.CurrentUser, e);
     }
 
-    public float getEventBalance(User appuser, Event e){
+    public static float getEventBalance(User appuser, Event e){
         float balance = 0;
         for (Position pos: e.getPositions()) {
             //The current user made the position - gets money
@@ -58,6 +55,24 @@ public class Stats {
             }
             // App user is participant - has to pay money
             balance -= pos.getFactorizedValue(e.getPositionFactor(false));
+        }
+        return balance;
+    }
+
+    public static float getPositionBalance(Position p, Event e){
+        if (App.CurrentUser == null)
+            throw new IllegalStateException("User not specified!");
+        return getPositionBalance(App.CurrentUser, p, e);
+    }
+
+    public static float getPositionBalance(User app_user, Position p, Event e){
+        float balance;
+        if (app_user.getId() == p.getCreator().getId()){
+            //The current user made the position - gets money
+            balance = p.getFactorizedValue(e.getPositionFactor(true));
+        } else {
+            // App user is participant - has to pay money
+            balance = -p.getFactorizedValue(e.getPositionFactor(false));
         }
         return balance;
     }

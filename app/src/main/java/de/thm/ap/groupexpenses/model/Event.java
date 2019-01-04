@@ -1,11 +1,12 @@
 package de.thm.ap.groupexpenses.model;
 
+import java.io.Serializable;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Event {
+public class Event implements Serializable {
 
     private String eid;
     private String name;
@@ -57,6 +58,11 @@ public class Event {
     public void setName(String name) {
         this.name = name;
     }
+    public User getCreator() { return this.creator; }
+    public int getId() { return id; }
+    public void setId(int id) {
+        this.id = id;
+    }
     public String getDate() {
         return date;
     }
@@ -88,8 +94,8 @@ public class Event {
     }
 
     public float getPositionFactor(boolean positive){
-        float posFactor = (float)(member.size()-1) / (float)member.size();
-        float negFactor = (float) (1.00/member.size());
+        float posFactor = (float)(members.size()-1) / (float) members.size();
+        float negFactor = (float) (1.00/ members.size());
         return positive? posFactor: negFactor;
     }
 
