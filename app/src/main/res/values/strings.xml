@@ -34,7 +34,7 @@
     <string name="labelProfileName">Name</string>
     <string name="edit_profile_name">Edit Name</string>
     <string name="btn_save_profile">Speichern</string>
-    <string name="error_invalid_name">invalid</string>
+    <string name="error_invalid_input">required</string>
     <string name="file_provider_authority">de.thm.ap.groupexpenses.fileprovider</string>
     <string name="error_file_not_found">File not found</string>
     <string name="error_file_couldnt_upload">File could not uploaded</string>
@@ -42,4 +42,10 @@
     <string name="success_download_ProfilePic">Successful download profile pic</string>
     <string name="error_download_ProfilePic">Error while downloading profile pic</string>
     <string name="menu_item_main">Main</string>
+    <string name="lastname">lastname</string>
+    <string name="firstname">firstname</string>
+    <string name="displayname">displayname</string>
+    <string name="enableEditMode">Editmode</string>
+    <string name="labelLastName">lastname</string>
+    <string name="labelFirstName">First name</string>
 </resources>

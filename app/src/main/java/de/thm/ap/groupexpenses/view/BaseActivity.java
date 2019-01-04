@@ -1,5 +1,7 @@
 package de.thm.ap.groupexpenses.view;
 
+import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -9,6 +11,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,24 +23,28 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.File;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import de.thm.ap.groupexpenses.R;
+import de.thm.ap.groupexpenses.database.Constants;
 
 
+@SuppressLint("Registered")
 public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuItemClickListener, View.OnClickListener{
+    private final String TAG = this.getClass().getName();
     private FrameLayout view_stub; //This is the framelayout to keep the content view
-    private NavigationView navigation_view; // The new navigation view from Android Design Library. Can inflate menu resources. Easy
     private View headerView;
-    private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
-    private Menu drawerMenu;
     private TextView name;
     private CircleImageView picture;
     protected FirebaseAuth auth;
-    private FirebaseUser currentUser;
+    protected FirebaseFirestore db;
+    public ProgressDialog mProgressDialog;
+
 
 
     @Override
@@ -45,17 +52,18 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.app_base_layout);// The base layout that contains your navigation drawer.
         view_stub = findViewById(R.id.view_stub);
-        navigation_view = findViewById(R.id.navigation_view);
+        // The new navigation view from Android Design Library. Can inflate menu resources. Easy
+        NavigationView navigation_view = findViewById(R.id.navigation_view);
         headerView = navigation_view.getHeaderView(0);
-        mDrawerLayout = findViewById(R.id.drawer_layout);
+        DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, 0, 0);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         name = headerView.findViewById(R.id.header_name);
         picture = headerView.findViewById(R.id.header_pic);
 
         // Add listener
-        drawerMenu = navigation_view.getMenu();
+        Menu drawerMenu = navigation_view.getMenu();
         for(int i = 0; i < drawerMenu.size(); i++) {
             drawerMenu.getItem(i).setOnMenuItemClickListener(this);
         }
@@ -63,14 +71,42 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
 
         // Firebase Auth
         auth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
+        if(auth.getCurrentUser() != null){
+            final DocumentReference docRef = db.collection(Constants.COLLECTION_USERS).document(auth.getCurrentUser().getUid());
+            docRef.addSnapshotListener((snapshot, e) -> {
+
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
+                }
+
+                String source = snapshot != null && snapshot.getMetadata().hasPendingWrites()
+                        ? "Local" : "Server";
+
+                if (snapshot != null && snapshot.exists()) {
+                    Log.d(TAG, source + " data: " + snapshot.getData());
+
+                    name.setText(snapshot.getString(Constants.DOC_USERS_NICKNAME));
+
+                } else {
+                    Log.d(TAG, source + " data: null");
+                }
+            });
+        }
+
     }
 
+    @SuppressWarnings("unused")
     public void hideKeyboard(View view) {
         final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null) {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
+
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -146,6 +182,9 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
                 return true;
             case R.id.menu_item_logout:
                 auth.signOut();
+                File pic = new File(getExternalFilesDir(null), "profilePic.jpg");
+                //noinspection ResultOfMethodCallIgnored
+                pic.delete();
                 startActivity(new Intent(this, LoginActivity.class));
                 return true;
             case R.id.menu_item_main:
@@ -156,9 +195,26 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
         }
     }
 
+    public void showProgressDialog() {
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(this);
+            mProgressDialog.setMessage(getString(R.string.loading));
+            mProgressDialog.setIndeterminate(true);
+        }
+
+        mProgressDialog.show();
+    }
+
+    public void hideProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
+    }
+
+
     public void checkLoginState(){
         // Check if user is signed in (non-null) and update UI accordingly.
-        currentUser = auth.getCurrentUser();
+        FirebaseUser currentUser = auth.getCurrentUser();
         if(currentUser == null || !currentUser.isEmailVerified()){
             startActivity(new Intent(this, LoginActivity.class));
         }
@@ -167,7 +223,6 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
             if(pic.exists()){
                 picture.setImageURI(Uri.fromFile(pic));
             }
-            name.setText(currentUser.getDisplayName());
         }
     }
 }

@@ -19,7 +19,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseUser;
@@ -39,16 +38,22 @@ import java.nio.channels.FileChannel;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import de.thm.ap.groupexpenses.R;
+import de.thm.ap.groupexpenses.database.DatabaseHandler;
+import de.thm.ap.groupexpenses.model.User;
 
 import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 
 public class ProfileActivity extends BaseActivity {
     private TextView tvEmail;
-    private EditText edName;
+    private EditText edNickname;
+    private EditText edFirst;
+    private EditText edLast;
     private CircleImageView profile_pic;
     private Button btnSave;
     private final int REQUEST_IMAGE_PICK = 1;
     private final String TAG = getClass().getName();
+    private User user;
+
 
 
     @Override
@@ -57,35 +62,58 @@ public class ProfileActivity extends BaseActivity {
         setContentView(R.layout.activity_profile);
 
         tvEmail = findViewById(R.id.tvProfileEmail);
-        edName = findViewById(R.id.edName);
-        ImageButton btnName = findViewById(R.id.edit_profile_name);
+        edNickname = findViewById(R.id.edName);
+        edFirst = findViewById(R.id.edFirstname);
+        edLast = findViewById(R.id.edLastname);
+        Button btnEdit = findViewById(R.id.edit_button);
         btnSave = findViewById(R.id.btn_save_profile);
         profile_pic = findViewById(R.id.profile_pic);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
-        FirebaseUser user = super.auth.getCurrentUser();
-        if(user != null){
-            tvEmail.setText(user.getEmail());
-            edName.setText(user.getDisplayName());
+        if(getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        btnName.setOnClickListener(l -> {
-            edName.setEnabled(true);
+        edFirst.setSelectAllOnFocus(true);
+        edLast.setSelectAllOnFocus(true);
+        edNickname.setSelectAllOnFocus(true);
+
+        FirebaseUser currentUser = super.auth.getCurrentUser();
+        if(currentUser != null){
+
+            DatabaseHandler.queryUser(currentUser.getUid(), us -> {
+                user = us;
+                edFirst.setText(us.getFirstName());
+                edLast.setText(us.getLastName());
+                edNickname.setText(us.getNickname());
+
+                tvEmail.setText(currentUser.getEmail());
+            });
+        }
+
+        btnEdit.setOnClickListener(l -> {
+            edNickname.setEnabled(true);
+            edLast.setEnabled(true);
+            edFirst.setEnabled(true);
             btnSave.setVisibility(View.VISIBLE);
+            btnEdit.setVisibility(View.GONE);
+
         });
         btnSave.setOnClickListener(l ->{
-            if(TextUtils.isEmpty(edName.getText())){
-                edName.setError(getString(R.string.error_invalid_name));
-            }
-            else{
+            showProgressDialog();
+            if(isValidUserInput()){
+
+                user.setFirstName(edFirst.getText().toString());
+                user.setLastName(edLast.getText().toString());
+                user.setNickname(edNickname.getText().toString());
+                DatabaseHandler.updateUser(user);
+
                 UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
-                        .setDisplayName(edName.getText().toString())
+                        .setDisplayName(edNickname.getText().toString())
                         .build();
-                if (user != null) {
-                    user.updateProfile(profileUpdate);
+                if (currentUser != null) {
+                    currentUser.updateProfile(profileUpdate);
                 }
+                hideProgressDialog();
                 finish();
             }
         });
@@ -98,8 +126,8 @@ public class ProfileActivity extends BaseActivity {
         profile_pic.setOnClickListener(l ->{
             pickPhoto();
             FirebaseStorage storage = FirebaseStorage.getInstance();
-            assert user != null;
-            StorageReference storageRef = storage.getReference().child("ProfilePictures").child(user.getUid()+".jpg");
+            assert currentUser != null;
+            StorageReference storageRef = storage.getReference().child("ProfilePictures").child(currentUser.getUid()+".jpg");
             File file = new File(getExternalFilesDir(null), "profilePic.jpg");
             Uri uriFile = Uri.fromFile(file);
 
@@ -119,8 +147,10 @@ public class ProfileActivity extends BaseActivity {
                     UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
                             .setPhotoUri(downloadUri)
                             .build();
-                    user.updateProfile(profileUpdate);
-//                        Log.i(TAG, user.getPhotoUrl().toString());
+                    currentUser.updateProfile(profileUpdate);
+
+                    user.setProfilePic(downloadUri);
+                    DatabaseHandler.updateUser(user);
                 } else {
                     // Handle failures
                     Log.i(TAG, "Error:" + task.toString());
@@ -131,6 +161,22 @@ public class ProfileActivity extends BaseActivity {
 
     }
 
+    private boolean isValidUserInput(){
+        boolean valid = true;
+        if(TextUtils.isEmpty(edNickname.getText())){
+            edNickname.setError(getString(R.string.error_invalid_input));
+            valid = false;
+        }
+        if(TextUtils.isEmpty(edFirst.getText())){
+            edNickname.setError(getString(R.string.error_invalid_input));
+            valid = false;
+        }
+        if(TextUtils.isEmpty(edLast.getText())){
+            edNickname.setError(getString(R.string.error_invalid_input));
+            valid = false;
+        }
+        return valid;
+    }
 
     private void pickPhoto() {
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -168,6 +214,7 @@ public class ProfileActivity extends BaseActivity {
 
         compressPicture();
     }
+
     private void compressPicture() {
         File pic = new File(getExternalFilesDir(null), "profilePic.jpg");
 
@@ -210,6 +257,7 @@ public class ProfileActivity extends BaseActivity {
             Snackbar.make(tvEmail, getString(R.string.error_file_not_found), Snackbar.LENGTH_LONG).show();
         }
     }
+
     private String getFromURIFilePath(Uri uri) throws IOException {
         String[] projection = { MediaStore.Images.Media.DATA };
         Cursor cursor = getContentResolver().query(uri, projection, null, null, null);

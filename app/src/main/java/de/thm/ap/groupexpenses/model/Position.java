@@ -7,54 +7,69 @@ import java.util.Map;
 
 public class Position {
 
-    private int id;
-    private HistoryValue<String> topic;
-    private HistoryValue<Integer> value;
-    private final User creator;
+//    private HistoryValue<String> topic;
+//    private HistoryValue<Integer> value;
+    private String topic;
+    private Integer value;
+    private String creatorId;
 
-    public Position(User creator, String topic, Integer value){
-        this.creator = creator;
-        this.topic = new HistoryValue<>(topic);
-        this.value = new HistoryValue<>(value);
-    }
+    public Position(){}
 
-    public void setId(int id) {
-        this.id = id;
-    }
-    public void setTopic(String topic){
-        this.topic.set(topic);
-    }
-    public void setValue(Integer value){
-        this.value.set(value);
+    public Position(String creatorId, String topic, Integer value){
+        this.creatorId = creatorId;
+        this.topic = topic;
+        this.value = value;
+//        this.topic = new HistoryValue<>(topic);
+//        this.value = new HistoryValue<>(value);
     }
 
-    public int getId() {
-        return id;
-    }
-    public String getTopic(){
-        return topic.get();
-    }
-    public int getValue(){
-        return value.get();
-    }
-    public User getCreator() {
-        return creator;
+    public String getTopic() {
+        return topic;
     }
 
-    public Map<Date, String> getTopicHistory() {
-        return topic.getHistory();
-    }
-    public Map<Date, Integer> getValueHistory() {
-        return value.getHistory();
+    public void setTopic(String topic) {
+        this.topic = topic;
     }
 
+    public Integer getValue() {
+        return value;
+    }
+
+    public void setValue(Integer value) {
+        this.value = value;
+    }
+
+//    public void setTopic(String topic){
+//        this.topic.set(topic);
+//    }
+//    public void setValue(Integer value){
+//        this.value.set(value);
+//    }
+
+//    public String getTopic(){
+//        return topic.get();
+//    }
+//    public int getValue(){
+//        return value.get();
+//    }
+    public String getcreatorId() {
+        return creatorId;
+    }
+
+//    public Map<Date, String> getTopicHistory() {
+//        return topic.getHistory();
+//    }
+//    public Map<Date, Integer> getValueHistory() {
+//        return value.getHistory();
+//    }
+//
     public float getFactorizedValue(float factor){
-        return (value.get()*factor);
+        return (getValue() * factor);
     }
 
     @NonNull
     @Override
     public String toString() {
-        return topic.toString() + ": " + value.toString() + " by " + creator.toString();
+        return topic + ": " + value.toString() + " by " + creatorId;
     }
 }

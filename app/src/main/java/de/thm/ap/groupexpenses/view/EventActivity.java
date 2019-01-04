@@ -22,7 +22,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
+import de.thm.ap.groupexpenses.database.DatabaseHandler;
 
 public class EventActivity extends BaseActivity {
 
@@ -41,6 +43,16 @@ public class EventActivity extends BaseActivity {
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+
+//                DatabaseHandler.createEvent(App.TestValues.EVENT1);
+//                DatabaseHandler.queryEvent("n3YmRXOCPmZtCU1BsJq5", event ->{
+//                    Log.d(TAG, event.toString());
+//                });
+//                String uid = FirebaseAuth.getInstance().getUid();
+//                DatabaseHandler.getAllUserEvents(uid, result -> {
+//
+//                    Log.d(TAG, result.toString());
+//                });
             }
         });
 
