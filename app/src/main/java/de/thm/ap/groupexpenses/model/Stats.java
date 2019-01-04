@@ -1,7 +1,6 @@
 package de.thm.ap.groupexpenses.model;
 
 import android.support.annotation.NonNull;
-import android.util.ArrayMap;
 
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +48,7 @@ public class Stats {
         float balance = 0;
         for (Position pos: e.getPositions()) {
             //The current user made the position - gets money
-            if (appuser.equals(pos.getcreatorId())){
+            if (appuser.equals(pos.getCreatorId())){
                 balance += pos.getFactorizedValue(e.getPositionFactor(true));
                 continue;
             }
@@ -67,7 +66,7 @@ public class Stats {
 
     public static float getPositionBalance(User app_user, Position p, Event e){
         float balance;
-        if (app_user.getId() == p.getCreator().getId()){
+        if (app_user.getUid().equals(p.getCreatorId())){
             //The current user made the position - gets money
             balance = p.getFactorizedValue(e.getPositionFactor(true));
         } else {

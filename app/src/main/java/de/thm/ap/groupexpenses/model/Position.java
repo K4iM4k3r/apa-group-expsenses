@@ -11,18 +11,30 @@ public class Position implements Serializable {
 
 //    private HistoryValue<String> topic;
 //    private HistoryValue<Integer> value;
+    private int pid;
     private String topic;
-    private Integer value;
+    private Float value;
+    private String info;
+    private String date;
     private String creatorId;
 
     public Position(){}
 
-    public Position(String creatorId, String topic, Integer value){
+    public Position(int positionId, String creatorId, String topic, Float value){
+        this.pid = positionId;
         this.creatorId = creatorId;
         this.topic = topic;
         this.value = value;
 //        this.topic = new HistoryValue<>(topic);
 //        this.value = new HistoryValue<>(value);
+    }
+
+    public int getPid() {
+        return pid;
+    }
+
+    public void setPid(int pid) {
+        this.pid = pid;
     }
 
     public String getTopic() {
@@ -33,12 +45,28 @@ public class Position implements Serializable {
         this.topic = topic;
     }
 
-    public Integer getValue() {
+    public Float getValue() {
         return value;
     }
 
-    public void setValue(Integer value) {
+    public void setValue(Float value) {
         this.value = value;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
 //    public void setTopic(String topic){
@@ -54,7 +82,7 @@ public class Position implements Serializable {
 //    public int getValue(){
 //        return value.get();
 //    }
-    public String getcreatorId() {
+    public String getCreatorId() {
         return creatorId;
     }
 

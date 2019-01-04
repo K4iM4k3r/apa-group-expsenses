@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import de.thm.ap.groupexpenses.model.Event;
@@ -80,6 +81,7 @@ public class App extends Application {
 //        };
 
 
+        /*
         public static Position[] POSITIONS_1 = new Position[]{
                 new Position(USERS[1].getUid(), "Bier", 90),
                 new Position(USERS[2].getUid(), "Sprit", 120),
@@ -93,10 +95,11 @@ public class App extends Application {
                 new Position(USERS[0].getUid(), "Tee", 15),
                 new Position(USERS[0].getUid(), "Reinigung", 15)
         };
+
                         //TODO add Postions
         public static Event EVENT = new Event("dVsX2SD6uWhQd1BV0RgE2haxW923", "Festival", "Morgen", "", Arrays.stream(USERS).map(User::getUid).collect(Collectors.toList()), null);
         public static Event EVENT1 = new Event("dVsX2SD6uWhQd1BV0RgE2haxW923", "Festival", "Morgen", "", Arrays.asList("TovwCQ2uT5YjxjkrnZkN1hV59uo1"), Arrays.asList(POSITIONS_1));
-
+*/
 //
 //        public static Event[] EVENTS = new Event[]{
 //                new Event(USER, "Festival: Herzberg", "11.01.2020", "", Arrays.asList(USERS), Arrays.asList(POSITIONS_1)),

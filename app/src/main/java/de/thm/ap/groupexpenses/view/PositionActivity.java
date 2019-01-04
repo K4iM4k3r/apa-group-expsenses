@@ -29,20 +29,24 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
+import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.fragment.ObjectListFragment;
 import de.thm.ap.groupexpenses.fragment.UserListFragmentDialog;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.Stats;
+import de.thm.ap.groupexpenses.model.User;
 
 public class PositionActivity extends BaseActivity implements ObjectListFragment.ItemClickListener{
 
     private Event selectedEvent;
+    private ArrayList<User> selectedEventUserList;
     private List<Object> positionList;
     private ObjectListFragment objectListFragment;
     private static final int POSITION_CREATE_SUCCESS = 11215;
@@ -66,6 +70,14 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
         }
 
         if(selectedEvent != null){
+            selectedEventUserList = new ArrayList<>();
+            List<String> eventMemberUids = selectedEvent.getMembers();
+            for(int idx = 0; idx < eventMemberUids.size(); ++idx){
+                DatabaseHandler.queryUser(eventMemberUids.get(idx), result -> {
+                    selectedEventUserList.add(result);
+                });
+
+            }
             positionList = (List<Object>)(List<?>) selectedEvent.getPositions();
             objectListFragment = (ObjectListFragment)getSupportFragmentManager()
                     .findFragmentById(R.id.position_fragment);
@@ -96,7 +108,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
         switch(id){
             case R.id.position_menu_inspect_users:
                 UserListFragmentDialog dialog = UserListFragmentDialog
-                        .newInstance(selectedEvent.getMembers(), selectedEvent.getCreator());
+                        .newInstance(selectedEventUserList, selectedEvent.getCreatorId());
                 dialog.show(getFragmentManager(), "edit_event");
                 break;
 
@@ -169,7 +181,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
            String creator;
            String positionDeptValue;
 
-           if(App.CurrentUser.getId() == position.getCreator().getId()){
+           if(App.CurrentUser.getUid().equals(position.getCreatorId())){
                // user is creator
                creator = getString(R.string.you);
                positionInfo.setCompoundDrawablesWithIntrinsicBounds(0,0,
@@ -203,7 +215,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
 
 
            } else {
-               creator = position.getCreator().toString();
+               creator = position.getCreatorId();
                positionDeptValue = getResources().getString(R.string.your_depts);
            }
            positionName.setText(position.getTopic());
@@ -223,7 +235,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
            dialog.setOnDismissListener(dialog1 -> {
                if(position_edited){
                    for(int idx = 0; idx < positionList.size(); ++idx){
-                       if(position.getId() == ((Position)positionList.get(idx)).getId()){
+                       if(position.getPid() == ((Position)positionList.get(idx)).getPid()){
                            positionList.set(idx, position);
                            positionList.add(selectedEvent);
                            objectListFragment.updateFragmentObjects(positionList, "Position");
@@ -278,7 +290,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                // delete position and close dialog
                boolean positionFound = false;
                for(int idx = 0; idx < positionList.size(); ++idx){
-                   if(((Position)positionList.get(idx)).getId() == position.getId()){
+                   if(((Position)positionList.get(idx)).getPid() == position.getPid()){
                        positionList.remove(idx);
                        positionFound = true;
                        position_deleted = true;
@@ -472,11 +484,11 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
 
             String creator;
 
-            if(App.CurrentUser.getId() == event.getCreator().getId()){
+            if(App.CurrentUser.getUid().equals(event.getCreatorId())){
                 // user is creator
                 creator = getString(R.string.you);
             } else {
-                creator = event.getCreator().toString();
+                creator = event.getCreatorId();
             }
             String creatorAndDate = getResources().getString(R.string.creator_and_date_event, creator, event.getDate());
             Spannable creatorAndDateDefaultVal = new SpannableString(creatorAndDate);

@@ -13,28 +13,28 @@ public class Event implements Serializable {
     private String date;
     private String info;
     private String creatorId;
-    private List<String> member;
+    private List<String> members;
     private List<Position> positions;
 
     public Event(){}
 
-    public Event(String creatorId, String name, String date, String info, List<String> member, List<Position> positions) {
+    public Event(String creatorId, String name, String date, String info, List<String> members, List<Position> positions) {
         this.name = name;
         this.date = date;
         this.info = info;
         this.creatorId = creatorId;
-        this.member = member;
+        this.members = members;
         this.positions = positions;
     }
 
-    public Event(String creatorId, String name, String date, String info, List<String> member) {
+    public Event(String creatorId, String name, String date, String info, List<String> members) {
         this.creatorId = creatorId;
         this.name = name;
         this.date = date;
         this.info = info;
-        this.member = new ArrayList<>();
-        this.member.add(creatorId);
-        this.member.addAll(member);
+        this.members = new ArrayList<>();
+        this.members.add(creatorId);
+        this.members.addAll(members);
         this.positions = new ArrayList<>();
     }
     public Event(String creatorId, String name, String date, String info) {
@@ -42,8 +42,8 @@ public class Event implements Serializable {
         this.name = name;
         this.date = date;
         this.info = info;
-        this.member = new ArrayList<>();
-        this.member.add(creatorId);
+        this.members = new ArrayList<>();
+        this.members.add(creatorId);
         this.positions = new ArrayList<>();
     }
     public String getEid() {
@@ -58,11 +58,6 @@ public class Event implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-    public User getCreator() { return this.creator; }
-    public int getId() { return id; }
-    public void setId(int id) {
-        this.id = id;
-    }
     public String getDate() {
         return date;
     }
@@ -75,11 +70,11 @@ public class Event implements Serializable {
     public void setInfo(String info) {
         this.info = info;
     }
-    public List<String> getMember() {
-        return member;
+    public List<String> getMembers() {
+        return members;
     }
     public void addMember(String user) {
-        this.member.add(user);
+        this.members.add(user);
     }
     public List<Position> getPositions() {
         return positions;

@@ -5,7 +5,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,7 +65,7 @@ public class DatabaseHandler {
                 }
             });
 
-            event.getMember().forEach(m -> queryUser(m, member -> {
+            event.getMembers().forEach(m -> queryUser(m, member -> {
                 if(member != null){
                     member.addEvent(event.getEid());
                     updateUser(member);

@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -101,15 +102,20 @@ public class EventFormActivity extends BaseActivity {
                 addMembersBtn.requestFocus();
             } else {
                 // save event strings here
-                User creator = new User(1,"Lukas", "Hilfrich", "l.hilfrich@gmx.de");
+                User creator = App.CurrentUser;
                 String eventName = eventNameEditText.getText().toString().trim();
                 eventName = eventName.substring(0,1).toUpperCase() + eventName.substring(1);
 
-                Event event = new Event(creator,
+                ArrayList<String> eventUserListStrings = new ArrayList<>();
+                for(int idx = 0; idx < eventUsersList.size(); ++idx){
+                    eventUserListStrings.add(eventUsersList.get(idx).getUid());
+                }
+
+                Event event = new Event(creator.getUid(),
                         eventName,
                         eventDateEditText.getText().toString(),
                         eventInfoEditText.getText().toString(),
-                        eventUsersList
+                        eventUserListStrings
                         );
 
                 Intent returnIntent = new Intent();

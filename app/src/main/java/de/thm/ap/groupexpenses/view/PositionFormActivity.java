@@ -69,7 +69,7 @@ public class PositionFormActivity extends BaseActivity {
                 String positionName = positionNameEditText.getText().toString().trim();
                 positionName = positionName.substring(0,1).toUpperCase() + positionName.substring(1);
 
-                Position position = new Position(creator, positionName,
+                Position position = new Position(12, creator.getUid(), positionName,
                         Float.parseFloat(positionValEditText.getText().toString())
                 );
                 String positionInfo = positionInfoEditText.getText().toString();

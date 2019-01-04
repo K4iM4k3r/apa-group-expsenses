@@ -24,11 +24,13 @@ import java.util.List;
 
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
+import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.Stats;
+import de.thm.ap.groupexpenses.model.User;
 
-public class ObjectListFragment extends Fragment
+public class ObjectListFragment<T> extends Fragment
 {
     private View view;
     private ListView object_listView;
@@ -63,7 +65,7 @@ public class ObjectListFragment extends Fragment
         return view;
     }
 
-    public void createFragmentObjects(List<Object> objectList, String type){
+    public void createFragmentObjects(List<T> objectList, String type){
         TextView noObjects_textView = view.findViewById(R.id.fragment_no_object_text);
 
         if(!objectList.isEmpty()){
@@ -82,7 +84,7 @@ public class ObjectListFragment extends Fragment
         }
     }
 
-    public void updateFragmentObjects(List<Object> objectList, String type){
+    public void updateFragmentObjects(List<T> objectList, String type){
         switch (type){
             case "Removal":
                 updateListView(objectList, type);
@@ -107,7 +109,7 @@ public class ObjectListFragment extends Fragment
 
     }
 
-    private void init(List<Object> objectList, String type){
+    private void init(List<T> objectList, String type){
         view.findViewById(R.id.fragment_no_object_text).setVisibility(View.GONE);
         headerView = getLayoutInflater().inflate(R.layout.fragment_object_list_header, null);
         updateTotalBalance(objectList, type);
@@ -121,7 +123,7 @@ public class ObjectListFragment extends Fragment
                 itemSelected(object_listView.getItemAtPosition(position)));
     }
 
-    private void updateListView(List<Object> objectList, String type){
+    private void updateListView(List<T> objectList, String type){
         //adapter.clear();
         //adapter.addAll(objects);
         // why does clear and add all not work? code below works (maybe because no database)
@@ -133,7 +135,7 @@ public class ObjectListFragment extends Fragment
                 itemSelected(object_listView.getItemAtPosition(position)));
     }
 
-    private void updateTotalBalance(List<Object> objectList, String type){
+    private void updateTotalBalance(List<T> objectList, String type){
         TextView obj_val = headerView.findViewById(R.id.object_balance_summary_val);
         float balance = 0;
 
@@ -166,7 +168,7 @@ public class ObjectListFragment extends Fragment
             headerVal.setTextColor(Color.parseColor("#2ba050"));    // green
     }
 
-    private void setRelatedEventToPosition(List<Object> positionList){
+    private void setRelatedEventToPosition(List<T> positionList){
         // last el of list is the related Event to this Position- save it locally and
         // rm it from positionList
         int lastIdx = positionList.size() - 1;
@@ -178,15 +180,15 @@ public class ObjectListFragment extends Fragment
         itemClickListener.onFragmentObjectClick(object);
     }
 
-    private class CustomCallLogListAdapter extends ArrayAdapter<Object> {
-        private List<Object> retrievedObjects;
+    private class CustomCallLogListAdapter extends ArrayAdapter<T> {
+        private List<T> retrievedObjects;
         private Context context;
         private int resource;
         private View view;
         String type;
         private Holder holder;
         private Object m_object;
-        public CustomCallLogListAdapter(Context context, int resource, List<Object> objects, String type) {
+        public CustomCallLogListAdapter(Context context, int resource, List<T> objects, String type) {
             super(context, resource, objects);
             this.type = type;
             this.context = context;
@@ -214,9 +216,12 @@ public class ObjectListFragment extends Fragment
                     Event event = (Event)m_object;
                     balance = Stats.getEventBalance(event);
                     holder.object_name.setText(event.getName());
-                    if(event.getCreator().getId() == App.CurrentUser.getId())
+                    if(event.getCreatorId().equals(App.CurrentUser.getUid()))
                         creatorPart = getString(R.string.you);
-                    else creatorPart = event.getCreator().toString();
+                    else {
+                        String uid = event.getCreatorId();
+                        creatorPart = uid;
+                    }
                     wholePart = fromPart + " " + creatorPart;
                     spannable = new SpannableString(wholePart);
                     spannable.setSpan(new ForegroundColorSpan(Color.parseColor("#3a90e0")),
@@ -229,9 +234,9 @@ public class ObjectListFragment extends Fragment
                     Position position = (Position) m_object;
                     balance = Stats.getPositionBalance(position, relatedEventToPosition);
                     holder.object_name.setText(position.getTopic());
-                    if(position.getCreator().getId() == App.CurrentUser.getId())
+                    if(position.getCreatorId().equals(App.CurrentUser.getUid()))
                         creatorPart = getString(R.string.you);
-                    else creatorPart = position.getCreator().toString();
+                    else creatorPart = position.getCreatorId();
                     wholePart = fromPart + " " + creatorPart;
                     spannable = new SpannableString(wholePart);
                     spannable.setSpan(new ForegroundColorSpan(Color.parseColor("#3a90e0")),

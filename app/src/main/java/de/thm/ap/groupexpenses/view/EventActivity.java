@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +28,7 @@ import de.thm.ap.groupexpenses.model.User;
 
 public class EventActivity extends BaseActivity implements ObjectListFragment.ItemClickListener{
 
-    private List<Object> events;
+    private List<Event> events;
     private ObjectListFragment objectListFragment;
 
     private static final int EVENT_CREATE_SUCCESS = 19438;
@@ -41,12 +43,13 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
         Toolbar toolbar = findViewById(R.id.event_toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+        App.CurrentUser = new User("1", "l.hilfrich@gmx.de");
+
+        DatabaseHandler.getAllUserEvents(App.CurrentUser.getUid(), result -> {
+            events = result;
+
+        });
+
 
 //                DatabaseHandler.createEvent(App.TestValues.EVENT1);
 //                DatabaseHandler.queryEvent("n3YmRXOCPmZtCU1BsJq5", event ->{
@@ -57,54 +60,6 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
 //
 //                    Log.d(TAG, result.toString());
 //                });
-            }
-        });
-        events = new ArrayList<>();
-
-        ArrayList<User> userList = new ArrayList<>();
-        User myUser = new User(1, "Lukas", "Hilfrich", "l.hilfrich@gmx.de");
-        User myUser2 = new User(2, "Hendrik", "Kegel", "oof");
-        User myUser3 = new User(3, "Kai", "Schäfer", "oof2");
-        User myUser4 = new User(4, "David", "Omran", "oof3");
-        User myUser5 = new User(5, "Ulf", "Smolka", "ka");
-        App.CurrentUser = myUser;
-        userList.add(myUser);
-        userList.add(myUser2);
-        userList.add(myUser3);
-        userList.add(myUser4);
-        userList.add(myUser5);
-        //userList.add(new User(6, "Dominik", "Herz", "kjlkalsd"));
-        //userList.add(new User(7, "Aris", "Christidis", "lolo"));
-        //userList.add(new User(8, "KQC", "NA", "xD"));
-        //userList.add(new User(9, "Adam", "Bdam", "dontEvenknow"));
-        //userList.add(new User(10, "Max", "Muster", "maybe@fdm"));
-        //userList.add(new User(11, "Rainer", "Rein", "lalalala"));
-
-        Event testEvent = new Event(
-                new User(1, "Lukas", "Hilfrich", "l.hilfrich@gmx.de"),
-                "TestEvent1",
-                "13.08.2019",
-                "Eventinfo",
-                userList
-        );
-
-        Event testEvent2 = new Event(
-                new User(2, "Hendrik", "Kegel", "dontknow"),
-                "TestEvent2",
-                "01.12.2033",
-                "Eventinfo blblbablablabla",
-                userList
-        );
-
-        testEvent.addPosition(new Position(myUser, "TestPosition", 50.f));
-        testEvent.addPosition(new Position(myUser, "TestPosition2", 20.f));
-
-        testEvent2.addPosition(new Position(myUser2, "TestPosition3", 100.f));
-        testEvent2.addPosition(new Position(myUser2, "TestPosition4", 100.f));
-
-        events.add(testEvent);
-        events.add(testEvent2);
-
 
         objectListFragment = (ObjectListFragment)getSupportFragmentManager()
                 .findFragmentById(R.id.event_fragment);
@@ -143,7 +98,7 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
                     boolean eventFound = false;
 
                     for(int idx = 0; idx < events.size(); ++idx) {
-                        if (event.getId() == ((Event) events.get(idx)).getId()) {
+                        if (event.getEid().equals((events.get(idx)).getEid())) {
                             events.set(idx, event);
                             eventFound = true;
                             break;
