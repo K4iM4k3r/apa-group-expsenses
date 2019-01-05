@@ -24,6 +24,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.Constants;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
@@ -85,6 +86,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onStop() {
         super.onStop();
         hideProgressDialog();
+
+        if(auth.getUid()!= null){
+            DatabaseHandler.queryUser(auth.getUid(), user -> App.CurrentUser = user);
+        }
     }
 
     private void createAccount(String email, String password) {
