@@ -41,7 +41,7 @@ public class DatabaseHandler {
     }
 
     /**
-     * Looks if an User with uid exits and than call the callback
+     * Looks if an User with uid exits and then call the callback
      * @param uid UserId of the User
      * @param callback is called when user exits
      */

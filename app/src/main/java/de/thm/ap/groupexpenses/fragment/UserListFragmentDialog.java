@@ -221,10 +221,6 @@ public class UserListFragmentDialog extends DialogFragment {
 
         doneBtn.setOnClickListener(v -> {
             switch(edit_state){
-                case EDIT_STATE_INSPECT_USERS:
-                    getDialog().dismiss();
-                    break;
-
                 case EDIT_STATE_DELETE_USERS:
                     setEditState(EDIT_STATE_INSPECT_USERS);
                     addBtn.setText(R.string.add_remove);
@@ -239,6 +235,10 @@ public class UserListFragmentDialog extends DialogFragment {
                     userArrayAdapter = new UserArrayAdapter(getActivity(), (ArrayList<User>) selectedUsers);
                     userListView.setAdapter(userArrayAdapter);
                     break;
+
+                default:
+                    getDialog().dismiss();
+
             }
         });
 

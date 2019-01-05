@@ -29,7 +29,7 @@ public class User implements Comparable<User>, Serializable {
         this.lastName = "";
         this.nickname = "";
         this.email = email;
-        this.events = null;
+        this.events = new ArrayList<>();
         this.profilePic = null;
     }
 
