@@ -117,14 +117,22 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
         if(currentUser == null || !currentUser.isEmailVerified()){
             startActivity(new Intent(this, LoginActivity.class));
         }
+        else{
+            DatabaseHandler.getAllUserEvents(currentUser.getUid(), result -> {
+                events = result;
+                if(events == null) events = new ArrayList<>();
+                objectListFragment.createFragmentObjects(events, "Event");
+                objectListFragment = (ObjectListFragment)getSupportFragmentManager()
+                        .findFragmentById(R.id.event_fragment);
+            });
+//            DatabaseHandler.onUserChangeListener(currentUser.getUid(), us ->{
+//                App.CurrentUser = us;
+//
+//                User s = App.CurrentUser;
+//            });
+        }
 
-        DatabaseHandler.getAllUserEvents(currentUser.getUid(), result -> {
-            events = result;
-            if(events == null) events = new ArrayList<>();
-            objectListFragment.createFragmentObjects(events, "Event");
-            objectListFragment = (ObjectListFragment)getSupportFragmentManager()
-                    .findFragmentById(R.id.event_fragment);
-        });
+
 
 
 //                DatabaseHandler.createEvent(App.TestValues.EVENT1);

@@ -109,12 +109,17 @@ public class DatabaseHandler {
         List<Event> result = new ArrayList<>();
         queryUser(uid, user -> {
             final int lengthEvents = user.getEvents().size();
-            user.getEvents().forEach(eid -> queryEvent(eid, event -> {
-                result.add(event);
-                if(result.size() == lengthEvents){
-                    callback.onResult(result);
-                }
-            }));
+            if(lengthEvents == 0){
+                callback.onResult(result);
+            }
+            else{
+                user.getEvents().forEach(eid -> queryEvent(eid, event -> {
+                    result.add(event);
+                    if(result.size() == lengthEvents){
+                        callback.onResult(result);
+                    }
+                }));
+            }
         });
     }
 
