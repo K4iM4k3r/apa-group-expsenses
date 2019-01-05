@@ -114,10 +114,6 @@ public class User implements Comparable<User>, Serializable {
         this.events.add(event);
     }
 
-//    public boolean equals(User otherUser){
-//        return this.id == otherUser.getId();
-//    }
-
     @NonNull
     @Override
     public String toString(){
