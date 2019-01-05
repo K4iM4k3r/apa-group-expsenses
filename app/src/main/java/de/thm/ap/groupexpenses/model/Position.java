@@ -9,13 +9,11 @@ import java.util.Map;
 
 public class Position implements Serializable {
 
-//    private HistoryValue<String> topic;
-//    private HistoryValue<Integer> value;
     private int pid;
-    private String topic;
-    private Float value;
+    private HistoryValue<String> topic;
+    private HistoryValue<Float> value;
     private String info;
-    private String date;
+    private Long date;
     private String creatorId;
 
     public Position(){}
@@ -23,10 +21,8 @@ public class Position implements Serializable {
     public Position(int positionId, String creatorId, String topic, Float value){
         this.pid = positionId;
         this.creatorId = creatorId;
-        this.topic = topic;
-        this.value = value;
-//        this.topic = new HistoryValue<>(topic);
-//        this.value = new HistoryValue<>(value);
+        this.topic = new HistoryValue<>(topic);
+        this.value = new HistoryValue<>(value);
     }
 
     public int getPid() {
@@ -38,19 +34,19 @@ public class Position implements Serializable {
     }
 
     public String getTopic() {
-        return topic;
+        return topic.get();
     }
 
     public void setTopic(String topic) {
-        this.topic = topic;
+        this.topic.set(topic);
     }
 
     public Float getValue() {
-        return value;
+        return value.get();
     }
 
     public void setValue(Float value) {
-        this.value = value;
+        this.value.set(value);
     }
 
     public String getInfo() {
@@ -61,38 +57,25 @@ public class Position implements Serializable {
         this.info = info;
     }
 
-    public String getDate() {
+    public Long getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(Long date) {
         this.date = date;
     }
 
-//    public void setTopic(String topic){
-//        this.topic.set(topic);
-//    }
-//    public void setValue(Integer value){
-//        this.value.set(value);
-//    }
-
-//    public String getTopic(){
-//        return topic.get();
-//    }
-//    public int getValue(){
-//        return value.get();
-//    }
     public String getCreatorId() {
         return creatorId;
     }
 
-//    public Map<Date, String> getTopicHistory() {
-//        return topic.getHistory();
-//    }
-//    public Map<Date, Integer> getValueHistory() {
-//        return value.getHistory();
-//    }
-//
+    public Map<Long, String> getTopicHistory() {
+        return topic.getHistory();
+    }
+    public Map<Long, Float> getValueHistory() {
+        return value.getHistory();
+    }
+
     public float getFactorizedValue(float factor){
         return (getValue() * factor);
     }

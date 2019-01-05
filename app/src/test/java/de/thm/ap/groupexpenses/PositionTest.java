@@ -11,14 +11,13 @@ import static org.junit.Assert.assertEquals;
 
 public class PositionTest {
 
-    Position position = new Position(Constants.creator, "Bier", 30);
+    Position position = new Position(1,"id1", "Bier", 30f);
 
     @Test
     public void positionTest(){
 
-        assertEquals(position.getCreator(), Constants.creator);
         assertEquals(position.getTopic(), "Bier");
-        assertEquals(position.getValue(), 30);
+        assertEquals(position.getValue(), 30f, 0.01);
 
         position.setTopic("Käse");
 
@@ -26,9 +25,9 @@ public class PositionTest {
         assertEquals(position.getTopicHistory().size(), 2);
         assertEquals(position.getValueHistory().size(), 1);
 
-        position.setValue(50000);
+        position.setValue(50000f);
 
-        assertEquals(position.getValue(), 50000);
+        assertEquals(position.getValue(), 50000f, 0.01);
         assertEquals(position.getValueHistory().size(), 2);
 
         int BREAKPOINT = 0;
