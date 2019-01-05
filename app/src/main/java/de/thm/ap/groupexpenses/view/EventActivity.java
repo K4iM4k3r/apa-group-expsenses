@@ -44,44 +44,11 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
         Toolbar toolbar = findViewById(R.id.event_toolbar);
         setSupportActionBar(toolbar);
 
-        App.CurrentUser = new User("1", "l.hilfrich@gmx.de");
-
-        DatabaseHandler.updateUser(App.CurrentUser);
-
-        DatabaseHandler.getAllUserEvents(App.CurrentUser.getUid(), result -> {
-            events = result;
-        });
-
-
-//                DatabaseHandler.createEvent(App.TestValues.EVENT1);
-//                DatabaseHandler.queryEvent("n3YmRXOCPmZtCU1BsJq5", event ->{
-//                    Log.d(TAG, event.toString());
-//                });
-//                String uid = FirebaseAuth.getInstance().getUid();
-//                DatabaseHandler.getAllUserEvents(uid, result -> {
-//
-//                    Log.d(TAG, result.toString());
-//                });
-
-        objectListFragment = (ObjectListFragment)getSupportFragmentManager()
-                .findFragmentById(R.id.event_fragment);
-        objectListFragment.createFragmentObjects(events, "Event");
-
-        FloatingActionButton createEventBtn = findViewById(R.id.create_event_btn);
-        createEventBtn.setOnClickListener(v -> startActivityForResult(
-                new Intent(EventActivity.this, EventFormActivity.class),
-                EVENT_CREATE_SUCCESS)
-        );
-
-        auth = FirebaseAuth.getInstance();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if(!events.isEmpty()){
-            // do nothing?
-        }
     }
 
     @Override
@@ -150,13 +117,42 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
         if(currentUser == null || !currentUser.isEmailVerified()){
             startActivity(new Intent(this, LoginActivity.class));
         }
+
+        DatabaseHandler.getAllUserEvents(App.CurrentUser.getUid(), result -> {
+            events = result;
+        });
+
+
+//                DatabaseHandler.createEvent(App.TestValues.EVENT1);
+//                DatabaseHandler.queryEvent("n3YmRXOCPmZtCU1BsJq5", event ->{
+//                    Log.d(TAG, event.toString());
+//                });
+//                String uid = FirebaseAuth.getInstance().getUid();
+//                DatabaseHandler.getAllUserEvents(uid, result -> {
+//
+//                    Log.d(TAG, result.toString());
+//                });
+
+        if(events == null) events = new ArrayList<>();
+        objectListFragment.createFragmentObjects(events, "Event");
+        objectListFragment = (ObjectListFragment)getSupportFragmentManager()
+                .findFragmentById(R.id.event_fragment);
+
+
+
+        FloatingActionButton createEventBtn = findViewById(R.id.create_event_btn);
+        createEventBtn.setOnClickListener(v -> startActivityForResult(
+                new Intent(EventActivity.this, EventFormActivity.class),
+                EVENT_CREATE_SUCCESS)
+        );
+
+        auth = FirebaseAuth.getInstance();
     }
 
     @Override
     public void onFragmentObjectClick(Object event) {
         Intent intent = new Intent(EventActivity.this, PositionActivity.class);
         intent.putExtra("event", (Event)event);
-
         startActivityForResult(intent, EVENT_INSPECT_SUCCESS);
     }
 }
