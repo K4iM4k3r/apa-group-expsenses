@@ -201,6 +201,7 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
         FirebaseUser currentUser = auth.getCurrentUser();
         if(currentUser == null || !currentUser.isEmailVerified()){
             startActivity(new Intent(this, LoginActivity.class));
+            finish();
         }
         else{
             File pic = new File(getExternalFilesDir(null), "profilePic.jpg");
