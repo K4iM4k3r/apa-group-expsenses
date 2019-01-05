@@ -11,7 +11,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,14 +22,14 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.File;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
-import de.thm.ap.groupexpenses.database.Constants;
+import de.thm.ap.groupexpenses.database.DatabaseHandler;
 
 
 @SuppressLint("Registered")
@@ -73,26 +72,11 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        if(auth.getCurrentUser() != null){
-            final DocumentReference docRef = db.collection(Constants.COLLECTION_USERS).document(auth.getCurrentUser().getUid());
-            docRef.addSnapshotListener((snapshot, e) -> {
+        if(auth.getCurrentUser() != null) {
 
-                if (e != null) {
-                    Log.w(TAG, "Listen failed.", e);
-                    return;
-                }
-
-                String source = snapshot != null && snapshot.getMetadata().hasPendingWrites()
-                        ? "Local" : "Server";
-
-                if (snapshot != null && snapshot.exists()) {
-                    Log.d(TAG, source + " data: " + snapshot.getData());
-
-                    name.setText(snapshot.getString(Constants.DOC_USERS_NICKNAME));
-
-                } else {
-                    Log.d(TAG, source + " data: null");
-                }
+            DatabaseHandler.onUserChangeListener(auth.getCurrentUser().getUid(), user -> {
+                App.CurrentUser = user;
+                name.setText(user.getNickname());
             });
         }
 
