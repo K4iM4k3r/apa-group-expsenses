@@ -16,12 +16,12 @@
             <div id="card-element">
                 <!-- Stripe card inputs get injected here -->
             </div>
-            <button type="submit">Donate $5 USD</button>
+            <button type="submit">Pay $5 USD</button>
             <div id="error" style="color: #e25950;"></div>
         </form>
 
         <div id="processing" style="display: none;">processing...</div>
-        <div id="thanks" style="display: none;">Thanks for your donation!</div>
+        <div id="thanks" style="display: none;">Thanks for your payment!</div>
     </div>
 
     <!-- This script used for the Payment Request and Card Element methods -->
@@ -31,7 +31,7 @@
     <script src="https://checkout.stripe.com/checkout.js"></script>
 
     <script>
-        const STRIPE_PUBLIC_KEY = 'YOUR_PUBLIC_KEY'; // TODO: PUT YOUR STRIPE PUBLISHABLE KEY HERE
+        const STRIPE_PUBLIC_KEY = 'pk_test_o7cI8z6a1Xtniq0iL4wWvXTb'; // TODO: PUT YOUR STRIPE PUBLISHABLE KEY HERE
         const FIREBASE_FUNCTION = 'https://[YOUR_FIREBASE_PROJECT].cloudfunctions.net/charge/'; // TODO: PUT YOUR FIREBASE FUNCTIONS URL HERE
 
         const stripe = Stripe(STRIPE_PUBLIC_KEY);
