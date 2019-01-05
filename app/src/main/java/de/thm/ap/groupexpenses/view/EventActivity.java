@@ -3,6 +3,7 @@ package de.thm.ap.groupexpenses.view;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
@@ -45,9 +46,10 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
 
         App.CurrentUser = new User("1", "l.hilfrich@gmx.de");
 
+        DatabaseHandler.updateUser(App.CurrentUser);
+
         DatabaseHandler.getAllUserEvents(App.CurrentUser.getUid(), result -> {
             events = result;
-
         });
 
 
@@ -90,6 +92,7 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
                 case EVENT_CREATE_SUCCESS:
                     event = (Event) data.getExtras().getSerializable("createdEvent");
                     events.add(event);
+                    DatabaseHandler.createEvent(event);
                     objectListFragment.updateFragmentObjects(events, "Event");
                     break;
 
@@ -107,8 +110,11 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
 
                     if(!eventFound)
                         throw new IllegalStateException("Inspected Event not found!");
-                    else
+                    else {
                         objectListFragment.updateFragmentObjects(events, "Event");
+                        DatabaseHandler.createEvent(event);
+                    }
+
                     break;
             }
         }
