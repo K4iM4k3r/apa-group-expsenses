@@ -17,6 +17,8 @@ public class User implements Comparable<User>, Serializable {
     private String nickname;
     private String email;
     private List<String> events;
+
+    private List<String> friendsIds;
     private Uri profilePic;
 
     public User(){}
@@ -69,6 +71,16 @@ public class User implements Comparable<User>, Serializable {
         return profilePic;
     }
 
+    public List<String> getFriendsIds() {
+        return friendsIds;
+    }
+    public void setFriendsIds(List<String> friendsIds) {
+        this.friendsIds = friendsIds;
+    }
+    public void addFriend(String friendId){
+        if (friendsIds == null) friendsIds = new ArrayList<>();
+        friendsIds.add(friendId);
+    }
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
