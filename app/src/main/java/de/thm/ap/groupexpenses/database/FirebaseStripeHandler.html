@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Firebase Stripe Example</title>
+    <title>Firebase Stripe</title>
 </head>
 <body>
 
@@ -16,7 +16,7 @@
             <div id="card-element">
                 <!-- Stripe card inputs get injected here -->
             </div>
-            <button type="submit">Pay $5 USD</button>
+            <button type="submit">Pay $5 EUR</button>
             <div id="error" style="color: #e25950;"></div>
         </form>
 
@@ -31,14 +31,14 @@
     <script src="https://checkout.stripe.com/checkout.js"></script>
 
     <script>
-        const STRIPE_PUBLIC_KEY = 'pk_test_o7cI8z6a1Xtniq0iL4wWvXTb'; // TODO: PUT YOUR STRIPE PUBLISHABLE KEY HERE
-        const FIREBASE_FUNCTION = 'https://[YOUR_FIREBASE_PROJECT].cloudfunctions.net/charge/'; // TODO: PUT YOUR FIREBASE FUNCTIONS URL HERE
+        const STRIPE_PUBLIC_KEY = 'pk_test_o7cI8z6a1Xtniq0iL4wWvXTb'; // STRIPE PUBLISHABLE KEY
+        const FIREBASE_FUNCTION = 'https://group-expenses-omran.cloudfunctions.net/charge/'; // FIREBASE FUNCTIONS URL
 
         const stripe = Stripe(STRIPE_PUBLIC_KEY);
         const elements = stripe.elements();
 
         const charge_amount = 500;
-        const charge_currency = 'usd';
+        const charge_currency = 'eur
 
         // Store the elements used
         const elForm = document.getElementById('form');
@@ -55,7 +55,7 @@
 
         function addPaymentRequestMethod() {
             const paymentRequest = stripe.paymentRequest({
-                country: 'US',
+                country: 'DE',
                 currency: charge_currency,
                 total: {
                     label: 'Total',
@@ -67,7 +67,7 @@
                 paymentRequest,
                 style: {
                     paymentRequestButton: {
-                        type: 'donate'
+                        type: 'pay'
                     }
                 }
             });
