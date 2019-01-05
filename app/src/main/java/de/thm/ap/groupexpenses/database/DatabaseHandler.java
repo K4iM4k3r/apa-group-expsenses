@@ -74,6 +74,26 @@ public class DatabaseHandler {
         });
     }
 
+    public static void onUserChangeListener(String uid, Callback<User> callback){
+        DocumentReference docRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_USERS).document(uid);
+        docRef.addSnapshotListener((snapshot, e) -> {
+            if (e != null) {
+//                Log.w(TAG, "Listen failed.", e);
+                return;
+            }
+
+            if (snapshot != null && snapshot.exists()) {
+                User user = snapshot.toObject(User.class);
+//                Log.d(TAG, "Current data: " + snapshot.getData());
+                callback.onResult(user);
+            } else {
+                callback.onResult(null);
+//                Log.d(TAG, "Current data: null");
+            }
+        });
+    }
+
+
     /**
      * Looks if an Event with eid exits and than call the callback with the result
      * @param eid Event Id
