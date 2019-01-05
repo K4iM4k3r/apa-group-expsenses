@@ -118,8 +118,12 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
             startActivity(new Intent(this, LoginActivity.class));
         }
 
-        DatabaseHandler.getAllUserEvents(App.CurrentUser.getUid(), result -> {
+        DatabaseHandler.getAllUserEvents(currentUser.getUid(), result -> {
             events = result;
+            if(events == null) events = new ArrayList<>();
+            objectListFragment.createFragmentObjects(events, "Event");
+            objectListFragment = (ObjectListFragment)getSupportFragmentManager()
+                    .findFragmentById(R.id.event_fragment);
         });
 
 
@@ -133,10 +137,7 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
 //                    Log.d(TAG, result.toString());
 //                });
 
-        if(events == null) events = new ArrayList<>();
-        objectListFragment.createFragmentObjects(events, "Event");
-        objectListFragment = (ObjectListFragment)getSupportFragmentManager()
-                .findFragmentById(R.id.event_fragment);
+
 
 
 
