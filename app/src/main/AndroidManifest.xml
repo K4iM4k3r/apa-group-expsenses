@@ -3,10 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="de.thm.ap.groupexpenses">
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
-        android:name="de.thm.ap.groupexpenses.App"
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -14,7 +14,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-
         <activity
             android:name=".view.EventActivity"
             android:label="@string/app_name"
@@ -27,17 +26,21 @@
         </activity>
         <activity android:name=".view.EventFormActivity" />
         <activity android:name=".view.PositionActivity" />
-        <activity android:name=".view.PositionFormActivity"></activity>
-        <activity android:name=".view.PositionInspectActivity"></activity>
-        <activity android:name=".view.AddUsersActivity"></activity>
+        <activity android:name=".view.PositionFormActivity" />
+        <!--<activity android:name=".view.PositionInspectActivity" />-->
+        <!--<activity android:name=".view.AddUsersActivity" />-->
         <activity
             android:name=".view.FriendsActivity"
+            android:exported="true"
             android:label="@string/title_activity_friends"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".view.BountyActivity"
             android:exported="true" />
-        <activity android:name=".view.LoginActivity"
-                android:theme="@style/ThemeOverlay.MyNoTitleActivity"
-                android:exported="true"/>
+        <activity
+            android:name=".view.LoginActivity"
+            android:exported="true"
+            android:theme="@style/ThemeOverlay.MyNoTitleActivity" />
         <activity android:name=".view.ProfileActivity" />
 
         <provider

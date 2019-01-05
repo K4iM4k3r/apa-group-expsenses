@@ -97,5 +97,6 @@
     <string name="enableEditMode">Editmode</string>
     <string name="labelLastName">lastname</string>
     <string name="labelFirstName">First name</string>
+    <string name="no_bounty">Sie haben keine offenen Positionen</string>
 </resources>
 

@@ -23,7 +23,9 @@ public class Event implements Serializable {
         this.date = date;
         this.info = info;
         this.creatorId = creatorId;
-        this.members = members;
+        this.members = new ArrayList<>();
+        this.members.add(creatorId);
+        this.members.addAll(members);
         this.positions = positions;
     }
 

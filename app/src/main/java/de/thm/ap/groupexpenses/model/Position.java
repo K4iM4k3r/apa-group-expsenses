@@ -18,6 +18,12 @@ public class Position implements Serializable {
 
     public Position(){}
 
+    public Position(String creatorId, String topic, Float value){
+        this.creatorId = creatorId;
+        this.topic = new HistoryValue<>(topic);
+        this.value = new HistoryValue<>(value);
+    }
+
     public Position(int positionId, String creatorId, String topic, Float value){
         this.pid = positionId;
         this.creatorId = creatorId;
