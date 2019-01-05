@@ -79,7 +79,7 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
                 name.setText(user.getNickname());
             });
         }
-
+        checkLoginState();
     }
 
     @SuppressWarnings("unused")
