@@ -124,7 +124,6 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
                         throw new IllegalStateException("Inspected Event not found!");
                     else {
                         objectListFragment.updateFragmentObjects(events, null, "Event");
-                        DatabaseHandler.createEvent(event);
                     }
 
                     break;
