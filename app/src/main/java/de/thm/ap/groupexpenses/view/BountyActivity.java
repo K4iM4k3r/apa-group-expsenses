@@ -39,6 +39,8 @@ public class BountyActivity extends AppCompatActivity {
     ListView bountyListView;
     ArrayAdapter<User> bountyAdapter;
 
+    Map<String, Float> currentBounty;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +62,7 @@ public class BountyActivity extends AppCompatActivity {
     }
 
     private void calculateData(){
-        Map<String, Float> bounty = getBounty(App.TestValues.USER, testEvent);
+        currentBounty = getBounty(App.TestValues.USER, testEvent);
     }
 
     private Map<String, Float> getBounty(User currentAppUser, Event e){
