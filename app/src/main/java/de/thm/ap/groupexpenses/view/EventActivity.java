@@ -120,10 +120,11 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
         else{
             DatabaseHandler.getAllUserEvents(currentUser.getUid(), result -> {
                 events = result;
-                if(events == null) events = new ArrayList<>();
-                objectListFragment.createFragmentObjects(events, "Event");
+                //if(events == null) events = new ArrayList<>();
                 objectListFragment = (ObjectListFragment)getSupportFragmentManager()
                         .findFragmentById(R.id.event_fragment);
+                objectListFragment.createFragmentObjects(result, "Event");
+
             });
 //            DatabaseHandler.onUserChangeListener(currentUser.getUid(), us ->{
 //                App.CurrentUser = us;
