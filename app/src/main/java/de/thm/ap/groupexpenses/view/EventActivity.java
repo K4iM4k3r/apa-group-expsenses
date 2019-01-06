@@ -105,7 +105,7 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
                     event = (Event) data.getExtras().getSerializable("createdEvent");
                     events.add(event);
                     DatabaseHandler.createEvent(event);
-                    objectListFragment.updateFragmentObjects(events, "Event");
+                    objectListFragment.updateFragmentObjects(events, null, "Event");
                     break;
 
                 case EVENT_INSPECT_SUCCESS: // get inspected Event and update it (its positions)
@@ -123,7 +123,7 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
                     if(!eventFound)
                         throw new IllegalStateException("Inspected Event not found!");
                     else {
-                        objectListFragment.updateFragmentObjects(events, "Event");
+                        objectListFragment.updateFragmentObjects(events, null, "Event");
                         DatabaseHandler.createEvent(event);
                     }
 

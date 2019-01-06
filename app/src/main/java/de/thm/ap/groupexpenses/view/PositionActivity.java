@@ -135,8 +135,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                 case POSITION_CREATE_SUCCESS:
                     Position position  = (Position) data.getExtras().getSerializable("createdPosition");
                     positionList.add(position);
-                    positionList.add(selectedEvent);
-                    objectListFragment.updateFragmentObjects(positionList, "Position");
+                    objectListFragment.updateFragmentObjects(positionList, selectedEvent,"Position");
                     break;
             }
         }
@@ -238,14 +237,14 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                        if(position.getPid() == ((Position)positionList.get(idx)).getPid()){
                            positionList.set(idx, position);
                            positionList.add(selectedEvent);
-                           objectListFragment.updateFragmentObjects(positionList, "Position");
+                           objectListFragment.updateFragmentObjects(positionList, null,"Position");
                            break;
                        }
                    }
                    position_edited = false;
                }
                if(position_deleted)
-                   objectListFragment.updateFragmentObjects(positionList, "Removal");
+                   objectListFragment.updateFragmentObjects(positionList, null,"Removal");
            });
        }
 
