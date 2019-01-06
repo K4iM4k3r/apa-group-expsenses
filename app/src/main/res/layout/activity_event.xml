@@ -20,6 +20,13 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <TextView
+        android:id="@+id/events_loading_textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/events_loading"
+        android:textAlignment="center" />
+
     <fragment
         android:id="@+id/event_fragment"
         android:name="de.thm.ap.groupexpenses.fragment.ObjectListFragment"

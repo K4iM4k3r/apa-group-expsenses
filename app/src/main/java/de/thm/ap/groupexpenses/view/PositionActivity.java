@@ -135,7 +135,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                 case POSITION_CREATE_SUCCESS:
                     Position position  = (Position) data.getExtras().getSerializable("createdPosition");
                     positionList.add(position);
-                    // DatabaseHandler.createEvent(selectedEvent); // CRASHES, createEvent not usable for updating Events?
+                    DatabaseHandler.updateEvent(selectedEvent);
                     objectListFragment.updateFragmentObjects(positionList, selectedEvent,"Position");
                     break;
             }

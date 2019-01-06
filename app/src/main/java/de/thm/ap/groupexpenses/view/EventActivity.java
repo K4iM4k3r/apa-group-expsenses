@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,8 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
         Toolbar toolbar = findViewById(R.id.event_toolbar);
         setSupportActionBar(toolbar);
 
+        TextView eventsLoadingTextView = findViewById(R.id.events_loading_textView);
+
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = auth.getCurrentUser();
         if(currentUser == null || !currentUser.isEmailVerified()){
@@ -51,6 +54,7 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
         }
         else{
             DatabaseHandler.getAllUserEvents(currentUser.getUid(), result -> {
+                eventsLoadingTextView.setVisibility(View.GONE);
                 events = result;
                 if(events == null) events = new ArrayList<>();
                 objectListFragment = (ObjectListFragment)getSupportFragmentManager()
