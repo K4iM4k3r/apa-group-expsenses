@@ -44,6 +44,7 @@
     <string name="edit">Bearbeiten</string>
     <string name="confirm">Bestätigen</string>
     <string name="nobody">Niemand</string>
+    <string name="events_loading">Events werden geladen...</string>
     <string name="no_events">Keine Events vorhanden!</string>
     <string name="no_positions">Keine Positionen vorhanden!</string>
     <string name="total_balance">Gesamtbilanz</string>

@@ -84,14 +84,15 @@ public class ObjectListFragment<T> extends Fragment
         }
     }
 
-    public void updateFragmentObjects(List<T> objectList, String type){
+    public void updateFragmentObjects(List<T> objectList, Event relatedEvent, String type){
         switch (type){
             case "Removal":
                 updateListView(objectList, type);
                 updateTotalBalance(objectList, type);
                 break;
             case "Position":
-                setRelatedEventToPosition(objectList);
+                relatedEventToPosition = relatedEvent;
+                //setRelatedEventToPosition(objectList);
                 // don't break here!
             case "Event":
                 if(objectList.size() == 1){     // first Event/Position was just added to list

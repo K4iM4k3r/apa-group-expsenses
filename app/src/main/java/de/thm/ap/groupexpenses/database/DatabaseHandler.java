@@ -74,6 +74,18 @@ public class DatabaseHandler {
         });
     }
 
+    public static void updateEvent(Event event){
+        DocumentReference documentReference = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS).document(event.getEid());
+        documentReference.set(event).addOnCompleteListener(c ->{
+            event.getMembers().forEach(m -> queryUser(m, member -> {
+                if(member != null){
+                    member.addEvent(event.getEid());
+                    updateUser(member);
+                }
+            }));
+        });
+    }
+
     public static void onUserChangeListener(String uid, Callback<User> callback){
         DocumentReference docRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_USERS).document(uid);
         docRef.addSnapshotListener((snapshot, e) -> {
@@ -109,12 +121,17 @@ public class DatabaseHandler {
         List<Event> result = new ArrayList<>();
         queryUser(uid, user -> {
             final int lengthEvents = user.getEvents().size();
-            user.getEvents().forEach(eid -> queryEvent(eid, event -> {
-                result.add(event);
-                if(result.size() == lengthEvents){
-                    callback.onResult(result);
-                }
-            }));
+            if(lengthEvents == 0){
+                callback.onResult(result);
+            }
+            else{
+                user.getEvents().forEach(eid -> queryEvent(eid, event -> {
+                    result.add(event);
+                    if(result.size() == lengthEvents){
+                        callback.onResult(result);
+                    }
+                }));
+            }
         });
     }
 

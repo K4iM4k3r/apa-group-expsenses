@@ -96,12 +96,15 @@ public class EventFormActivity extends BaseActivity {
             } else if(!isValidDate(eventDateEditText.getText().toString())){
                 eventDateEditText.setError(getString(R.string.error_invalid_date));
                 eventDateEditText.requestFocus();
-            } else if(eventUsersList == null || eventUsersList.isEmpty()){
+            } /* else if(eventUsersList == null || eventUsersList.isEmpty()){
                 eventUsersTextView.setText(getString(R.string.error_users_required));
                 addMembersBtn.setError("");
                 addMembersBtn.requestFocus();
-            } else {
+            } */ else {
                 // save event strings here
+
+                if(eventUsersList == null) eventUsersList = new ArrayList<>();
+
                 User creator = App.CurrentUser;
                 String eventName = eventNameEditText.getText().toString().trim();
                 eventName = eventName.substring(0,1).toUpperCase() + eventName.substring(1);

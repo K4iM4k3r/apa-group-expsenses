@@ -13,7 +13,7 @@ public class Position implements Serializable {
     private HistoryValue<String> topic;
     private HistoryValue<Float> value;
     private String info;
-    private Long date;
+    private String date;
     private String creatorId;
 
     public Position(){}
@@ -23,6 +23,12 @@ public class Position implements Serializable {
         this.creatorId = creatorId;
         this.topic = new HistoryValue<>(topic);
         this.value = new HistoryValue<>(value);
+
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH) + 1;
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        this.date = day + "." + month + "." + year;
     }
 
     public int getPid() {
@@ -57,11 +63,11 @@ public class Position implements Serializable {
         this.info = info;
     }
 
-    public Long getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Long date) {
+    public void setDate(String date) {
         this.date = date;
     }
 

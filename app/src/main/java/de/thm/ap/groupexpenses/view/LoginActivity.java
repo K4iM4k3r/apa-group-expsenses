@@ -1,6 +1,7 @@
 package de.thm.ap.groupexpenses.view;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.VisibleForTesting;
@@ -28,6 +29,7 @@ import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.Constants;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
+import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.User;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
@@ -153,7 +155,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 }).addOnFailureListener(exception -> Snackbar.make(tvStatus, getString(R.string.error_download_ProfilePic), Snackbar.LENGTH_LONG).show());
 
                             }
-
+                            startActivity(new Intent(this, EventActivity.class));
                             finish();
                         }
                         else {

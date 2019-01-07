@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,13 +45,31 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
         Toolbar toolbar = findViewById(R.id.event_toolbar);
         setSupportActionBar(toolbar);
 
-        App.CurrentUser = new User("1", "l.hilfrich@gmx.de");
+        TextView eventsLoadingTextView = findViewById(R.id.events_loading_textView);
 
-        DatabaseHandler.updateUser(App.CurrentUser);
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = auth.getCurrentUser();
+        if(currentUser == null || !currentUser.isEmailVerified()){
+            startActivity(new Intent(this, LoginActivity.class));
+        }
+        else{
+            DatabaseHandler.getAllUserEvents(currentUser.getUid(), result -> {
+                eventsLoadingTextView.setVisibility(View.GONE);
+                events = result;
+                if(events == null) events = new ArrayList<>();
+                objectListFragment = (ObjectListFragment)getSupportFragmentManager()
+                        .findFragmentById(R.id.event_fragment);
+                objectListFragment.createFragmentObjects(result, "Event");
 
-        DatabaseHandler.getAllUserEvents(App.CurrentUser.getUid(), result -> {
-            events = result;
-        });
+            });
+//            DatabaseHandler.onUserChangeListener(currentUser.getUid(), us ->{
+//                App.CurrentUser = us;
+//
+//                User s = App.CurrentUser;
+//            });
+        }
+
+
 
 
 //                DatabaseHandler.createEvent(App.TestValues.EVENT1);
@@ -63,9 +82,9 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
 //                    Log.d(TAG, result.toString());
 //                });
 
-        objectListFragment = (ObjectListFragment)getSupportFragmentManager()
-                .findFragmentById(R.id.event_fragment);
-        objectListFragment.createFragmentObjects(events, "Event");
+
+
+
 
         FloatingActionButton createEventBtn = findViewById(R.id.create_event_btn);
         createEventBtn.setOnClickListener(v -> startActivityForResult(
@@ -79,9 +98,6 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
     @Override
     protected void onResume() {
         super.onResume();
-        if(!events.isEmpty()){
-            // do nothing?
-        }
     }
 
     @Override
@@ -93,7 +109,7 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
                     event = (Event) data.getExtras().getSerializable("createdEvent");
                     events.add(event);
                     DatabaseHandler.createEvent(event);
-                    objectListFragment.updateFragmentObjects(events, "Event");
+                    objectListFragment.updateFragmentObjects(events, null, "Event");
                     break;
 
                 case EVENT_INSPECT_SUCCESS: // get inspected Event and update it (its positions)
@@ -111,8 +127,7 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
                     if(!eventFound)
                         throw new IllegalStateException("Inspected Event not found!");
                     else {
-                        objectListFragment.updateFragmentObjects(events, "Event");
-                        DatabaseHandler.createEvent(event);
+                        objectListFragment.updateFragmentObjects(events, null, "Event");
                     }
 
                     break;
@@ -145,18 +160,12 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = auth.getCurrentUser();
-        if(currentUser == null || !currentUser.isEmailVerified()){
-            startActivity(new Intent(this, LoginActivity.class));
-        }
     }
 
     @Override
     public void onFragmentObjectClick(Object event) {
         Intent intent = new Intent(EventActivity.this, PositionActivity.class);
         intent.putExtra("event", (Event)event);
-
         startActivityForResult(intent, EVENT_INSPECT_SUCCESS);
     }
 }
