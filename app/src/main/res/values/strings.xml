@@ -98,5 +98,6 @@
     <string name="enableEditMode">Editmode</string>
     <string name="labelLastName">lastname</string>
     <string name="labelFirstName">First name</string>
+    <string name="error_already_in_use">Nickname exists already</string>
 </resources>
 
