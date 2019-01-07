@@ -111,6 +111,26 @@ public class PositionTest {
         assertTrue(position.isClosable(involvedPeople));
     }
 
+    @Test
+    public void getBalanceTest(){
+
+        float balance = position.getBalance("id1", involvedPeople);
+
+        // balance equals credit since user is creator
+        assertEquals(balance, position.getCredit("id1", involvedPeople), 0.01);
+
+        balance = position.getBalance("John", involvedPeople);
+
+        // balance equals negative debts of user
+        assertEquals(balance, -position.getDebtOfUser("John", involvedPeople.size()), 0.01);
+
+        balance = position.getBalance("NOT_INVOLVED_PERSON", involvedPeople);
+
+        // not involved users wont have a balance
+        assertEquals(balance, 0, 0.01);
+
+    }
+
     //region helper
     private int getRandomInt(){
         return (int)(Math.random()*100);

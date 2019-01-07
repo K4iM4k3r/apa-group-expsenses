@@ -26,6 +26,7 @@ public class Position implements Serializable {
         this.peopleThatDontHaveToPay = new ArrayList<>();
         this.peopleThatDontHaveToPay.add(creatorId);
     }
+    @Deprecated
     public Position(int positionId, String creatorId, String topic, Float value){
         this.pid = positionId;
         this.creatorId = creatorId;
@@ -46,9 +47,11 @@ public class Position implements Serializable {
     //endregion
 
     //region getter/setter
+    @Deprecated
     public int getPid() {
         return pid;
     }
+    @Deprecated
     public void setPid(int pid) {
         this.pid = pid;
     }
@@ -88,34 +91,42 @@ public class Position implements Serializable {
     //endregion
 
     //region public methods
-
+    /**
+     * This will release the given debtor from any of his debts.
+     */
     public void removeDebtor(String debtorId){
         this.peopleThatDontHaveToPay.add(debtorId);
     }
-    public boolean hasDebts(String debtorId) {
+
+    /**
+     * Checks if the specified user is excluded from paying on this position.
+     */
+    public boolean isExcludedFromPayments(String debtorId) {
         return !peopleThatDontHaveToPay.contains(debtorId);
     }
 
     /**
      * Returns debts of single person. The debt is owed to the creator.
-     * @param userId
      * @param userCount amount of users that share the costs including the creator
-     * @return
+     * @return debts of user specified in relation to the amount of users given. This will return
+     *          a value for people that are not involved in the position!
      */
     public float getDebtOfUser(String userId, int userCount) {
-        if (!hasDebts(userId)) return 0.f;
+        if (!isExcludedFromPayments(userId)) return 0.f;
         return (1.f/userCount)*value.get();
     }
 
+    /**
+     * Calculates the amount of money the specified user has to retrieve from the involved people.
+     * @return >0:amount, 0 if user is not the creator and therefore wont get money.
+     */
     public float getCredit(String creditorId, List<String> involvedPeople) {
         if (!isCreator(creditorId)) return 0.f;
 
         float credit = 0.f;
-
         for(String userId : involvedPeople){
             credit += getDebtOfUser(userId, involvedPeople.size());
         }
-
         return credit;
     }
 
@@ -123,6 +134,17 @@ public class Position implements Serializable {
         return peopleThatDontHaveToPay.containsAll(involvedPeople);
     }
 
+    /**
+     * Gives the position balance for specified userId.
+     * @return 0:if user is not involved, >0 for creditor, <0 for debtor
+     */
+    public float getBalance(String userId, List<String> involvedPeople){
+        if(!involvedPeople.contains(userId)) return 0.f;
+        if (userId.equals(creatorId)) return getCredit(userId, involvedPeople);
+        return -getDebtOfUser(userId, involvedPeople.size());
+    }
+
+    @Deprecated
     public float getFactorizedValue(float factor){
         return (getValue() * factor);
     }
@@ -134,7 +156,9 @@ public class Position implements Serializable {
     }
     //endregion
 
+    //region private methods
     private boolean isCreator(String userId){
         return this.creatorId.equals(userId);
     }
+    //endregion
 }
