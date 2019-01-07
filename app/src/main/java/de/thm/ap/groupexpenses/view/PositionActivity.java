@@ -107,9 +107,12 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
 
         switch(id){
             case R.id.position_menu_inspect_users:
-                UserListFragmentDialog dialog = UserListFragmentDialog
-                        .newInstance(selectedEventUserList, selectedEvent.getCreatorId());
-                dialog.show(getFragmentManager(), "edit_event");
+                DatabaseHandler.getAllFriendsOfUser(auth.getCurrentUser().getUid(), result -> {
+                    List<User> friendsList = result;
+                    UserListFragmentDialog dialog = UserListFragmentDialog
+                            .newInstance(selectedEventUserList, friendsList, selectedEvent.getCreatorId());
+                    dialog.show(getFragmentManager(), "edit_event");
+                });
                 break;
 
             case R.id.position_menu_info:

@@ -164,18 +164,22 @@ public class DatabaseHandler {
     public static void getAllFriendsOfUser(String uid, Callback<List<User>> callback){
         List<User> result = new ArrayList<>();
         queryUser(uid, user -> {
-            final int lengthFriends = user.getFriendsIds().size();
-            if(lengthFriends == 0){
-                callback.onResult(result);
+            if(user.getFriendsIds() == null) callback.onResult(result);
+            else {
+                final int lengthFriends = user.getFriendsIds().size();
+                if(lengthFriends == 0){
+                    callback.onResult(result);
+                }
+                else{
+                    user.getFriendsIds().forEach(fid -> queryUser(fid, friend -> {
+                        result.add(friend);
+                        if(result.size() == lengthFriends){
+                            callback.onResult(result);
+                        }
+                    }));
+                }
             }
-            else{
-                user.getFriendsIds().forEach(fid -> queryUser(fid, friend -> {
-                    result.add(friend);
-                    if(result.size() == lengthFriends){
-                        callback.onResult(result);
-                    }
-                }));
-            }
+
         });
 
     }
