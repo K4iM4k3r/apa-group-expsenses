@@ -4,8 +4,10 @@ import android.support.annotation.NonNull;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class Position implements Serializable {
 
@@ -102,7 +104,7 @@ public class Position implements Serializable {
      * Checks if the specified user is excluded from paying on this position.
      */
     public boolean isExcludedFromPayments(String debtorId) {
-        return !peopleThatDontHaveToPay.contains(debtorId);
+        return peopleThatDontHaveToPay.contains(debtorId);
     }
 
     /**
@@ -112,7 +114,7 @@ public class Position implements Serializable {
      *          a value for people that are not involved in the position!
      */
     public float getDebtOfUser(String userId, int userCount) {
-        if (!isExcludedFromPayments(userId)) return 0.f;
+        if (isExcludedFromPayments(userId)) return 0.f;
         return (1.f/userCount)*value.get();
     }
 
@@ -138,10 +140,25 @@ public class Position implements Serializable {
      * Gives the position balance for specified userId.
      * @return 0:if user is not involved, >0 for creditor, <0 for debtor
      */
-    public float getBalance(String userId, List<String> involvedPeople){
-        if(!involvedPeople.contains(userId)) return 0.f;
-        if (userId.equals(creatorId)) return getCredit(userId, involvedPeople);
-        return -getDebtOfUser(userId, involvedPeople.size());
+    public Map<String,Float> getBalance(String userId, List<String> involvedPeople){
+        Map<String, Float> result = new HashMap<>();
+
+        if(!involvedPeople.contains(userId))
+            return result;
+
+        if (isCreator(userId)){
+            for(String person: involvedPeople){
+                float debt = getDebtOfUser(person, involvedPeople.size());
+                if (Float.compare(debt, 0.f)!=0) result.put(person, debt);
+            }
+            return result;
+        }
+
+        if(isExcludedFromPayments(userId))
+            return result;
+
+        result.put(creatorId, -getDebtOfUser(userId, involvedPeople.size()));
+        return result;
     }
 
     @Deprecated
