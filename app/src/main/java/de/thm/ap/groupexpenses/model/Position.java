@@ -10,8 +10,10 @@ import java.util.Map;
 public class Position implements Serializable {
 
     private int pid;
-    private HistoryValue<String> topic;
-    private HistoryValue<Float> value;
+    //private HistoryValue<String> topic;
+    //private HistoryValue<Float> value;
+    private float value;
+    private String topic;
     private String info;
     private String date;
     private String creatorId;
@@ -21,8 +23,8 @@ public class Position implements Serializable {
     public Position(int positionId, String creatorId, String topic, Float value){
         this.pid = positionId;
         this.creatorId = creatorId;
-        this.topic = new HistoryValue<>(topic);
-        this.value = new HistoryValue<>(value);
+        this.topic = topic;
+        this.value = value;
 
         Calendar cal = Calendar.getInstance();
         int year = cal.get(Calendar.YEAR);
@@ -39,20 +41,21 @@ public class Position implements Serializable {
         this.pid = pid;
     }
 
+
     public String getTopic() {
-        return topic.get();
+        return topic;
     }
 
     public void setTopic(String topic) {
-        this.topic.set(topic);
+        this.topic = topic;
     }
 
     public Float getValue() {
-        return value.get();
+        return value;
     }
 
     public void setValue(Float value) {
-        this.value.set(value);
+        this.value = value;
     }
 
     public String getInfo() {
@@ -74,21 +77,21 @@ public class Position implements Serializable {
     public String getCreatorId() {
         return creatorId;
     }
-
+/*
     public Map<Long, String> getTopicHistory() {
         return topic.getHistory();
     }
     public Map<Long, Float> getValueHistory() {
         return value.getHistory();
     }
-
+*/
     public float getFactorizedValue(float factor){
-        return (getValue() * factor);
+        return (value * factor);
     }
 
     @NonNull
     @Override
     public String toString() {
-        return topic + ": " + value.toString() + " by " + creatorId;
+        return topic + ": " + value + " by " + creatorId;
     }
 }
