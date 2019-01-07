@@ -17,19 +17,14 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
-import de.thm.ap.groupexpenses.database.Constants;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
-import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.User;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
@@ -67,7 +62,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         findViewById(R.id.emailSignInButton).setOnClickListener(this);
         findViewById(R.id.emailCreateAccountButton).setOnClickListener(this);
         findViewById(R.id.signOutButton).setOnClickListener(this);
-        findViewById(R.id.verifyEmailButton).setOnClickListener(this);
+        findViewById(R.id.completeCreation).setOnClickListener(this);
         findViewById(R.id.sendNewPassword).setOnClickListener(this);
 
         tvForgot.setOnClickListener(this);
@@ -138,12 +133,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         // Sign in success, update UI with the signed-in user's information
                         Log.d(TAG, "signInWithEmail:success");
                         FirebaseUser user = auth.getCurrentUser();
-                        if(user !=null && user.isEmailVerified()){
+                        if(user != null && user.isEmailVerified()){
                             Snackbar.make(tvStatus, getString(R.string.auth_successful), Snackbar.LENGTH_LONG).show();
 
                             FirebaseStorage storage = FirebaseStorage.getInstance();
-
-
                             Uri uri = user.getPhotoUrl();
                             if(uri != null){
                                 StorageReference profilePic = storage.getReferenceFromUrl(String.valueOf(uri));
@@ -183,7 +176,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void sendEmailVerification() {
         // Disable button
-        findViewById(R.id.verifyEmailButton).setEnabled(false);
+        findViewById(R.id.completeCreation).setEnabled(false);
 
         // Send verification email
         // [START send_email_verification]
@@ -193,7 +186,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     .addOnCompleteListener(this, task -> {
                         // [START_EXCLUDE]
                         // Re-enable button
-                        findViewById(R.id.verifyEmailButton).setEnabled(true);
+                        findViewById(R.id.completeCreation).setEnabled(true);
 
                         if (task.isSuccessful()) {
                             Snackbar.make(tvStatus, getString(R.string.info_verification_fmt, user.getEmail()), Snackbar.LENGTH_LONG).show();
@@ -234,14 +227,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             findViewById(R.id.info).setVisibility(View.VISIBLE);
             tvStatus.setText(getString(R.string.emailpassword_status_fmt,
                     user.getEmail(), user.isEmailVerified()));
-
             tvDetail.setText(getString(R.string.detail_verification));
 
             layoutEmailPassword.setVisibility(View.GONE);
             findViewById(R.id.emailPasswordFields).setVisibility(View.GONE);
             layoutSignedIn.setVisibility(View.VISIBLE);
             tvForgot.setVisibility(View.GONE);
-            findViewById(R.id.verifyEmailButton).setEnabled(!user.isEmailVerified());
+            findViewById(R.id.completeCreation).setEnabled(!user.isEmailVerified());
 
 
         } else {
@@ -283,8 +275,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             case R.id.signOutButton:
                 signOut();
                 break;
-            case R.id.verifyEmailButton:
-                sendEmailVerification();
+            case R.id.completeCreation:
+                completeCreation();
                 break;
             case R.id.passwordForgot:
                 showPasswordForgot(true);
@@ -293,6 +285,27 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 sendPasswordResetEmail();
             default:
                 break;
+        }
+    }
+
+    private void completeCreation() {
+        EditText edNick = findViewById(R.id.setNickname);
+        if(TextUtils.isEmpty(edNick.getText())) {
+            edNick.setError(getString(R.string.error_invalid_input));
+        }
+        else {
+            DatabaseHandler.queryNickname(edNick.getText().toString(), exists ->{
+                if(exists){
+                    edNick.setError(getString(R.string.error_already_in_use));
+                }
+                else{
+                    DatabaseHandler.queryUser(auth.getUid(), user ->{
+                        user.setNickname(edNick.getText().toString());
+                        DatabaseHandler.updateUser(user);
+                    });
+                    sendEmailVerification();
+                }
+            });
         }
     }
 
@@ -317,9 +330,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     Snackbar.make(tvStatus, getString(R.string.resetPassword_error), Snackbar.LENGTH_LONG).show();
                 }
             });
-
         }
-
     }
 
     private void showPasswordForgot(boolean visible) {
