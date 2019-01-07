@@ -57,10 +57,29 @@ public class DatabaseHandler {
         docRef.get().addOnSuccessListener(documentSnapshot -> callback.onResult(documentSnapshot.toObject(User.class)));
     }
 
-    public static void queryNickname(String nickname, Callback<Boolean> callback){
+    public static void isNicknameExist(String nickname, Callback<Boolean> callback){
         CollectionReference usersRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_USERS);
         Query query = usersRef.whereEqualTo(Constants.DOC_USERS_NICKNAME, nickname);
         query.get().addOnSuccessListener(queryDocumentSnapshots -> callback.onResult(!queryDocumentSnapshots.isEmpty()));
+    }
+
+    /**
+     * Looks if an user with the nickname exits and give the user back in the callback
+     * @param nickname user nickname
+     * @param callback give the searched user back or null
+     */
+    public static void queryUserByNickname(String nickname, Callback<User> callback){
+        CollectionReference usersRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_USERS);
+        Query query = usersRef.whereEqualTo(Constants.DOC_USERS_NICKNAME, nickname);
+        query.get().addOnSuccessListener(queryDocumentSnapshots -> {
+
+            if(!queryDocumentSnapshots.isEmpty()){
+                callback.onResult(queryDocumentSnapshots.getDocuments().get(0).toObject(User.class));
+            }
+            else {
+                callback.onResult(null);
+            }
+        });
     }
 
     /**
@@ -146,6 +165,25 @@ public class DatabaseHandler {
                 }));
             }
         });
+    }
+
+    public static void getAllFriendsOfUser(String uid, Callback<List<User>> callback){
+        List<User> result = new ArrayList<>();
+        queryUser(uid, user -> {
+            final int lengthFriends = user.getFriendsIds().size();
+            if(lengthFriends == 0){
+                callback.onResult(result);
+            }
+            else{
+                user.getFriendsIds().forEach(fid -> queryUser(fid, friend -> {
+                    result.add(friend);
+                    if(result.size() == lengthFriends){
+                        callback.onResult(result);
+                    }
+                }));
+            }
+        });
+
     }
 
 }

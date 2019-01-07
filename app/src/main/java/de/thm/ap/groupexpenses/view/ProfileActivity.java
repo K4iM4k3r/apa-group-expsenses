@@ -101,7 +101,7 @@ public class ProfileActivity extends BaseActivity {
         btnSave.setOnClickListener(l ->{
             showProgressDialog();
             if(isValidUserInput()){
-                DatabaseHandler.queryNickname(edNickname.getText().toString(), exists ->{
+                DatabaseHandler.isNicknameExist(edNickname.getText().toString(), exists ->{
                     if(exists){
                         edNickname.setError(getString(R.string.error_already_in_use));
                         hideProgressDialog();

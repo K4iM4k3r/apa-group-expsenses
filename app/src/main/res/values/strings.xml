@@ -99,5 +99,12 @@
     <string name="labelLastName">lastname</string>
     <string name="labelFirstName">First name</string>
     <string name="error_already_in_use">Nickname exists already</string>
+    <string name="hint_nickname">nickname</string>
+    <string name="menu_item_friends">Friends</string>
+    <string name="dialog_friend_title">Add new Friend</string>
+    <string name="dialog_friends_message">Add Friend with nickname</string>
+    <string name="dialog_friends_positiveBtn">add</string>
+    <string name="error_user_not_found">User not found</string>
+    <string name="dialog_friend_retry">try again</string>
 </resources>
 

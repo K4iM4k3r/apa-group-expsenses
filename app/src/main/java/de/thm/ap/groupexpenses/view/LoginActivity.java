@@ -294,7 +294,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             edNick.setError(getString(R.string.error_invalid_input));
         }
         else {
-            DatabaseHandler.queryNickname(edNick.getText().toString(), exists ->{
+            DatabaseHandler.isNicknameExist(edNick.getText().toString(), exists ->{
                 if(exists){
                     edNick.setError(getString(R.string.error_already_in_use));
                 }
