@@ -1,16 +1,11 @@
 package de.thm.ap.groupexpenses.database;
 
-import android.support.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,14 +103,12 @@ public class DatabaseHandler {
 
     public static void updateEvent(Event event){
         DocumentReference documentReference = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS).document(event.getEid());
-        documentReference.set(event).addOnCompleteListener(c ->{
-            event.getMembers().forEach(m -> queryUser(m, member -> {
-                if(member != null){
-                    member.addEvent(event.getEid());
-                    updateUser(member);
-                }
-            }));
-        });
+        documentReference.set(event).addOnCompleteListener(c -> event.getMembers().forEach(m -> queryUser(m, member -> {
+            if(member != null){
+                member.addEvent(event.getEid());
+                updateUser(member);
+            }
+        })));
     }
 
     public static void onUserChangeListener(String uid, Callback<User> callback){
@@ -143,6 +136,7 @@ public class DatabaseHandler {
      * @param eid Event Id
      * @param callback Callback
      */
+    @SuppressWarnings("WeakerAccess")
     public static void queryEvent(String eid, Callback<Event> callback){
         DocumentReference docRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS).document(eid);
         docRef.get().addOnSuccessListener(documentSnapshot -> callback.onResult(documentSnapshot.toObject(Event.class)));

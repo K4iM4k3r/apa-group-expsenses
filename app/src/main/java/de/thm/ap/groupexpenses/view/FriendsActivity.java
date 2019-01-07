@@ -12,7 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
