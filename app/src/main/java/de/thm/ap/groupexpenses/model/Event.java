@@ -78,6 +78,9 @@ public class Event implements Serializable {
     public void addMember(String user) {
         this.members.add(user);
     }
+    public int getMemberCount(){
+        return getMembers().size();
+    }
     public List<Position> getPositions() {
         return positions;
     }
