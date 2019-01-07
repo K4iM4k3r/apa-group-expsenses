@@ -174,6 +174,9 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
             case R.id.menu_item_main:
                 startActivity(new Intent(this, EventActivity.class));
                 return true;
+            case R.id.menu_item_friends:
+                startActivity(new Intent(this, FriendsActivity.class));
+                return true;
             default:
                 return false;
         }

@@ -1,16 +1,11 @@
 package de.thm.ap.groupexpenses.database;
 
-import android.support.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,10 +52,29 @@ public class DatabaseHandler {
         docRef.get().addOnSuccessListener(documentSnapshot -> callback.onResult(documentSnapshot.toObject(User.class)));
     }
 
-    public static void queryNickname(String nickname, Callback<Boolean> callback){
+    public static void isNicknameExist(String nickname, Callback<Boolean> callback){
         CollectionReference usersRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_USERS);
         Query query = usersRef.whereEqualTo(Constants.DOC_USERS_NICKNAME, nickname);
         query.get().addOnSuccessListener(queryDocumentSnapshots -> callback.onResult(!queryDocumentSnapshots.isEmpty()));
+    }
+
+    /**
+     * Looks if an user with the nickname exits and give the user back in the callback
+     * @param nickname user nickname
+     * @param callback give the searched user back or null
+     */
+    public static void queryUserByNickname(String nickname, Callback<User> callback){
+        CollectionReference usersRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_USERS);
+        Query query = usersRef.whereEqualTo(Constants.DOC_USERS_NICKNAME, nickname);
+        query.get().addOnSuccessListener(queryDocumentSnapshots -> {
+
+            if(!queryDocumentSnapshots.isEmpty()){
+                callback.onResult(queryDocumentSnapshots.getDocuments().get(0).toObject(User.class));
+            }
+            else {
+                callback.onResult(null);
+            }
+        });
     }
 
     /**
@@ -89,14 +103,12 @@ public class DatabaseHandler {
 
     public static void updateEvent(Event event){
         DocumentReference documentReference = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS).document(event.getEid());
-        documentReference.set(event).addOnCompleteListener(c ->{
-            event.getMembers().forEach(m -> queryUser(m, member -> {
-                if(member != null){
-                    member.addEvent(event.getEid());
-                    updateUser(member);
-                }
-            }));
-        });
+        documentReference.set(event).addOnCompleteListener(c -> event.getMembers().forEach(m -> queryUser(m, member -> {
+            if(member != null){
+                member.addEvent(event.getEid());
+                updateUser(member);
+            }
+        })));
     }
 
     public static void onUserChangeListener(String uid, Callback<User> callback){
@@ -124,6 +136,7 @@ public class DatabaseHandler {
      * @param eid Event Id
      * @param callback Callback
      */
+    @SuppressWarnings("WeakerAccess")
     public static void queryEvent(String eid, Callback<Event> callback){
         DocumentReference docRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS).document(eid);
         docRef.get().addOnSuccessListener(documentSnapshot -> callback.onResult(documentSnapshot.toObject(Event.class)));
@@ -146,6 +159,25 @@ public class DatabaseHandler {
                 }));
             }
         });
+    }
+
+    public static void getAllFriendsOfUser(String uid, Callback<List<User>> callback){
+        List<User> result = new ArrayList<>();
+        queryUser(uid, user -> {
+            final int lengthFriends = user.getFriendsIds().size();
+            if(lengthFriends == 0){
+                callback.onResult(result);
+            }
+            else{
+                user.getFriendsIds().forEach(fid -> queryUser(fid, friend -> {
+                    result.add(friend);
+                    if(result.size() == lengthFriends){
+                        callback.onResult(result);
+                    }
+                }));
+            }
+        });
+
     }
 
 }

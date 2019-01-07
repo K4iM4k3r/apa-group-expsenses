@@ -79,7 +79,7 @@ public class User implements Comparable<User>, Serializable {
     }
     public void addFriend(String friendId){
         if (friendsIds == null) friendsIds = new ArrayList<>();
-        friendsIds.add(friendId);
+        if (!friendsIds.contains(friendId)) friendsIds.add(friendId);
     }
 
     public void setFirstName(String firstName) {
@@ -121,7 +121,8 @@ public class User implements Comparable<User>, Serializable {
     @NonNull
     @Override
     public String toString(){
-        return firstName + " " + lastName;
+        return nickname;
+//        return firstName + " " + lastName;
     }
 
     // allows Collections.sort() by first name
