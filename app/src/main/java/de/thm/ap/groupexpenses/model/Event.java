@@ -108,8 +108,7 @@ public class Event implements Serializable {
     public Map<String, Float> getBalanceTable(String userId){
         Map<String, Float> result = new HashMap<>();
         for(Position p : positions){
-            Map<String, Float> tmp = p.getBalance(userId, members);
-            tmp.forEach((k,v)-> result.merge(k,v,Float::sum));
+            p.getBalance(userId, members).forEach((k,v)-> result.merge(k,v,Float::sum));
         }
         return result;
     }
