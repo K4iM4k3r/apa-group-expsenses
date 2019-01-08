@@ -20,11 +20,15 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
+import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.model.User;
 import de.thm.ap.groupexpenses.view.EventFormActivity;
 
@@ -35,8 +39,10 @@ public class UserListFragmentDialog extends DialogFragment {
     private ListView userListView;
     private Button addBtn, doneBtn;
     private UserArrayAdapter userArrayAdapter;
-    private ArrayList<User> usersInContactList, addableUsers, addableUsersSelected, usersDeleted;
+    private List<User> friendsList;
+    private ArrayList<User> addableUsers, addableUsersSelected, usersDeleted;
     private List<User> selectedUsers;
+    private User creator;
     private String TAG;
     private static boolean isCreator;
     private static int edit_state;
@@ -45,17 +51,18 @@ public class UserListFragmentDialog extends DialogFragment {
     private static final int EDIT_STATE_ADD_USERS = 2;
     private static final int EDIT_STATE_DELETE_USERS = 3;
 
-    public static UserListFragmentDialog newInstance(List<User> selectedUsers) {
+    public static UserListFragmentDialog newInstance(List<User> selectedUsers, List<User> friendsList) {
         UserListFragmentDialog f = new UserListFragmentDialog();
         Bundle args = new Bundle();
         args.putSerializable("selectedUsers", (ArrayList<User>) selectedUsers);
+        args.putSerializable("friendsList", (ArrayList<User>) friendsList);
         f.setArguments(args);
         isCreator = false;
         return f;
     }
 
-    public static UserListFragmentDialog newInstance(List<User> selectedUsers, String creatorId) {
-        UserListFragmentDialog f = newInstance(selectedUsers);
+    public static UserListFragmentDialog newInstance(List<User> selectedUsers, List<User> friendsList, String creatorId) {
+        UserListFragmentDialog f = newInstance(selectedUsers, friendsList);
         if(App.CurrentUser.getUid().equals(creatorId)) isCreator = true;
         return f;
     }
@@ -80,25 +87,27 @@ public class UserListFragmentDialog extends DialogFragment {
         if(selectedUsers == null)
             selectedUsers = new ArrayList<>();
 
-        usersInContactList = new ArrayList<>();
+        friendsList = (List<User>) getArguments().getSerializable("friendsList");
+        if(friendsList == null)
+            friendsList = new ArrayList<>();
         /*
 
-        usersInContactList.add(new User(1, "Lukas", "Hilfrich", "l.hilfrich@gmx.de"));
-        usersInContactList.add(new User(2, "Hendrik", "Kegel", "oof"));
-        usersInContactList.add(new User(3, "Kai", "Schäfer", "oof2"));
-        usersInContactList.add(new User(4, "David", "Omran", "oof3"));
-        usersInContactList.add(new User(5, "Ulf", "Smolka", "ka"));
-        usersInContactList.add(new User(6, "Dominik", "Herz", "kjlkalsd"));
-        usersInContactList.add(new User(7, "Aris", "Christidis", "lolo"));
-        usersInContactList.add(new User(8, "KQC", "NA", "xD"));
-        usersInContactList.add(new User(9, "Adam", "Bdam", "dontEvenknow"));
-        usersInContactList.add(new User(10, "Max", "Muster", "maybe@fdm"));
-        usersInContactList.add(new User(11, "Rainer", "Rein", "lalalala"));
-        usersInContactList.add(new User(12, "Reimann", "Rolf", "2345"));
-        usersInContactList.add(new User(13, "Nikolaus", "Santa", "geshcnk@gmx.de"));
-        usersInContactList.add(new User(14, "Rentier", "Rot", "ren@s.c"));
-        usersInContactList.add(new User(15, "Grinch", "Grinch", "kb"));
-        usersInContactList.add(new User(16, "Rübe", "Nase", "hund@gmx.com"));
+        friendsList.add(new User(1, "Lukas", "Hilfrich", "l.hilfrich@gmx.de"));
+        friendsList.add(new User(2, "Hendrik", "Kegel", "oof"));
+        friendsList.add(new User(3, "Kai", "Schäfer", "oof2"));
+        friendsList.add(new User(4, "David", "Omran", "oof3"));
+        friendsList.add(new User(5, "Ulf", "Smolka", "ka"));
+        friendsList.add(new User(6, "Dominik", "Herz", "kjlkalsd"));
+        friendsList.add(new User(7, "Aris", "Christidis", "lolo"));
+        friendsList.add(new User(8, "KQC", "NA", "xD"));
+        friendsList.add(new User(9, "Adam", "Bdam", "dontEvenknow"));
+        friendsList.add(new User(10, "Max", "Muster", "maybe@fdm"));
+        friendsList.add(new User(11, "Rainer", "Rein", "lalalala"));
+        friendsList.add(new User(12, "Reimann", "Rolf", "2345"));
+        friendsList.add(new User(13, "Nikolaus", "Santa", "geshcnk@gmx.de"));
+        friendsList.add(new User(14, "Rentier", "Rot", "ren@s.c"));
+        friendsList.add(new User(15, "Grinch", "Grinch", "kb"));
+        friendsList.add(new User(16, "Rübe", "Nase", "hund@gmx.com"));
 */
 
         if(TAG.equals("edit_event")){
@@ -111,7 +120,8 @@ public class UserListFragmentDialog extends DialogFragment {
             headerTextView.setVisibility(View.VISIBLE);
             userArrayAdapter = new UserArrayAdapter(getActivity(), (ArrayList<User>) selectedUsers);
         } else {
-            userArrayAdapter = new UserArrayAdapter(getActivity(), usersInContactList);
+            doneBtn.setText(R.string.cancel);
+            userArrayAdapter = new UserArrayAdapter(getActivity(), friendsList);
         }
         userListView.setAdapter(userArrayAdapter);
 
@@ -166,6 +176,13 @@ public class UserListFragmentDialog extends DialogFragment {
                     switch (edit_state){
                         case EDIT_STATE_INSPECT_USERS: // add btn was pressed in inspect state
                             setEditState(EDIT_STATE_DELETE_USERS);
+                            // remove creator from list and save it locally to add it back later
+                            for(int idx = 0; idx < selectedUsers.size(); ++idx){
+                                if(selectedUsers.get(idx).getUid().equals(App.CurrentUser.getUid())){
+                                    creator = selectedUsers.get(idx);
+                                    selectedUsers.remove(idx);
+                                }
+                            }
                             userArrayAdapter.notifyDataSetChanged();
                             addBtn.setText(R.string.event_form_add_members);
                             doneBtn.setText(R.string.confirm);
@@ -199,8 +216,8 @@ public class UserListFragmentDialog extends DialogFragment {
                             addableUsers = new ArrayList<>();
                             if(addableUsersSelected == null) addableUsersSelected = new ArrayList<>();
 
-                            for(int idx = 0; idx < usersInContactList.size(); ++idx){
-                                User currentUser = usersInContactList.get(idx);
+                            for(int idx = 0; idx < friendsList.size(); ++idx){
+                                User currentUser = friendsList.get(idx);
                                 if(!findUserById(currentUser.getUid(), selectedUsers))
                                     addableUsers.add(currentUser);
                             }
@@ -225,11 +242,13 @@ public class UserListFragmentDialog extends DialogFragment {
                     setEditState(EDIT_STATE_INSPECT_USERS);
                     addBtn.setText(R.string.add_remove);
                     doneBtn.setText(R.string.done);
+                    selectedUsers.add(creator);
                     userArrayAdapter.notifyDataSetChanged();
                     break;
 
                 case EDIT_STATE_ADD_USERS:
                     setEditState(EDIT_STATE_DELETE_USERS);
+                    headerTextView.setText(R.string.event_form_users);
                     addBtn.setText(R.string.event_form_add_members);
                     doneBtn.setText(R.string.done);
                     userArrayAdapter = new UserArrayAdapter(getActivity(), (ArrayList<User>) selectedUsers);
@@ -251,9 +270,12 @@ public class UserListFragmentDialog extends DialogFragment {
 
         if(isCreator){
             if(usersDeleted != null && addableUsersSelected != null){
-                showConfirmDialog(addableUsersSelected.size(), usersDeleted.size());
+                if(addableUsersSelected.size() > 0 && usersDeleted.size() > 0){
+                    showConfirmDialog(addableUsersSelected.size(), usersDeleted.size());
+                }
             } else if(usersDeleted != null){
-                showConfirmDialog(0, usersDeleted.size());
+                if(usersDeleted.size() > 0)
+                    showConfirmDialog(0, usersDeleted.size());
             }
         }
     }
@@ -308,7 +330,7 @@ public class UserListFragmentDialog extends DialogFragment {
         private List<User> usersList;
         private Filter filter;
 
-        private UserArrayAdapter(@NonNull Context context, ArrayList<User> list) {
+        private UserArrayAdapter(@NonNull Context context, List<User> list) {
             super(context, 0, list);
             mContext = context;
             usersList = list;
@@ -340,6 +362,9 @@ public class UserListFragmentDialog extends DialogFragment {
                 case "edit_event":
                     switch(edit_state){
                         case EDIT_STATE_INSPECT_USERS:
+                            if(currentUser.getUid().equals(App.CurrentUser.getUid())){
+                                name.setText(R.string.yourself);
+                            }
                             if(previous_edit_state != 0){
                                 image = listItem.findViewById(R.id.fragment_user_list_row_image_delete);
                                 image.setVisibility(View.GONE);
@@ -455,7 +480,7 @@ public class UserListFragmentDialog extends DialogFragment {
 
     private boolean removeUserById(String id, List<User> list){
         for(int idx = 0; idx < list.size(); ++idx){
-            if(list.get(idx).equals(id)){
+            if(list.get(idx).getUid().equals(id)){
                 list.remove(idx);
                 return true;
             }
@@ -465,7 +490,7 @@ public class UserListFragmentDialog extends DialogFragment {
 
     private boolean findUserById(String id, List<User> list){
         for(int idx = 0; idx < list.size(); ++idx){
-            if(list.get(idx).equals(id)){
+            if(list.get(idx).getUid().equals(id)){
                 return true;
             }
         }

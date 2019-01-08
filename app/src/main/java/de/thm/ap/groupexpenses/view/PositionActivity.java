@@ -107,9 +107,12 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
 
         switch(id){
             case R.id.position_menu_inspect_users:
-                UserListFragmentDialog dialog = UserListFragmentDialog
-                        .newInstance(selectedEventUserList, selectedEvent.getCreatorId());
-                dialog.show(getFragmentManager(), "edit_event");
+                DatabaseHandler.getAllMembersOfEvent(selectedEvent.getEid(), result -> {
+                    List<User> memberList = result;
+                    UserListFragmentDialog dialog = UserListFragmentDialog
+                            .newInstance(selectedEventUserList, memberList, selectedEvent.getCreatorId());
+                    dialog.show(getFragmentManager(), "edit_event");
+                });
                 break;
 
             case R.id.position_menu_info:
@@ -135,8 +138,8 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                 case POSITION_CREATE_SUCCESS:
                     Position position  = (Position) data.getExtras().getSerializable("createdPosition");
                     positionList.add(position);
-                    positionList.add(selectedEvent);
-                    objectListFragment.updateFragmentObjects(positionList, "Position");
+                    DatabaseHandler.updateEvent(selectedEvent);
+                    objectListFragment.updateFragmentObjects(positionList, selectedEvent,"Position");
                     break;
             }
         }
@@ -238,14 +241,14 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                        if(position.getPid() == ((Position)positionList.get(idx)).getPid()){
                            positionList.set(idx, position);
                            positionList.add(selectedEvent);
-                           objectListFragment.updateFragmentObjects(positionList, "Position");
+                           objectListFragment.updateFragmentObjects(positionList, null,"Position");
                            break;
                        }
                    }
                    position_edited = false;
                }
                if(position_deleted)
-                   objectListFragment.updateFragmentObjects(positionList, "Removal");
+                   objectListFragment.updateFragmentObjects(positionList, null,"Removal");
            });
        }
 

@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
+import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.fragment.UserListFragmentDialog;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.User;
@@ -46,8 +47,12 @@ public class EventFormActivity extends BaseActivity {
         eventUsersTextView = findViewById(R.id.event_form_users_textView);
 
         addMembersBtn.setOnClickListener(v -> {
-            UserListFragmentDialog dialog = UserListFragmentDialog.newInstance(eventUsersList);
-            dialog.show(getFragmentManager(), "create_event");
+            DatabaseHandler.getAllFriendsOfUser(auth.getCurrentUser().getUid(), result -> {
+                List<User> friendsList = result;
+                UserListFragmentDialog dialog = UserListFragmentDialog.newInstance(eventUsersList, friendsList);
+                dialog.show(getFragmentManager(), "create_event");
+            });
+
         });
 
         eventDateEditText.setOnFocusChangeListener((view, hasFocus) -> {
@@ -96,12 +101,15 @@ public class EventFormActivity extends BaseActivity {
             } else if(!isValidDate(eventDateEditText.getText().toString())){
                 eventDateEditText.setError(getString(R.string.error_invalid_date));
                 eventDateEditText.requestFocus();
-            } else if(eventUsersList == null || eventUsersList.isEmpty()){
+            } /* else if(eventUsersList == null || eventUsersList.isEmpty()){
                 eventUsersTextView.setText(getString(R.string.error_users_required));
                 addMembersBtn.setError("");
                 addMembersBtn.requestFocus();
-            } else {
+            } */ else {
                 // save event strings here
+
+                if(eventUsersList == null) eventUsersList = new ArrayList<>();
+
                 User creator = App.CurrentUser;
                 String eventName = eventNameEditText.getText().toString().trim();
                 eventName = eventName.substring(0,1).toUpperCase() + eventName.substring(1);

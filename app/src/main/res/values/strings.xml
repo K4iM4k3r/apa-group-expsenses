@@ -13,6 +13,7 @@
     <string name="info">Info</string>
     <string name="inspect_users">Teilnehmer inspizieren</string>
     <string name="you">Dir</string>
+    <string name="yourself">Du</string>
     <string name="no_position_info">Keine Positionsinfo vorhanden!</string>
     <string name="no_event_info">Keine Eventinfo vorhanden!</string>
     <string name="your_depts">Deine Schulden:</string>
@@ -44,6 +45,7 @@
     <string name="edit">Bearbeiten</string>
     <string name="confirm">Bestätigen</string>
     <string name="nobody">Niemand</string>
+    <string name="events_loading">Events werden geladen...</string>
     <string name="no_events">Keine Events vorhanden!</string>
     <string name="no_positions">Keine Positionen vorhanden!</string>
     <string name="total_balance">Gesamtbilanz</string>
@@ -98,5 +100,13 @@
     <string name="labelLastName">lastname</string>
     <string name="labelFirstName">First name</string>
     <string name="no_bounty">Sie haben keine offenen Positionen</string>
+    <string name="error_already_in_use">Nickname exists already</string>
+    <string name="hint_nickname">nickname</string>
+    <string name="menu_item_friends">Friends</string>
+    <string name="dialog_friend_title">Add new Friend</string>
+    <string name="dialog_friends_message">Add Friend with nickname</string>
+    <string name="dialog_friends_positiveBtn">add</string>
+    <string name="error_user_not_found">User not found</string>
+    <string name="dialog_friend_retry">try again</string>
 </resources>
 

@@ -53,6 +53,7 @@ public class ProfileActivity extends BaseActivity {
     private final int REQUEST_IMAGE_PICK = 1;
     private final String TAG = getClass().getName();
     private User user;
+    private FirebaseUser currentUser;
 
 
 
@@ -77,7 +78,7 @@ public class ProfileActivity extends BaseActivity {
         edLast.setSelectAllOnFocus(true);
         edNickname.setSelectAllOnFocus(true);
 
-        FirebaseUser currentUser = super.auth.getCurrentUser();
+        currentUser = super.auth.getCurrentUser();
         if(currentUser != null){
 
             DatabaseHandler.queryUser(currentUser.getUid(), us -> {
@@ -101,20 +102,22 @@ public class ProfileActivity extends BaseActivity {
         btnSave.setOnClickListener(l ->{
             showProgressDialog();
             if(isValidUserInput()){
-
-                user.setFirstName(edFirst.getText().toString());
-                user.setLastName(edLast.getText().toString());
-                user.setNickname(edNickname.getText().toString());
-                DatabaseHandler.updateUser(user);
-
-                UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
-                        .setDisplayName(edNickname.getText().toString())
-                        .build();
-                if (currentUser != null) {
-                    currentUser.updateProfile(profileUpdate);
+                //TOdo
+                if(edNickname.getText().toString().equals(user.getNickname())){
+                    updateRoutine();
                 }
+                DatabaseHandler.isNicknameExist(edNickname.getText().toString(), exists ->{
+                    if(exists){
+                        edNickname.setError(getString(R.string.error_already_in_use));
+                        hideProgressDialog();
+                    }
+                    else{
+                        updateRoutine();
+                    }
+                });
+            }
+            else{
                 hideProgressDialog();
-                finish();
             }
         });
 
@@ -161,6 +164,22 @@ public class ProfileActivity extends BaseActivity {
 
     }
 
+    private void updateRoutine(){
+        user.setFirstName(edFirst.getText().toString());
+        user.setLastName(edLast.getText().toString());
+        user.setNickname(edNickname.getText().toString());
+        DatabaseHandler.updateUser(user);
+
+        UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
+                .setDisplayName(edNickname.getText().toString())
+                .build();
+        if (currentUser != null) {
+            currentUser.updateProfile(profileUpdate);
+        }
+        hideProgressDialog();
+        finish();
+    }
+
     private boolean isValidUserInput(){
         boolean valid = true;
         if(TextUtils.isEmpty(edNickname.getText())){
@@ -168,11 +187,11 @@ public class ProfileActivity extends BaseActivity {
             valid = false;
         }
         if(TextUtils.isEmpty(edFirst.getText())){
-            edNickname.setError(getString(R.string.error_invalid_input));
+            edFirst.setError(getString(R.string.error_invalid_input));
             valid = false;
         }
         if(TextUtils.isEmpty(edLast.getText())){
-            edNickname.setError(getString(R.string.error_invalid_input));
+            edLast.setError(getString(R.string.error_invalid_input));
             valid = false;
         }
         return valid;

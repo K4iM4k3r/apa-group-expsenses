@@ -9,7 +9,12 @@
         android:orderInCategory="2"
         android:title="@string/menu_item_main" />
     <item
-        android:id="@+id/menu_item_logout"
+        android:id="@+id/menu_item_friends"
         android:orderInCategory="3"
+        android:title="@string/menu_item_friends" />
+
+    <item
+        android:id="@+id/menu_item_logout"
+        android:orderInCategory="4"
         android:title="@string/menu_item_logout"/>
 </menu>
