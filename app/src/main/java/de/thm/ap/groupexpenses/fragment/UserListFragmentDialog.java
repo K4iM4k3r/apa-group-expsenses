@@ -42,6 +42,7 @@ public class UserListFragmentDialog extends DialogFragment {
     private List<User> friendsList;
     private ArrayList<User> addableUsers, addableUsersSelected, usersDeleted;
     private List<User> selectedUsers;
+    private User creator;
     private String TAG;
     private static boolean isCreator;
     private static int edit_state;
@@ -175,6 +176,13 @@ public class UserListFragmentDialog extends DialogFragment {
                     switch (edit_state){
                         case EDIT_STATE_INSPECT_USERS: // add btn was pressed in inspect state
                             setEditState(EDIT_STATE_DELETE_USERS);
+                            // remove creator from list and save it locally to add it back later
+                            for(int idx = 0; idx < selectedUsers.size(); ++idx){
+                                if(selectedUsers.get(idx).getUid().equals(App.CurrentUser.getUid())){
+                                    creator = selectedUsers.get(idx);
+                                    selectedUsers.remove(idx);
+                                }
+                            }
                             userArrayAdapter.notifyDataSetChanged();
                             addBtn.setText(R.string.event_form_add_members);
                             doneBtn.setText(R.string.confirm);
@@ -234,11 +242,13 @@ public class UserListFragmentDialog extends DialogFragment {
                     setEditState(EDIT_STATE_INSPECT_USERS);
                     addBtn.setText(R.string.add_remove);
                     doneBtn.setText(R.string.done);
+                    selectedUsers.add(creator);
                     userArrayAdapter.notifyDataSetChanged();
                     break;
 
                 case EDIT_STATE_ADD_USERS:
                     setEditState(EDIT_STATE_DELETE_USERS);
+                    headerTextView.setText(R.string.event_form_users);
                     addBtn.setText(R.string.event_form_add_members);
                     doneBtn.setText(R.string.done);
                     userArrayAdapter = new UserArrayAdapter(getActivity(), (ArrayList<User>) selectedUsers);
@@ -260,9 +270,12 @@ public class UserListFragmentDialog extends DialogFragment {
 
         if(isCreator){
             if(usersDeleted != null && addableUsersSelected != null){
-                showConfirmDialog(addableUsersSelected.size(), usersDeleted.size());
+                if(addableUsersSelected.size() > 0 && usersDeleted.size() > 0){
+                    showConfirmDialog(addableUsersSelected.size(), usersDeleted.size());
+                }
             } else if(usersDeleted != null){
-                showConfirmDialog(0, usersDeleted.size());
+                if(usersDeleted.size() > 0)
+                    showConfirmDialog(0, usersDeleted.size());
             }
         }
     }
@@ -349,6 +362,9 @@ public class UserListFragmentDialog extends DialogFragment {
                 case "edit_event":
                     switch(edit_state){
                         case EDIT_STATE_INSPECT_USERS:
+                            if(currentUser.getUid().equals(App.CurrentUser.getUid())){
+                                name.setText(R.string.yourself);
+                            }
                             if(previous_edit_state != 0){
                                 image = listItem.findViewById(R.id.fragment_user_list_row_image_delete);
                                 image.setVisibility(View.GONE);
