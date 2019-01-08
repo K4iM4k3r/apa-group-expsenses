@@ -13,6 +13,7 @@
     <string name="info">Info</string>
     <string name="inspect_users">Teilnehmer inspizieren</string>
     <string name="you">Dir</string>
+    <string name="yourself">Du</string>
     <string name="no_position_info">Keine Positionsinfo vorhanden!</string>
     <string name="no_event_info">Keine Eventinfo vorhanden!</string>
     <string name="your_depts">Deine Schulden:</string>
