@@ -38,6 +38,7 @@ public class Position implements Serializable {
         this.creatorId = creatorId;
         this.topic = topic;
         this.value = value;
+        this.info = "";
         this.date = Calendar.getInstance().getTimeInMillis();
         this.peopleThatDontHaveToPay = new ArrayList<>();
         this.peopleThatDontHaveToPay.add(creatorId);

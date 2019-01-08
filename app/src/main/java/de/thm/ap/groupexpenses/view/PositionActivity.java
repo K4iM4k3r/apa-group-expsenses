@@ -191,6 +191,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                creator = getString(R.string.you);
                positionInfo.setCompoundDrawablesWithIntrinsicBounds(0,0,
                        R.drawable.ic_edit_grey_24dp, 0);
+               positionInfo.setCompoundDrawablePadding(-20);
                positionDeptValue = getResources().getString(R.string.your_dept_claim);
                dept_val.setTextColor(Color.parseColor("#2ba050"));  //green
                payBtn.setText(getString(R.string.position_inspect_release_dept_claim));
@@ -218,6 +219,15 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                    }
                });
 
+               // close btn clicked
+               positionName.setOnTouchListener(new RightDrawableOnTouchListener(positionName) {
+                   @Override
+                   public boolean onDrawableTouch(final MotionEvent event) {
+                       dialog.dismiss();
+                       return clickable.get();
+                   }
+               });
+
 
            } else {
                creator = position.getCreatorId();
@@ -234,7 +244,8 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
            dept_val.setText(new DecimalFormat("0.00")
                    .format(Stats.getPositionBalance(position, selectedEvent))+ " " + getString(R.string.euro));
            String positionInfoString = position.getInfo();
-           if(!positionInfoString.isEmpty()) positionInfo.setText(positionInfoString);
+           if(positionInfoString != null && !positionInfoString.isEmpty())
+               positionInfo.setText(positionInfoString);
            positionDialog.setView(view);
            dialog = positionDialog.create();
            dialog.show();
@@ -399,6 +410,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
            payBtn.setVisibility(View.VISIBLE);
            positionInfo.setCompoundDrawablesWithIntrinsicBounds(0, 0,
                    R.drawable.ic_edit_grey_24dp,0);
+           positionInfo.setCompoundDrawablePadding(-20);
            clickable.set(true);
 
            switch(type){
@@ -434,33 +446,6 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                    break;
            }
        }
-
-       private abstract class RightDrawableOnTouchListener implements View.OnTouchListener {
-           private Drawable drawable;
-           private final int FUZZ = 10;
-
-           RightDrawableOnTouchListener(TextView view) {
-               super();
-               final Drawable[] drawables = view.getCompoundDrawables();
-               if (drawables.length == 4)
-                   this.drawable = drawables[2];
-           }
-           @Override
-           public boolean onTouch(final View v, final MotionEvent event) {
-               if (event.getAction() == MotionEvent.ACTION_DOWN && drawable != null) {
-                   final int x = (int) event.getX();
-                   final int y = (int) event.getY();
-                   final Rect bounds = drawable.getBounds();
-                   if (x >= (v.getRight() - bounds.width() - FUZZ) && x <= (v.getRight() - v.getPaddingRight() + FUZZ)
-                           && y >= (v.getPaddingTop() - FUZZ) && y <= (v.getHeight() - v.getPaddingBottom()) + FUZZ) {
-                       return onDrawableTouch(event);
-                   }
-               }
-               return false;
-           }
-           public abstract boolean onDrawableTouch(final MotionEvent event);
-
-       }
    }
 
     private class EventInfoDialog {
@@ -468,7 +453,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
         private AlertDialog dialog;
         private Event event;
         private View view;
-        private TextView eventInfo, eventDepts;
+        private TextView eventName, eventInfo, eventDepts;
         private Button cash_check_btn;
         private TextView dept_val;
 
@@ -483,10 +468,12 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
 
         @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
         private void createDialog(){
-            ((TextView)view.findViewById(R.id.event_dialog_name)).setText(event.getName());
+            eventName = view.findViewById(R.id.event_dialog_name);
             eventDepts = view.findViewById(R.id.event_dialog_your_depts);
             TextView positionCreatorAndDate = view.findViewById(R.id.event_dialog_creator_and_date);
             eventInfo = view.findViewById(R.id.event_dialog_info);
+
+            eventName.setText(event.getName());
 
             String creator;
 
@@ -511,6 +498,16 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                     .format(balance)+ " " + getString(R.string.euro));
             String eventInfoString = event.getInfo();
             if(!eventInfoString.isEmpty()) eventInfo.setText(eventInfoString);
+
+            // close btn clicked
+            eventName.setOnTouchListener(new RightDrawableOnTouchListener(eventName) {
+                @Override
+                public boolean onDrawableTouch(final MotionEvent event) {
+                    dialog.dismiss();
+                    return true;
+                }
+            });
+
             cash_check_btn.setOnClickListener(v -> {
                 // do cash check here
             });
@@ -518,8 +515,35 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
             dialog = eventDialog.create();
             dialog.show();
             dialog.setOnDismissListener(dialog1 -> {
-                // nothing
+                // save changes to database ?!
             });
         }
+    }
+
+    private abstract class RightDrawableOnTouchListener implements View.OnTouchListener {
+        private Drawable drawable;
+        private final int FUZZ = 10;
+
+        RightDrawableOnTouchListener(TextView view) {
+            super();
+            final Drawable[] drawables = view.getCompoundDrawables();
+            if (drawables.length == 4)
+                this.drawable = drawables[2];
+        }
+        @Override
+        public boolean onTouch(final View v, final MotionEvent event) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN && drawable != null) {
+                final int x = (int) event.getX();
+                final int y = (int) event.getY();
+                final Rect bounds = drawable.getBounds();
+                if (x >= (v.getRight() - bounds.width() - FUZZ) && x <= (v.getRight() - v.getPaddingRight() + FUZZ)
+                        && y >= (v.getPaddingTop() - FUZZ) && y <= (v.getHeight() - v.getPaddingBottom()) + FUZZ) {
+                    return onDrawableTouch(event);
+                }
+            }
+            return false;
+        }
+        public abstract boolean onDrawableTouch(final MotionEvent event);
+
     }
 }
