@@ -21,7 +21,7 @@ public class Position implements Serializable {
     private Long date;
     private String creatorId;
     private List<String> peopleThatDontHaveToPay;
-
+    
     //region constructor
     public Position(){}
     public Position(String creatorId, String topic, Float value){
