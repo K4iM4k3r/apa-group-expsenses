@@ -111,7 +111,8 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                 DatabaseHandler.getAllMembersOfEvent(selectedEvent.getEid(), result -> {
                     List<User> memberList = result;
                     UserListFragmentDialog dialog = UserListFragmentDialog
-                            .newInstance(selectedEventUserList, memberList, selectedEvent.getCreatorId());
+                            .newInstance(selectedEventUserList, memberList, selectedEvent.getCreatorId(),
+                                    !selectedEvent.getPositions().isEmpty());
                     dialog.show(getFragmentManager(), "edit_event");
                 });
                 break;
