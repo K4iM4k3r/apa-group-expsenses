@@ -30,6 +30,7 @@ import android.widget.TextView;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -222,7 +223,8 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                positionDeptValue = getResources().getString(R.string.your_depts);
            }
            positionName.setText(position.getTopic());
-           String creatorAndDate = getResources().getString(R.string.creator_and_date_position, creator, position.getDate());
+           String date = new Date(position.getDate()).toString();
+           String creatorAndDate = getResources().getString(R.string.creator_and_date_position, creator, date);
            creatorAndDateDefaultVal = new SpannableString(creatorAndDate);
            creatorAndDateDefaultVal.setSpan(new ForegroundColorSpan(Color.parseColor("#3a90e0")),
                    13, 13 + creator.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
