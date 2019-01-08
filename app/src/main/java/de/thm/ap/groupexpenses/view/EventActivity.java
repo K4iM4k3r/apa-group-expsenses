@@ -97,7 +97,9 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
     }
 
     private void setCurrentUser(FirebaseUser currentUser) {
-        App.CurrentUser = new User(currentUser.getUid(), currentUser.getEmail());
+        DatabaseHandler.queryUser(currentUser.getUid(), result -> {
+            App.CurrentUser = result;
+        });
     }
 
     @Override
