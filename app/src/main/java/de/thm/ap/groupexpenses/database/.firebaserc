@@ -1,6 +1,7 @@
 {
   "projects": {
     "default": "group-expenses-omran",
-    "staging": "group-expenses-omran"
+    "staging": "group-expenses-omran",
+    "payments": "group-expenses-omran"
   }
 }
