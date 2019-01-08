@@ -93,7 +93,7 @@ public class DatabaseHandler {
             });
 
             event.getMembers().forEach(m -> queryUser(m, member -> {
-                if(member != null){
+                if(member != null && !member.getEvents().contains(event.getEid())){
                     member.addEvent(event.getEid());
                     updateUser(member);
                 }
@@ -104,7 +104,7 @@ public class DatabaseHandler {
     public static void updateEvent(Event event){
         DocumentReference documentReference = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS).document(event.getEid());
         documentReference.set(event).addOnCompleteListener(c -> event.getMembers().forEach(m -> queryUser(m, member -> {
-            if(member != null){
+            if(member != null && !member.getEvents().contains(event.getEid())){
                 member.addEvent(event.getEid());
                 updateUser(member);
             }
@@ -164,17 +164,19 @@ public class DatabaseHandler {
     public static void getAllFriendsOfUser(String uid, Callback<List<User>> callback){
         List<User> result = new ArrayList<>();
         queryUser(uid, user -> {
-            final int lengthFriends = user.getFriendsIds().size();
-            if(lengthFriends == 0){
-                callback.onResult(result);
-            }
-            else{
-                user.getFriendsIds().forEach(fid -> queryUser(fid, friend -> {
-                    result.add(friend);
-                    if(result.size() == lengthFriends){
-                        callback.onResult(result);
-                    }
-                }));
+            if(user.getFriendsIds() != null){
+                final int lengthFriends = user.getFriendsIds().size();
+                if(lengthFriends == 0){
+                    callback.onResult(result);
+                }
+                else{
+                    user.getFriendsIds().forEach(fid -> queryUser(fid, friend -> {
+                        result.add(friend);
+                        if(result.size() == lengthFriends){
+                            callback.onResult(result);
+                        }
+                    }));
+                }
             }
         });
 
