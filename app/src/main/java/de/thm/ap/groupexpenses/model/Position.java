@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,7 @@ public class Position implements Serializable {
     private float value;
     private String topic;
     private String info;
-    private String date;
+    private Long date;
     private String creatorId;
     private List<String> peopleThatDontHaveToPay;
 
@@ -25,8 +26,9 @@ public class Position implements Serializable {
     public Position(){}
     public Position(String creatorId, String topic, Float value){
         this.creatorId = creatorId;
-        this.topic = new HistoryValue<>(topic);
-        this.value = new HistoryValue<>(value);
+        this.date = Calendar.getInstance().getTimeInMillis();
+        this.topic = topic;
+        this.value = value;
         this.peopleThatDontHaveToPay = new ArrayList<>();
         this.peopleThatDontHaveToPay.add(creatorId);
     }
@@ -34,16 +36,18 @@ public class Position implements Serializable {
     public Position(int positionId, String creatorId, String topic, Float value){
         this.pid = positionId;
         this.creatorId = creatorId;
-        this.topic = new HistoryValue<>(topic);
-        this.value = new HistoryValue<>(value);
+        this.topic = topic;
+        this.value = value;
+        this.date = Calendar.getInstance().getTimeInMillis();
         this.peopleThatDontHaveToPay = new ArrayList<>();
         this.peopleThatDontHaveToPay.add(creatorId);
     }
     public Position(int positionId, String creatorId, String topic, Float value, List<String> excludedPeople){
         this.pid = positionId;
         this.creatorId = creatorId;
-        this.topic = new HistoryValue<>(topic);
-        this.value = new HistoryValue<>(value);
+        this.topic = topic;
+        this.value = value;
+        this.date = Calendar.getInstance().getTimeInMillis();
         this.peopleThatDontHaveToPay = new ArrayList<>();
         this.peopleThatDontHaveToPay.add(creatorId);
         this.peopleThatDontHaveToPay.addAll(excludedPeople);
@@ -119,7 +123,7 @@ public class Position implements Serializable {
      */
     public float getDebtOfUser(String userId, int userCount) {
         if (isExcludedFromPayments(userId)) return 0.f;
-        return (1.f/userCount)*value.get();
+        return (1.f/userCount)*value;
     }
 
     /**
