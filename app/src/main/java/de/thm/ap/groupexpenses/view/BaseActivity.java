@@ -30,6 +30,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
+import de.thm.ap.groupexpenses.model.UserLiveData;
 
 
 @SuppressLint("Registered")
@@ -39,6 +40,7 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
     private View headerView;
     private ActionBarDrawerToggle mDrawerToggle;
     private TextView name;
+    private UserLiveData userLiveData;
     private CircleImageView picture;
     protected FirebaseAuth auth;
     protected FirebaseFirestore db;
@@ -74,9 +76,12 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
 
         if(auth.getCurrentUser() != null) {
 
-            DatabaseHandler.onUserChangeListener(auth.getCurrentUser().getUid(), user -> {
-                App.CurrentUser = user;
-                name.setText(user.getNickname());
+            userLiveData = DatabaseHandler.qetUserLiveData(auth.getCurrentUser().getUid());
+            userLiveData.observe(this, user -> {
+                if(user != null){
+                    App.CurrentUser = user;
+                    name.setText(user.getNickname());
+                }
             });
         }
         checkLoginState();
@@ -143,6 +148,12 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
     public void onStart() {
         super.onStart();
         checkLoginState();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        userLiveData.removeObservers(this);
     }
 
     @Override

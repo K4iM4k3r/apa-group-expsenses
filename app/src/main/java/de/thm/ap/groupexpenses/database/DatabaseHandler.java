@@ -11,7 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.thm.ap.groupexpenses.model.Event;
+import de.thm.ap.groupexpenses.model.EventLiveData;
 import de.thm.ap.groupexpenses.model.User;
+import de.thm.ap.groupexpenses.model.UserLiveData;
 
 public class DatabaseHandler {
 
@@ -111,6 +113,12 @@ public class DatabaseHandler {
         })));
     }
 
+    public static UserLiveData qetUserLiveData(String uid){
+        DocumentReference docRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_USERS).document(uid);
+        return new UserLiveData(docRef);
+    }
+
+    @Deprecated
     public static void onUserChangeListener(String uid, Callback<User> callback){
         DocumentReference docRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_USERS).document(uid);
         docRef.addSnapshotListener((snapshot, e) -> {
@@ -141,7 +149,12 @@ public class DatabaseHandler {
         DocumentReference docRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS).document(eid);
         docRef.get().addOnSuccessListener(documentSnapshot -> callback.onResult(documentSnapshot.toObject(Event.class)));
     }
+    
 
+    public static EventLiveData getEventLiveData(String eid){
+        DocumentReference docRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS).document(eid);
+        return new EventLiveData(docRef);
+    }
 
     public static void getAllUserEvents(String uid, Callback<List<Event>> callback){
         List<Event> result = new ArrayList<>();

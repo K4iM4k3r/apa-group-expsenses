@@ -63,28 +63,8 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
                 objectListFragment.createFragmentObjects(result, "Event");
 
             });
-//            DatabaseHandler.onUserChangeListener(currentUser.getUid(), us ->{
-//                App.CurrentUser = us;
-//
-//                User s = App.CurrentUser;
-//            });
+
         }
-
-
-
-
-//                DatabaseHandler.createEvent(App.TestValues.EVENT1);
-//                DatabaseHandler.queryEvent("n3YmRXOCPmZtCU1BsJq5", event ->{
-//                    Log.d(TAG, event.toString());
-//                });
-//                String uid = FirebaseAuth.getInstance().getUid();
-//                DatabaseHandler.getAllUserEvents(uid, result -> {
-//
-//                    Log.d(TAG, result.toString());
-//                });
-
-
-
 
 
         FloatingActionButton createEventBtn = findViewById(R.id.create_event_btn);
