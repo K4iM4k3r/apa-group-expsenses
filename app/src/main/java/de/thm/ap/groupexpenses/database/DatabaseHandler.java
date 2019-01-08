@@ -161,25 +161,42 @@ public class DatabaseHandler {
         });
     }
 
-    public static void getAllFriendsOfUser(String uid, Callback<List<User>> callback){
+    public static void getAllFriendsOfUser(String uid, Callback<List<User>> callback) {
         List<User> result = new ArrayList<>();
         queryUser(uid, user -> {
-            if(user.getFriendsIds() != null){
+            if (user.getFriendsIds() != null) {
                 final int lengthFriends = user.getFriendsIds().size();
-                if(lengthFriends == 0){
+                if (lengthFriends == 0) {
                     callback.onResult(result);
-                }
-                else{
+                } else {
                     user.getFriendsIds().forEach(fid -> queryUser(fid, friend -> {
                         result.add(friend);
-                        if(result.size() == lengthFriends){
+                        if (result.size() == lengthFriends) {
                             callback.onResult(result);
                         }
                     }));
                 }
             }
         });
-
+    }
+        public static void getAllMembersOfEvent(String eid, Callback<List<User>> callback){
+            List<User> result = new ArrayList<>();
+            queryEvent(eid, event -> {
+                if(event.getMembers() != null){
+                    final int lengthMembers = event.getMembers().size();
+                    if(lengthMembers == 0){
+                        callback.onResult(result);
+                    }
+                    else{
+                        event.getMembers().forEach(fid -> queryUser(fid, member -> {
+                            result.add(member);
+                            if(result.size() == lengthMembers){
+                                callback.onResult(result);
+                            }
+                        }));
+                    }
+                }
+            });
     }
 
 }
