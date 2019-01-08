@@ -53,6 +53,7 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
             startActivity(new Intent(this, LoginActivity.class));
         }
         else{
+            setCurrentUser(currentUser);
             DatabaseHandler.getAllUserEvents(currentUser.getUid(), result -> {
                 eventsLoadingTextView.setVisibility(View.GONE);
                 events = result;
@@ -93,6 +94,10 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
         );
 
         auth = FirebaseAuth.getInstance();
+    }
+
+    private void setCurrentUser(FirebaseUser currentUser) {
+        App.CurrentUser = new User(currentUser.getUid(), currentUser.getEmail());
     }
 
     @Override
