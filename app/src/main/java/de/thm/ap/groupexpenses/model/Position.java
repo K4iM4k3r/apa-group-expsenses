@@ -72,14 +72,6 @@ public class Position {
     public String getCreatorId() {
         return creatorId;
     }
-    @Deprecated
-    public int getPid() {
-        return pid;
-    }
-    @Deprecated
-    public void setPid(int pid) {
-        this.pid = pid;
-    }
     //endregion
 
     //region expense-management
