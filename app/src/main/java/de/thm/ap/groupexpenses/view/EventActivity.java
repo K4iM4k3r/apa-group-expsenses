@@ -3,9 +3,7 @@ package de.thm.ap.groupexpenses.view;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,14 +18,11 @@ import de.thm.ap.groupexpenses.App;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.fragment.ObjectListFragment;
 import de.thm.ap.groupexpenses.model.Event;
-import de.thm.ap.groupexpenses.model.EventListLiveData;
-import de.thm.ap.groupexpenses.model.Position;
-import de.thm.ap.groupexpenses.model.User;
+import de.thm.ap.groupexpenses.livedata.EventListLiveData;
 
 public class EventActivity extends BaseActivity implements ObjectListFragment.ItemClickListener{
 

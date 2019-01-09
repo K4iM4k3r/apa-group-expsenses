@@ -30,7 +30,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
-import de.thm.ap.groupexpenses.model.UserLiveData;
+import de.thm.ap.groupexpenses.livedata.UserLiveData;
 
 
 @SuppressLint("Registered")

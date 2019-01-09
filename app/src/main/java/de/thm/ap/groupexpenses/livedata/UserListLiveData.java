@@ -1,4 +1,4 @@
-package de.thm.ap.groupexpenses.model;
+package de.thm.ap.groupexpenses.livedata;
 
 import android.arch.lifecycle.LiveData;
 import android.os.Handler;
@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
+
+import de.thm.ap.groupexpenses.model.User;
 
 public class UserListLiveData extends LiveData<List<User>> {
     private static final String TAG = "FbaseQueryLiveData";

@@ -1,4 +1,4 @@
-package de.thm.ap.groupexpenses.model;
+package de.thm.ap.groupexpenses.livedata;
 
 import android.arch.lifecycle.LiveData;
 import android.os.Handler;
@@ -12,7 +12,9 @@ import com.google.firebase.firestore.ListenerRegistration;
 
 import javax.annotation.Nullable;
 
-public class UserLiveData extends LiveData<User> {
+import de.thm.ap.groupexpenses.model.Event;
+
+public class EventLiveData extends LiveData<Event> {
     private static final String TAG = "FbaseQueryLiveData";
     private DocumentReference docRef;
     private final MyValueEventListener listener = new MyValueEventListener();
@@ -20,7 +22,7 @@ public class UserLiveData extends LiveData<User> {
     private boolean listenerRemovePending = false;
     private final Handler handler = new Handler();
 
-    public UserLiveData(DocumentReference docRef) {
+    public EventLiveData(DocumentReference docRef) {
         this.docRef = docRef;
     }
 
@@ -64,7 +66,7 @@ public class UserLiveData extends LiveData<User> {
                 return;
             }
             if(documentSnapshot != null){
-                setValue(documentSnapshot.toObject(User.class));
+                setValue(documentSnapshot.toObject(Event.class));
             }
         }
     }

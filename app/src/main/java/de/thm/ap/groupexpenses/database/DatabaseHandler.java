@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.thm.ap.groupexpenses.model.Event;
-import de.thm.ap.groupexpenses.model.EventListLiveData;
-import de.thm.ap.groupexpenses.model.EventLiveData;
+import de.thm.ap.groupexpenses.livedata.EventListLiveData;
+import de.thm.ap.groupexpenses.livedata.EventLiveData;
 import de.thm.ap.groupexpenses.model.User;
-import de.thm.ap.groupexpenses.model.UserListLiveData;
-import de.thm.ap.groupexpenses.model.UserLiveData;
+import de.thm.ap.groupexpenses.livedata.UserListLiveData;
+import de.thm.ap.groupexpenses.livedata.UserLiveData;
 
 public class DatabaseHandler {
 

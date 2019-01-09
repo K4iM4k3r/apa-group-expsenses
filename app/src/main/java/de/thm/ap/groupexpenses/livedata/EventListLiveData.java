@@ -1,27 +1,32 @@
-package de.thm.ap.groupexpenses.model;
+package de.thm.ap.groupexpenses.livedata;
 
 import android.arch.lifecycle.LiveData;
 import android.os.Handler;
 import android.util.Log;
 
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
-public class EventLiveData extends LiveData<Event> {
+import de.thm.ap.groupexpenses.model.Event;
+
+public class EventListLiveData extends LiveData<List<Event>> {
     private static final String TAG = "FbaseQueryLiveData";
-    private DocumentReference docRef;
+    private Query query;
     private final MyValueEventListener listener = new MyValueEventListener();
     private ListenerRegistration listenerRegistration;
     private boolean listenerRemovePending = false;
     private final Handler handler = new Handler();
 
-    public EventLiveData(DocumentReference docRef) {
-        this.docRef = docRef;
+    public EventListLiveData(Query query) {
+        this.query = query;
     }
 
     private final Runnable removeListener = new Runnable() {
@@ -41,7 +46,7 @@ public class EventLiveData extends LiveData<Event> {
             handler.removeCallbacks(removeListener);
         }
         else {
-            listenerRegistration = docRef.addSnapshotListener(listener);
+            listenerRegistration = query.addSnapshotListener(listener);
         }
         listenerRemovePending = false;
     }
@@ -56,15 +61,16 @@ public class EventLiveData extends LiveData<Event> {
         listenerRemovePending = true;
     }
 
-    private class MyValueEventListener implements EventListener<DocumentSnapshot> {
+    private class MyValueEventListener implements EventListener<QuerySnapshot> {
         @Override
-        public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+        public void onEvent(@Nullable QuerySnapshot querySnapshot, @Nullable FirebaseFirestoreException e) {
             if (e != null){
-                Log.e(TAG, "Can't listen to query snapshots: " + documentSnapshot + ":::" + e.getMessage());
+                Log.e(TAG, "Can't listen to query snapshots: " + querySnapshot + ":::" + e.getMessage());
                 return;
             }
-            if(documentSnapshot != null){
-                setValue(documentSnapshot.toObject(Event.class));
+            if(querySnapshot != null){
+
+                setValue(querySnapshot.getDocuments().stream().map(event -> event.toObject(Event.class)).collect(Collectors.toList()));
             }
         }
     }
