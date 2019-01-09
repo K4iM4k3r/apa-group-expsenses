@@ -44,7 +44,7 @@ public class UserListFragmentDialog extends DialogFragment {
     private List<User> selectedUsers;
     private User creator;
     private String TAG;
-    private static boolean isCreator;
+    private static boolean isCreator, hasPositions;
     private static int edit_state;
     private static int previous_edit_state;
     private static final int EDIT_STATE_INSPECT_USERS = 1;
@@ -61,9 +61,10 @@ public class UserListFragmentDialog extends DialogFragment {
         return f;
     }
 
-    public static UserListFragmentDialog newInstance(List<User> selectedUsers, List<User> friendsList, String creatorId) {
+    public static UserListFragmentDialog newInstance(List<User> selectedUsers, List<User> friendsList, String creatorId, boolean hasPos) {
         UserListFragmentDialog f = newInstance(selectedUsers, friendsList);
         if(App.CurrentUser.getUid().equals(creatorId)) isCreator = true;
+        hasPositions = hasPos;
         return f;
     }
 
@@ -90,25 +91,6 @@ public class UserListFragmentDialog extends DialogFragment {
         friendsList = (List<User>) getArguments().getSerializable("friendsList");
         if(friendsList == null)
             friendsList = new ArrayList<>();
-        /*
-
-        friendsList.add(new User(1, "Lukas", "Hilfrich", "l.hilfrich@gmx.de"));
-        friendsList.add(new User(2, "Hendrik", "Kegel", "oof"));
-        friendsList.add(new User(3, "Kai", "Schäfer", "oof2"));
-        friendsList.add(new User(4, "David", "Omran", "oof3"));
-        friendsList.add(new User(5, "Ulf", "Smolka", "ka"));
-        friendsList.add(new User(6, "Dominik", "Herz", "kjlkalsd"));
-        friendsList.add(new User(7, "Aris", "Christidis", "lolo"));
-        friendsList.add(new User(8, "KQC", "NA", "xD"));
-        friendsList.add(new User(9, "Adam", "Bdam", "dontEvenknow"));
-        friendsList.add(new User(10, "Max", "Muster", "maybe@fdm"));
-        friendsList.add(new User(11, "Rainer", "Rein", "lalalala"));
-        friendsList.add(new User(12, "Reimann", "Rolf", "2345"));
-        friendsList.add(new User(13, "Nikolaus", "Santa", "geshcnk@gmx.de"));
-        friendsList.add(new User(14, "Rentier", "Rot", "ren@s.c"));
-        friendsList.add(new User(15, "Grinch", "Grinch", "kb"));
-        friendsList.add(new User(16, "Rübe", "Nase", "hund@gmx.com"));
-*/
 
         if(TAG.equals("edit_event")){
             setEditState(EDIT_STATE_INSPECT_USERS);
@@ -116,9 +98,11 @@ public class UserListFragmentDialog extends DialogFragment {
             if(isCreator) addBtn.setText(R.string.add_remove);
             else addBtn.setVisibility(View.GONE);
 
+            if(hasPositions) addBtn.setText(R.string.event_form_add_members);
+
             headerTextView = view.findViewById(R.id.fragment_user_list_users_textView);
             headerTextView.setVisibility(View.VISIBLE);
-            userArrayAdapter = new UserArrayAdapter(getActivity(), (ArrayList<User>) selectedUsers);
+            userArrayAdapter = new UserArrayAdapter(getActivity(), selectedUsers);
         } else {
             doneBtn.setText(R.string.cancel);
             userArrayAdapter = new UserArrayAdapter(getActivity(), friendsList);
@@ -149,7 +133,6 @@ public class UserListFragmentDialog extends DialogFragment {
                     }
                     break;
             }
-
         });
 
         userSearchEditText.addTextChangedListener(new TextWatcher() {
@@ -175,39 +158,22 @@ public class UserListFragmentDialog extends DialogFragment {
                 case "edit_event":
                     switch (edit_state){
                         case EDIT_STATE_INSPECT_USERS: // add btn was pressed in inspect state
-                            setEditState(EDIT_STATE_DELETE_USERS);
-                            // remove creator from list and save it locally to add it back later
-                            for(int idx = 0; idx < selectedUsers.size(); ++idx){
-                                if(selectedUsers.get(idx).getUid().equals(App.CurrentUser.getUid())){
-                                    creator = selectedUsers.get(idx);
-                                    selectedUsers.remove(idx);
-                                }
-                            }
-                            userArrayAdapter.notifyDataSetChanged();
-                            addBtn.setText(R.string.event_form_add_members);
-                            doneBtn.setText(R.string.confirm);
-                            if(usersDeleted == null) usersDeleted = new ArrayList<>();
-                            break;
-
-                        case EDIT_STATE_ADD_USERS: // add btn was pressed in edit state
-                            setEditState(EDIT_STATE_DELETE_USERS);
-                            for(int idx = 0; idx < addableUsersSelected.size(); ++idx){
-                                boolean userFound = false;
-                                for(int idx2 = selectedUsers.size() - 1; idx2 >= 0; --idx2){
-                                    if(selectedUsers.get(idx2).getUid().equals(addableUsersSelected.get(idx).getUid())){
-                                        userFound = true;
-                                        break;
+                            if(!hasPositions) { // you can delete users when no pos in event
+                                setEditState(EDIT_STATE_DELETE_USERS);
+                                // remove creator from list and save it locally to add it back later
+                                for(int idx = 0; idx < selectedUsers.size(); ++idx){
+                                    if(selectedUsers.get(idx).getUid().equals(App.CurrentUser.getUid())){
+                                        creator = selectedUsers.get(idx);
+                                        selectedUsers.remove(idx);
                                     }
                                 }
-                                if(!userFound) selectedUsers.add(addableUsersSelected.get(idx));
+                                userArrayAdapter.notifyDataSetChanged();
+                                addBtn.setText(R.string.event_form_add_members);
+                                doneBtn.setText(R.string.confirm);
+                                if(usersDeleted == null) usersDeleted = new ArrayList<>();
+                                break;
                             }
-
-                            userArrayAdapter = new UserArrayAdapter(getActivity(), (ArrayList<User>)selectedUsers);
-                            userListView.setAdapter(userArrayAdapter);
-                            doneBtn.setText(R.string.confirm);
-                            addBtn.setText(R.string.event_form_add_members);
-                            break;
-
+                            // don't break
                         case EDIT_STATE_DELETE_USERS:
                             setEditState(EDIT_STATE_ADD_USERS);
                             headerTextView.setText(R.string.event_form_add_members);
@@ -231,6 +197,25 @@ public class UserListFragmentDialog extends DialogFragment {
                                 userArrayAdapter.notifyDataSetChanged();
                             });
                             break;
+
+                        case EDIT_STATE_ADD_USERS: // add btn was pressed in edit state
+                            setEditState(EDIT_STATE_DELETE_USERS);
+                            for(int idx = 0; idx < addableUsersSelected.size(); ++idx){
+                                boolean userFound = false;
+                                for(int idx2 = selectedUsers.size() - 1; idx2 >= 0; --idx2){
+                                    if(selectedUsers.get(idx2).getUid().equals(addableUsersSelected.get(idx).getUid())){
+                                        userFound = true;
+                                        break;
+                                    }
+                                }
+                                if(!userFound) selectedUsers.add(addableUsersSelected.get(idx));
+                            }
+
+                            userArrayAdapter = new UserArrayAdapter(getActivity(), selectedUsers);
+                            userListView.setAdapter(userArrayAdapter);
+                            doneBtn.setText(R.string.confirm);
+                            addBtn.setText(R.string.event_form_add_members);
+                            break;
                     }
                     break;
             }
@@ -238,21 +223,28 @@ public class UserListFragmentDialog extends DialogFragment {
 
         doneBtn.setOnClickListener(v -> {
             switch(edit_state){
+                case EDIT_STATE_ADD_USERS:
+                    if(!hasPositions){
+                        setEditState(EDIT_STATE_DELETE_USERS);
+                        headerTextView.setText(R.string.event_form_users);
+                        addBtn.setText(R.string.event_form_add_members);
+                        doneBtn.setText(R.string.done);
+                        userArrayAdapter = new UserArrayAdapter(getActivity(), selectedUsers);
+                        userListView.setAdapter(userArrayAdapter);
+                        break;
+                    }
+                    // don't break
                 case EDIT_STATE_DELETE_USERS:
                     setEditState(EDIT_STATE_INSPECT_USERS);
-                    addBtn.setText(R.string.add_remove);
-                    doneBtn.setText(R.string.done);
-                    selectedUsers.add(creator);
-                    userArrayAdapter.notifyDataSetChanged();
-                    break;
-
-                case EDIT_STATE_ADD_USERS:
-                    setEditState(EDIT_STATE_DELETE_USERS);
                     headerTextView.setText(R.string.event_form_users);
-                    addBtn.setText(R.string.event_form_add_members);
                     doneBtn.setText(R.string.done);
-                    userArrayAdapter = new UserArrayAdapter(getActivity(), (ArrayList<User>) selectedUsers);
-                    userListView.setAdapter(userArrayAdapter);
+                    if(!hasPositions) {
+                        selectedUsers.add(creator);
+                        addBtn.setText(R.string.add_remove);
+                    } else {
+                        addBtn.setText(R.string.event_form_add_members);
+                    }
+                    userArrayAdapter.notifyDataSetChanged();
                     break;
 
                 default:

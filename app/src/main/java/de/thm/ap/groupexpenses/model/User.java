@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class User implements Comparable<User>, Serializable {
+public class User implements Comparable<User> {
 
 
     private String uid;

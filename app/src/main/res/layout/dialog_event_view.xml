@@ -13,6 +13,8 @@
         android:layout_marginEnd="@dimen/app_margin"
         android:layout_marginStart="@dimen/app_margin"
         android:layout_marginTop="@dimen/app_margin"
+        android:drawableRight="@drawable/ic_close_grey_24dp"
+        android:drawablePadding="-20sp"
         android:gravity="center"
         android:text="Event"
         android:textColor="@android:color/black"

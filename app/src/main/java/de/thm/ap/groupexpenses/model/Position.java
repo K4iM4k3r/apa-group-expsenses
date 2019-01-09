@@ -2,6 +2,10 @@ package de.thm.ap.groupexpenses.model;
 
 import android.support.annotation.NonNull;
 
+import com.google.firebase.firestore.IgnoreExtraProperties;
+
+import org.apache.commons.lang3.NotImplementedException;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -10,9 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class Position implements Serializable {
+public class Position {
 
-    private int pid;
     //private HistoryValue<String> topic;
     //private HistoryValue<Float> value;
     private float value;
@@ -24,45 +27,24 @@ public class Position implements Serializable {
     
     //region constructor
     public Position(){}
-    public Position(String creatorId, String topic, Float value){
+
+    public Position(String creatorId, String topic, String info, Float value){
         this.creatorId = creatorId;
         this.date = Calendar.getInstance().getTimeInMillis();
         this.topic = topic;
+        this.info = info;
         this.value = value;
         this.peopleThatDontHaveToPay = new ArrayList<>();
         this.peopleThatDontHaveToPay.add(creatorId);
     }
-    @Deprecated
-    public Position(int positionId, String creatorId, String topic, Float value){
-        this.pid = positionId;
-        this.creatorId = creatorId;
-        this.topic = topic;
-        this.value = value;
-        this.date = Calendar.getInstance().getTimeInMillis();
-        this.peopleThatDontHaveToPay = new ArrayList<>();
-        this.peopleThatDontHaveToPay.add(creatorId);
-    }
-    public Position(int positionId, String creatorId, String topic, Float value, List<String> excludedPeople){
-        this.pid = positionId;
-        this.creatorId = creatorId;
-        this.topic = topic;
-        this.value = value;
-        this.date = Calendar.getInstance().getTimeInMillis();
-        this.peopleThatDontHaveToPay = new ArrayList<>();
-        this.peopleThatDontHaveToPay.add(creatorId);
+
+    public Position(String creatorId, String topic, String info, Float value, List<String> excludedPeople){
+        this(creatorId, topic, info, value);
         this.peopleThatDontHaveToPay.addAll(excludedPeople);
     }
     //endregion
 
     //region getter/setter
-    @Deprecated
-    public int getPid() {
-        return pid;
-    }
-    @Deprecated
-    public void setPid(int pid) {
-        this.pid = pid;
-    }
     public String getTopic() {
         return topic;
     }
@@ -90,17 +72,9 @@ public class Position implements Serializable {
     public String getCreatorId() {
         return creatorId;
     }
-/*
-    public Map<Long, String> getTopicHistory() {
-        return topic.getHistory();
-    }
-    public Map<Long, Float> getValueHistory() {
-        return value.getHistory();
-    }
-*/
     //endregion
 
-    //region public methods
+    //region expense-management
     /**
      * This will release the given debtor from any of his debts.
      */
@@ -140,15 +114,25 @@ public class Position implements Serializable {
         return credit;
     }
 
-    public boolean isClosable(List<String> involvedPeople) {
-        return peopleThatDontHaveToPay.containsAll(involvedPeople);
+    /**
+     * Calculates the balance the given user has in the event.
+     * Simpler form of getBalanceMap without information who owes whom.
+     */
+    public float getBalance(String userId, List<String> involvedPeople){
+        if (isCreator(userId)) {
+            float factor = (involvedPeople.size()-1f)/involvedPeople.size();
+            return value*factor;
+        }
+
+        float factor = 1f/involvedPeople.size();
+        return -(value*factor);
     }
 
     /**
      * Gives the position balance for specified userId.
-     * @return 0:if user is not involved, >0 for creditor, <0 for debtor
+     * @return Map of debt relations
      */
-    public Map<String,Float> getBalance(String userId, List<String> involvedPeople){
+    public Map<String,Float> getBalanceMap(String userId, List<String> involvedPeople){
         Map<String, Float> result = new HashMap<>();
 
         if(!involvedPeople.contains(userId))
@@ -169,15 +153,11 @@ public class Position implements Serializable {
         return result;
     }
 
-    @Deprecated
-    public float getFactorizedValue(float factor){
-        return (value * factor);
-    }
-
-    @NonNull
-    @Override
-    public String toString() {
-        return topic + ": " + value + " by " + creatorId;
+    /**
+     * Checks if all involvedPeople are excluded from payments.
+     */
+    public boolean isClosable(List<String> involvedPeople) {
+        return peopleThatDontHaveToPay.containsAll(involvedPeople);
     }
     //endregion
 
@@ -186,4 +166,10 @@ public class Position implements Serializable {
         return this.creatorId.equals(userId);
     }
     //endregion
+
+    @NonNull
+    @Override
+    public String toString() {
+        return topic + ": " + value + " by " + creatorId;
+    }
 }

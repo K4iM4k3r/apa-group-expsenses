@@ -45,17 +45,7 @@ public class Stats {
     }
 
     public static float getEventBalance(User appuser, Event e){
-        float balance = 0;
-        for (Position pos: e.getPositions()) {
-            //The current user made the position - gets money
-            if (appuser.getUid().equals(pos.getCreatorId())){
-                balance += pos.getFactorizedValue(e.getPositionFactor(true));
-                continue;
-            }
-            // App user is participant - has to pay money
-            balance -= pos.getFactorizedValue(e.getPositionFactor(false));
-        }
-        return balance;
+        return e.getBalance(appuser.getUid());
     }
 
     public static float getPositionBalance(Position p, Event e){
@@ -65,15 +55,7 @@ public class Stats {
     }
 
     public static float getPositionBalance(User app_user, Position p, Event e){
-        float balance;
-        if (app_user.getUid().equals(p.getCreatorId())){
-            //The current user made the position - gets money
-            balance = p.getFactorizedValue(e.getPositionFactor(true));
-        } else {
-            // App user is participant - has to pay money
-            balance = -p.getFactorizedValue(e.getPositionFactor(false));
-        }
-        return balance;
+        return p.getBalance(app_user.getUid(), e.getMembers());
     }
 
 }

@@ -50,13 +50,13 @@ public class StatsTest {
         Event event = new Event(creator.getUid(), "Festival2", "Morgen", "", Arrays.stream(member).map(User::getUid).collect(Collectors.toList()));
         event.addPositions(positions);
 
-        float balance = stats.getEventBalance(creator, event);
+        float balance = Stats.getEventBalance(creator, event);
 
         assertEquals(balance, -45, 0.01);
 
         event.addPositions(new Position(creator.getUid(), "Planung", 60f));
 
-        balance = stats.getEventBalance(creator, event);
+        balance = Stats.getEventBalance(creator, event);
 
         assertEquals(balance, 3, 0.01);
     }
@@ -76,22 +76,22 @@ public class StatsTest {
 
         events.add(event);
 
-        expected_balance = stats.getEventBalance(creator, event);
-        actual_balance = stats.getBalance(creator, events);
+        expected_balance = Stats.getEventBalance(creator, event);
+        actual_balance = Stats.getBalance(creator, events);
 
         assertEquals(actual_balance, expected_balance, 0.001);
 
         events.add(event1);
 
-        expected_balance = stats.getEventBalance(creator, event) + stats.getEventBalance(creator, event1);
-        actual_balance = stats.getBalance(creator, events);
+        expected_balance = Stats.getEventBalance(creator, event) + Stats.getEventBalance(creator, event1);
+        actual_balance = Stats.getBalance(creator, events);
 
         assertEquals(actual_balance, expected_balance);
 
         events.get(1).addPosition(creators_position);
 
-        expected_balance = stats.getEventBalance(creator, event) + stats.getEventBalance(creator, event1);
-        actual_balance = stats.getBalance(creator, events);
+        expected_balance = Stats.getEventBalance(creator, event) + Stats.getEventBalance(creator, event1);
+        actual_balance = Stats.getBalance(creator, events);
 
         assertEquals(actual_balance, expected_balance);
 
@@ -103,7 +103,7 @@ public class StatsTest {
         Stats stats = new Stats();
         Event event = new Event(creator.getUid(), "Festival2", "Morgen", "", Arrays.stream(member).map(User::getUid).collect(Collectors.toList()));
 
-        stats.getEventBalance(event);
+        Stats.getEventBalance(event);
     }
 
     @Test
@@ -120,7 +120,7 @@ public class StatsTest {
         events.add(event);
         events.add(event1);
 
-        Map<Event, Float> result = stats.calculateAll(creator, events);
+        Map<Event, Float> result = Stats.calculateAll(creator, events);
 
         int BREAK = 0;
     }
