@@ -100,7 +100,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
     @Override
     protected void onResume() {
         super.onResume();
-        int debug = 0;
+
     }
 
     @Override
@@ -146,7 +146,8 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
             switch (requestCode) {
                 case POSITION_CREATE_SUCCESS:
                     String eventEid = Objects.requireNonNull(data.getExtras()).getString("createdPositionEid");
-                    DatabaseHandler.queryEvent(eventEid, selectedEvent -> {
+                    DatabaseHandler.queryEvent(eventEid, result -> {
+                        selectedEvent = result;
                         objectListFragment.updateFragmentObjects(selectedEvent.getPositions(), selectedEvent, "Position");
                     });
                     break;

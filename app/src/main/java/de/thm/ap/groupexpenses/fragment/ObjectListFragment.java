@@ -34,6 +34,7 @@ public class ObjectListFragment<T> extends Fragment
 {
     private View view;
     private ListView object_listView;
+    private TextView noObjects_textView;
     private CustomCallLogListAdapter adapter;
     private View headerView;
     private Event relatedEventToPosition;
@@ -66,7 +67,7 @@ public class ObjectListFragment<T> extends Fragment
     }
 
     public void createFragmentObjects(List<T> objectList, Event relatedEvent, String type){
-        TextView noObjects_textView = view.findViewById(R.id.fragment_no_object_text);
+        noObjects_textView = view.findViewById(R.id.fragment_no_object_text);
 
         if(!objectList.isEmpty()){
             if(type.equals("Position"))
@@ -125,12 +126,25 @@ public class ObjectListFragment<T> extends Fragment
     }
 
     private void updateListView(List<T> objectList, String type){
+        if(objectList.isEmpty()) {
+            object_listView.removeHeaderView(headerView);
+            noObjects_textView.setVisibility(View.VISIBLE);
+            switch (type){
+                case "Event":
+                    noObjects_textView.setText(R.string.no_events);
+                    break;
+                case "Position":
+                    noObjects_textView.setText(R.string.no_positions);
+                    break;
+            }
+        }
         adapter = new CustomCallLogListAdapter(getActivity(),
                 R.layout.fragment_object_list_row, objectList, type);
         object_listView = view.findViewById(R.id.fragment_listView);
         object_listView.setAdapter(adapter);
         object_listView.setOnItemClickListener((parent, view, position, id) ->
                 itemSelected(object_listView.getItemAtPosition(position)));
+
         /*
         adapter.clear();
         adapter.addAll(objectList);
