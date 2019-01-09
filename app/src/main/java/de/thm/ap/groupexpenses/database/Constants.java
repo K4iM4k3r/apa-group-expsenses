@@ -9,4 +9,7 @@ public class Constants {
     public static final String DOC_USERS_LAST_NAME = "lastName";
     public static final String DOC_USERS_NICKNAME = "nickname";
     public static final String DOC_USERS_PROFILE_PIC_URL = "profilePic";
+    public static final String DOC_USERS_EVENTS = "events";
+
+    public static final String DOC_EVENTS_MEMBERS = "members";
 }

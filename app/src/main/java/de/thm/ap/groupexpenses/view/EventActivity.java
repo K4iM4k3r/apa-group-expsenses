@@ -23,6 +23,7 @@ import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.fragment.ObjectListFragment;
 import de.thm.ap.groupexpenses.model.Event;
+import de.thm.ap.groupexpenses.livedata.EventListLiveData;
 
 public class EventActivity extends BaseActivity implements ObjectListFragment.ItemClickListener {
 
@@ -33,6 +34,8 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
     private static final int EVENT_EDIT_SUCCESS = 26374;
 
     private static final String TAG = "EventActivity";
+
+    private EventListLiveData listLiveData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +52,18 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
             startActivity(new Intent(this, LoginActivity.class));
         } else {
             setCurrentUser(currentUser);
+
+            // Beispiel von der LiveData Nutzung
+
+//            listLiveData = DatabaseHandler.getEventListLiveData(currentUser.getUid());
+//            listLiveData.observe(this, eventList -> {
+//                eventsLoadingTextView.setVisibility(View.GONE);
+//                events = eventList;
+//                if(events == null) events = new ArrayList<>();
+//                objectListFragment = (ObjectListFragment)getSupportFragmentManager()
+//                        .findFragmentById(R.id.event_fragment);
+//                objectListFragment.createFragmentObjects(eventList, "Event");
+//            });
             DatabaseHandler.getAllUserEvents(currentUser.getUid(), result -> {
                 eventsLoadingTextView.setVisibility(View.GONE);
                 events = result;
