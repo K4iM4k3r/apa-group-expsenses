@@ -18,6 +18,7 @@ public class Event implements Serializable {
     private List<String> members; // cleaner way with HashSet TODO
     private List<Position> positions;
 
+    //region Constructor
     public Event(){}
     public Event(String creatorId, String name, String date, String info, List<String> members, List<Position> positions) {
         this.name = name;
@@ -48,7 +49,9 @@ public class Event implements Serializable {
         this.members.add(creatorId);
         this.positions = new ArrayList<>();
     }
+    //endregion
 
+    //region Getter/Setter/Adder
     public String getEid() {
         return eid;
     }
@@ -97,21 +100,25 @@ public class Event implements Serializable {
             addPosition(position);
         }
     }
+    //endregion
 
-    @Deprecated
-    public float getPositionFactor(boolean positive){
-        float posFactor = (float)(members.size()-1) / (float) members.size();
-        float negFactor = (float) (1.00/ members.size());
-        return positive? posFactor: negFactor;
-    }
-
+    //region Expense-Management
     public Map<String, Float> getBalanceTable(String userId){
         Map<String, Float> result = new HashMap<>();
         for(Position p : positions){
-            p.getBalance(userId, members).forEach((k,v)-> result.merge(k,v,Float::sum));
+            p.getBalanceMap(userId, members).forEach((k, v)-> result.merge(k,v,Float::sum));
         }
         return result;
     }
+
+    public float getBalance(String userId){
+        float balance = 0.f;
+        for(Position p : positions){
+            balance += p.getBalance(userId, members);
+        }
+        return balance;
+    }
+    //endregion
 
     @NonNull
     @Override

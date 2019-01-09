@@ -1,7 +1,6 @@
 package de.thm.ap.groupexpenses;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.nio.charset.Charset;
@@ -33,28 +32,28 @@ public class PositionTest {
         involvedPeople.add("Dan");
     }
 
-    @Ignore("Skipped positionTest() due to strange behaviour, seems like junit bug.")
-    @Test
-    public void positionTest(){
-
-        assertEquals(position.getTopic(), "Bier");
-        assertEquals(position.getValue(), 30f, 0.01);
-
-        position.setTopic("Käse");
-
-        int breaki = 0;
-
-        assertEquals(position.getTopic(), "Käse");
-        assertEquals(position.getTopicHistory().size(), 2);
-        assertEquals(position.getValueHistory().size(), 1);
-
-        position.setValue(50000f);
-
-        assertEquals(position.getValue(), 50000f, 0.01);
-        assertEquals(position.getValueHistory().size(), 2);
-
-        int BREAKPOINT = 0;
-    }
+//    @Ignore("Skipped positionTest() due to strange behaviour, seems like junit bug.")
+//    @Test
+//    public void positionTest(){
+//
+//        assertEquals(position.getTopic(), "Bier");
+//        assertEquals(position.getValue(), 30f, 0.01);
+//
+//        position.setTopic("Käse");
+//
+//        int breaki = 0;
+//
+//        assertEquals(position.getTopic(), "Käse");
+//        assertEquals(position.getTopicHistory().size(), 2);
+//        assertEquals(position.getValueHistory().size(), 1);
+//
+//        position.setValue(50000f);
+//
+//        assertEquals(position.getValue(), 50000f, 0.01);
+//        assertEquals(position.getValueHistory().size(), 2);
+//
+//        int BREAKPOINT = 0;
+//    }
 
     @Test
     public void getDebtTest(){
@@ -116,28 +115,28 @@ public class PositionTest {
     }
 
     @Test
-    public void getBalanceTest(){
+    public void getBalanceMapTest(){
 
         Map<String, Float> balance;
 
-        balance = position.getBalance("id1", involvedPeople);
+        balance = position.getBalanceMap("id1", involvedPeople);
         assertEquals(balance.size(), 5);
 
-        balance = position.getBalance("John", involvedPeople);
+        balance = position.getBalanceMap("John", involvedPeople);
         assertEquals(balance.size(), 1);
 
         position.removeDebtor("Jan");
 
-        balance = position.getBalance("id1", involvedPeople);
+        balance = position.getBalanceMap("id1", involvedPeople);
         assertEquals(balance.size(), 4);
-        balance = position.getBalance("John", involvedPeople);
+        balance = position.getBalanceMap("John", involvedPeople);
         assertEquals(balance.size(), 1);
 
         position.removeDebtor("John");
 
-        balance = position.getBalance("id1", involvedPeople);
+        balance = position.getBalanceMap("id1", involvedPeople);
         assertEquals(balance.size(), 3);
-        balance = position.getBalance("John", involvedPeople);
+        balance = position.getBalanceMap("John", involvedPeople);
         assertEquals(balance.size(), 0);
 
     }
