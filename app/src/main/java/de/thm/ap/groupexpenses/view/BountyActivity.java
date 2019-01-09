@@ -20,16 +20,19 @@ import de.thm.ap.groupexpenses.model.User;
 public class BountyActivity extends AppCompatActivity {
 
     //region testdata
+
     Position[] testPositions = new Position[]{
-            new Position(App.TestValues.USERS[1].getUid(), "Bier", 90f),
-            new Position(App.TestValues.USERS[2].getUid(), "Sprit", 120f),
-            new Position(App.TestValues.USERS[3].getUid(), "Essen", 15f),
-            new Position(App.TestValues.USERS[3].getUid(), "Kuchen", 30f),
-            new Position(App.TestValues.USER.getUid(), "App", 300f)
+            new Position(App.TestValues.USERS[1].getUid(), "Bier", "", 90f),
+            new Position(App.TestValues.USERS[2].getUid(), "Sprit", "",120f),
+            new Position(App.TestValues.USERS[3].getUid(), "Essen", "", 15f),
+            new Position(App.TestValues.USERS[3].getUid(), "Kuchen", "", 30f),
+            new Position(App.TestValues.USER.getUid(), "App", "", 300f)
 
     };
+
     Event testEvent = new Event(App.TestValues.USER.getUid(), "Festival", "11.01.2015", "",
             Arrays.stream(App.TestValues.USERS).map(User::getUid).collect(Collectors.toList()), Arrays.asList(testPositions));
+
     // endregion
 
     ListView bountyListView;

@@ -10,9 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class Position implements Serializable {
+public class Position {
 
-    private int pid;
     //private HistoryValue<String> topic;
     //private HistoryValue<Float> value;
     private float value;
@@ -24,46 +23,24 @@ public class Position implements Serializable {
     
     //region constructor
     public Position(){}
-    public Position(String creatorId, String topic, Float value){
+
+    public Position(String creatorId, String topic, String info, Float value){
         this.creatorId = creatorId;
         this.date = Calendar.getInstance().getTimeInMillis();
         this.topic = topic;
+        this.info = info;
         this.value = value;
         this.peopleThatDontHaveToPay = new ArrayList<>();
         this.peopleThatDontHaveToPay.add(creatorId);
     }
-    @Deprecated
-    public Position(int positionId, String creatorId, String topic, Float value){
-        this.pid = positionId;
-        this.creatorId = creatorId;
-        this.topic = topic;
-        this.value = value;
-        this.info = "";
-        this.date = Calendar.getInstance().getTimeInMillis();
-        this.peopleThatDontHaveToPay = new ArrayList<>();
-        this.peopleThatDontHaveToPay.add(creatorId);
-    }
-    public Position(int positionId, String creatorId, String topic, Float value, List<String> excludedPeople){
-        this.pid = positionId;
-        this.creatorId = creatorId;
-        this.topic = topic;
-        this.value = value;
-        this.date = Calendar.getInstance().getTimeInMillis();
-        this.peopleThatDontHaveToPay = new ArrayList<>();
-        this.peopleThatDontHaveToPay.add(creatorId);
+
+    public Position(String creatorId, String topic, String info, Float value, List<String> excludedPeople){
+        this(creatorId, topic, info, value);
         this.peopleThatDontHaveToPay.addAll(excludedPeople);
     }
     //endregion
 
     //region getter/setter
-    @Deprecated
-    public int getPid() {
-        return pid;
-    }
-    @Deprecated
-    public void setPid(int pid) {
-        this.pid = pid;
-    }
     public String getTopic() {
         return topic;
     }

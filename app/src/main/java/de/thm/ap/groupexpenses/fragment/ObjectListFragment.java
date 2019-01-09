@@ -65,12 +65,12 @@ public class ObjectListFragment<T> extends Fragment
         return view;
     }
 
-    public void createFragmentObjects(List<T> objectList, String type){
+    public void createFragmentObjects(List<T> objectList, Event relatedEvent, String type){
         TextView noObjects_textView = view.findViewById(R.id.fragment_no_object_text);
 
         if(!objectList.isEmpty()){
             if(type.equals("Position"))
-                setRelatedEventToPosition(objectList);
+                relatedEventToPosition = relatedEvent;
             init(objectList, type);
         } else {
             switch (type){
@@ -125,15 +125,17 @@ public class ObjectListFragment<T> extends Fragment
     }
 
     private void updateListView(List<T> objectList, String type){
-        //adapter.clear();
-        //adapter.addAll(objects);
-        // why does clear and add all not work? code below works (maybe because no database)
         adapter = new CustomCallLogListAdapter(getActivity(),
                 R.layout.fragment_object_list_row, objectList, type);
         object_listView = view.findViewById(R.id.fragment_listView);
         object_listView.setAdapter(adapter);
         object_listView.setOnItemClickListener((parent, view, position, id) ->
                 itemSelected(object_listView.getItemAtPosition(position)));
+        /*
+        adapter.clear();
+        adapter.addAll(objectList);
+        adapter.notifyDataSetChanged();
+        */
     }
 
     private void updateTotalBalance(List<T> objectList, String type){
@@ -142,7 +144,7 @@ public class ObjectListFragment<T> extends Fragment
 
         switch (type){
             case "Event":
-                List<Event> eventList = (List<Event>)(List<?>) objectList;
+                List<Event> eventList = (List<Event>) objectList;
                 balance = Stats.getBalance(eventList);
 
                 obj_val.setText(new DecimalFormat("0.00").format(balance)
@@ -167,14 +169,6 @@ public class ObjectListFragment<T> extends Fragment
             headerVal.setTextColor(Color.parseColor("#ef4545"));    // red
         else
             headerVal.setTextColor(Color.parseColor("#2ba050"));    // green
-    }
-
-    private void setRelatedEventToPosition(List<T> positionList){
-        // last el of list is the related Event to this Position- save it locally and
-        // rm it from positionList
-        int lastIdx = positionList.size() - 1;
-        relatedEventToPosition = (Event)positionList.get(lastIdx);
-        positionList.remove(lastIdx);
     }
 
     public void itemSelected(Object object){
@@ -207,7 +201,7 @@ public class ObjectListFragment<T> extends Fragment
             holder.object_balance = view.findViewById(R.id.balance);
             m_object = retrievedObjects.get(index);
             float balance = 0;
-            String fromPart = getString(R.string.from);;
+            String fromPart = getString(R.string.from);
             String creatorPart;
             String wholePart;
             Spannable spannable;

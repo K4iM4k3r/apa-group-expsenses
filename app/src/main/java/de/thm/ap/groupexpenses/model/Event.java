@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Event implements Serializable {
+public class Event {
 
     private String eid;
     private String name;
@@ -89,13 +89,35 @@ public class Event implements Serializable {
     public List<Position> getPositions() {
         return positions;
     }
+
     public void addPosition(Position position){
         positions.add(position);
     }
+
     public void addPositions(Position... positions){
         for (Position position : positions) {
             addPosition(position);
         }
+    }
+
+    public boolean updatePosition(Position position){
+        for(int idx = 0; idx < positions.size(); ++idx){
+            if(positions.get(idx).getDate().equals(position.getDate())){
+                positions.set(idx, position);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean deletePosition(Position position){
+        for(int idx = 0; idx < positions.size(); ++idx){
+            if(positions.get(idx).getDate().equals(position.getDate())){
+                positions.remove(idx);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Deprecated
