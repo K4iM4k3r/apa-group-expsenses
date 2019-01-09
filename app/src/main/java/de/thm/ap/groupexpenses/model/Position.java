@@ -2,6 +2,10 @@ package de.thm.ap.groupexpenses.model;
 
 import android.support.annotation.NonNull;
 
+import com.google.firebase.firestore.IgnoreExtraProperties;
+
+import org.apache.commons.lang3.NotImplementedException;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -68,17 +72,17 @@ public class Position {
     public String getCreatorId() {
         return creatorId;
     }
-/*
-    public Map<Long, String> getTopicHistory() {
-        return topic.getHistory();
+    @Deprecated
+    public int getPid() {
+        return pid;
     }
-    public Map<Long, Float> getValueHistory() {
-        return value.getHistory();
+    @Deprecated
+    public void setPid(int pid) {
+        this.pid = pid;
     }
-*/
     //endregion
 
-    //region public methods
+    //region expense-management
     /**
      * This will release the given debtor from any of his debts.
      */
@@ -118,15 +122,25 @@ public class Position {
         return credit;
     }
 
-    public boolean isClosable(List<String> involvedPeople) {
-        return peopleThatDontHaveToPay.containsAll(involvedPeople);
+    /**
+     * Calculates the balance the given user has in the event.
+     * Simpler form of getBalanceMap without information who owes whom.
+     */
+    public float getBalance(String userId, List<String> involvedPeople){
+        if (isCreator(userId)) {
+            float factor = (involvedPeople.size()-1f)/involvedPeople.size();
+            return value*factor;
+        }
+
+        float factor = 1f/involvedPeople.size();
+        return -(value*factor);
     }
 
     /**
      * Gives the position balance for specified userId.
-     * @return 0:if user is not involved, >0 for creditor, <0 for debtor
+     * @return Map of debt relations
      */
-    public Map<String,Float> getBalance(String userId, List<String> involvedPeople){
+    public Map<String,Float> getBalanceMap(String userId, List<String> involvedPeople){
         Map<String, Float> result = new HashMap<>();
 
         if(!involvedPeople.contains(userId))
@@ -147,15 +161,11 @@ public class Position {
         return result;
     }
 
-    @Deprecated
-    public float getFactorizedValue(float factor){
-        return (value * factor);
-    }
-
-    @NonNull
-    @Override
-    public String toString() {
-        return topic + ": " + value + " by " + creatorId;
+    /**
+     * Checks if all involvedPeople are excluded from payments.
+     */
+    public boolean isClosable(List<String> involvedPeople) {
+        return peopleThatDontHaveToPay.containsAll(involvedPeople);
     }
     //endregion
 
@@ -164,4 +174,10 @@ public class Position {
         return this.creatorId.equals(userId);
     }
     //endregion
+
+    @NonNull
+    @Override
+    public String toString() {
+        return topic + ": " + value + " by " + creatorId;
+    }
 }
