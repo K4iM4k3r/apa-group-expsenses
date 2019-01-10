@@ -67,9 +67,6 @@ public class PositionFormActivity extends BaseActivity {
                     DatabaseHandler.queryEvent(relatedEventEid, relatedEvent -> {
                         relatedEvent.addPosition(position);
                         DatabaseHandler.updateEvent(relatedEvent);
-                        Intent returnIntent = new Intent();
-                        returnIntent.putExtra("createdPositionEid", relatedEventEid);
-                        setResult(Activity.RESULT_OK, returnIntent);
                         finish();
                     });
                 }

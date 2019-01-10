@@ -40,6 +40,8 @@ import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.fragment.ObjectListFragment;
 import de.thm.ap.groupexpenses.fragment.UserListFragmentDialog;
+import de.thm.ap.groupexpenses.livedata.EventLiveData;
+import de.thm.ap.groupexpenses.livedata.UserListLiveData;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.Stats;
@@ -48,16 +50,16 @@ import de.thm.ap.groupexpenses.model.User;
 public class PositionActivity extends BaseActivity implements ObjectListFragment.ItemClickListener {
 
     private Event selectedEvent;
-    private ArrayList<User> selectedEventUserList;
+    private EventLiveData eventLiveData;
+    private UserListLiveData userListLiveData;
+    private List<User> selectedEventUserList;
     private ObjectListFragment objectListFragment;
-    private static final int POSITION_CREATE_SUCCESS = 11215;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_position);
         getSupportActionBar().setTitle(R.string.position_inspect_positions);
-
 
         String selectedEventEid = null;
         if (savedInstanceState == null) {
@@ -72,18 +74,17 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
             selectedEventEid = savedInstanceState.getString("eventEid");
         }
         if (selectedEventEid != null) {
-            DatabaseHandler.queryEvent(selectedEventEid, result -> {
-                selectedEvent = result;
-                selectedEventUserList = new ArrayList<>();
-                List<String> eventMemberUids = selectedEvent.getMembers();
-                for (int idx = 0; idx < eventMemberUids.size(); ++idx) {
-                    DatabaseHandler.queryUser(eventMemberUids.get(idx), result2 -> {
-                        selectedEventUserList.add(result2);
-                    });
-                }
+            eventLiveData = DatabaseHandler.getEventLiveData(selectedEventEid);
+            eventLiveData.observe(this, event -> {
+                selectedEvent = event;
                 objectListFragment = (ObjectListFragment) getSupportFragmentManager()
                         .findFragmentById(R.id.position_fragment);
-                objectListFragment.updateObjectList(selectedEvent.getPositions(), selectedEvent);
+                objectListFragment.updateObjectList(event.getPositions(), event);
+            });
+
+            userListLiveData = DatabaseHandler.getAllMembersOfEvent(selectedEventEid);
+            userListLiveData.observe(this, userList -> {
+                selectedEventUserList = userList;
             });
         } else {
             finish();
@@ -92,7 +93,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
         createPositionBtn.setOnClickListener(v -> {
             Intent intent = new Intent(PositionActivity.this, PositionFormActivity.class);
             intent.putExtra("relatedEventEid", selectedEvent.getEid());
-            startActivityForResult(intent, POSITION_CREATE_SUCCESS);
+            startActivity(intent);
         });
     }
 
@@ -137,21 +138,6 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
-            switch (requestCode) {
-                case POSITION_CREATE_SUCCESS:
-                    String eventEid = Objects.requireNonNull(data.getExtras()).getString("createdPositionEid");
-                    DatabaseHandler.queryEvent(eventEid, result -> {
-                        selectedEvent = result;
-                        objectListFragment.updateObjectList(selectedEvent.getPositions(), selectedEvent);
-                    });
-                    break;
-            }
-        }
-    }
-
-    @Override
     public void onFragmentObjectClick(Object object) {
         // show a custom alert dialog with position information
         new PositionAlertDialog((Position) object);
@@ -166,7 +152,6 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
         private Spannable creatorAndDateDefaultVal;
         private Button valueEditBtn, payBtn;
         private TextView dept_val, positionDepts;
-        private boolean position_edited, position_deleted;
         private AtomicBoolean clickable;
 
         PositionAlertDialog(Position selectedPosition) {
@@ -253,22 +238,6 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
             positionDialog.setView(view);
             dialog = positionDialog.create();
             dialog.show();
-            dialog.setOnDismissListener(dialog1 -> {
-                if (position_edited) {
-                    if(!selectedEvent.updatePosition(position)){
-                        throw new IllegalAccessError("Position '" + position.getTopic() +
-                                "' could not be updated in Event '" + selectedEvent.getName() + "'");
-                    } else {
-                        DatabaseHandler.updateEvent(selectedEvent);
-                        objectListFragment.updateObjectList(selectedEvent.getPositions(),
-                                selectedEvent);
-                    }
-
-                }
-                if (position_deleted)
-                    objectListFragment.updateObjectList(selectedEvent.getPositions(),
-                            selectedEvent);
-            });
         }
 
         @SuppressLint("SetTextI18n")
@@ -290,7 +259,12 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                 position.setValue(Float.parseFloat(quickEditField.getText().toString()));
                 dept_val.setText(new DecimalFormat("0.00")
                         .format(Stats.getPositionBalance(position, selectedEvent)) + " " + getString(R.string.euro));
-                position_edited = true;
+
+                if(!selectedEvent.updatePosition(position)){
+                    throw new IllegalAccessError("Position '" + position.getTopic() +
+                            "' could not be updated in Event '" + selectedEvent.getName() + "'");
+                } else
+                    DatabaseHandler.updateEvent(selectedEvent);
             });
             cancelBtn.setOnClickListener(v3 -> resetBackToNormal("edit_value"));
         }
@@ -315,7 +289,6 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                     throw new IllegalAccessError("Position '" + position.getTopic() +
                             "' could not be deleted from Event '" + selectedEvent.getName() + "'");
                 } else {
-                    position_deleted = true;
                     DatabaseHandler.updateEvent(selectedEvent);
                     dialog.dismiss();
                 }
@@ -390,7 +363,12 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                     position.setInfo(input);
                     positionInfo.setText(input);
                 }
-                position_edited = true;
+                if(!selectedEvent.updatePosition(position)){
+                    throw new IllegalAccessError("Position '" + position.getTopic() +
+                            "' could not be updated in Event '" + selectedEvent.getName() + "'");
+                } else
+                    DatabaseHandler.updateEvent(selectedEvent);
+
                 resetBackToNormal("edit_info");
             });
 
