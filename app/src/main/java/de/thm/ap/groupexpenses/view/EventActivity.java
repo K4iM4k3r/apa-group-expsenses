@@ -1,6 +1,5 @@
 package de.thm.ap.groupexpenses.view;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -12,7 +11,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import de.thm.ap.groupexpenses.App;
 
@@ -29,13 +27,11 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
 
     private List<Event> events;
     private ObjectListFragment objectListFragment;
-
-    private static final int EVENT_CREATE_SUCCESS = 19438;
-    private static final int EVENT_EDIT_SUCCESS = 26374;
+    private EventListLiveData listLiveData;
 
     private static final String TAG = "EventActivity";
 
-    private EventListLiveData listLiveData;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,74 +48,20 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
             startActivity(new Intent(this, LoginActivity.class));
         } else {
             setCurrentUser(currentUser);
-
-            // Beispiel von der LiveData Nutzung
-
-//            listLiveData = DatabaseHandler.getEventListLiveData(currentUser.getUid());
-//            listLiveData.observe(this, eventList -> {
-//                eventsLoadingTextView.setVisibility(View.GONE);
-//                events = eventList;
-//                if(events == null) events = new ArrayList<>();
-//                objectListFragment = (ObjectListFragment)getSupportFragmentManager()
-//                        .findFragmentById(R.id.event_fragment);
-//                objectListFragment.createFragmentObjects(eventList, "Event");
-//            });
-            DatabaseHandler.getAllUserEvents(currentUser.getUid(), result -> {
+            listLiveData = DatabaseHandler.getEventListLiveData(currentUser.getUid());
+            listLiveData.observe(this, eventList -> {
                 eventsLoadingTextView.setVisibility(View.GONE);
-                events = result;
+                events = eventList;
                 if (events == null) events = new ArrayList<>();
                 objectListFragment = (ObjectListFragment) getSupportFragmentManager()
                         .findFragmentById(R.id.event_fragment);
-                objectListFragment.createFragmentObjects(result, null, "Event");
-
+                objectListFragment.updateObjectList(eventList, null);
             });
         }
         FloatingActionButton createEventBtn = findViewById(R.id.create_event_btn);
-        createEventBtn.setOnClickListener(v -> startActivityForResult(
-                new Intent(EventActivity.this, EventFormActivity.class),
-                EVENT_CREATE_SUCCESS)
-        );
+        createEventBtn.setOnClickListener(v -> startActivity(
+                new Intent(EventActivity.this, EventFormActivity.class)));
         auth = FirebaseAuth.getInstance();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
-            String eventUid;
-            switch (requestCode) {
-                case EVENT_CREATE_SUCCESS:
-                    eventUid = Objects.requireNonNull(data.getExtras()).getString("createdEventEid");
-                    DatabaseHandler.queryEvent(eventUid, createdEvent -> {
-                        events.add(createdEvent);
-                        objectListFragment.updateFragmentObjects(events, null, "Event");
-                    });
-                    break;
-
-                case EVENT_EDIT_SUCCESS: // get inspected Event and update it (its positions or users)
-                    eventUid = Objects.requireNonNull(data.getExtras()).getString("editedEventUid");
-                    DatabaseHandler.queryEvent(eventUid, editedEvent -> {
-                        boolean eventFound = false;
-                        for (int idx = 0; idx < events.size(); ++idx) {
-                            if (editedEvent.getEid().equals((events.get(idx)).getEid())) {
-                                events.set(idx, editedEvent);
-                                eventFound = true;
-                                break;
-                            }
-                        }
-                        if (!eventFound)
-                            throw new IllegalStateException("Inspected Event not found!");
-                        else {
-                            objectListFragment.updateFragmentObjects(events, null, "Event");
-                        }
-                    });
-                    break;
-            }
-        }
     }
 
     @Override
@@ -152,7 +94,7 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
     public void onFragmentObjectClick(Object event) {
         Intent intent = new Intent(EventActivity.this, PositionActivity.class);
         intent.putExtra("eventEid", ((Event) event).getEid());
-        startActivityForResult(intent, EVENT_EDIT_SUCCESS);
+        startActivity(intent);
     }
 
     private void setCurrentUser(FirebaseUser currentUser) {

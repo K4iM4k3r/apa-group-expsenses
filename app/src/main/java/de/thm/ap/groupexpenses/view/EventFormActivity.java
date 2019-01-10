@@ -125,10 +125,7 @@ public class EventFormActivity extends BaseActivity {
                         eventInfoEditText.getText().toString(),
                         eventUserListStrings
                         );
-                Intent returnIntent = new Intent();
                 DatabaseHandler.createEvent(event);
-                returnIntent.putExtra("createdEventEid", event.getEid());
-                setResult(Activity.RESULT_OK, returnIntent);
                 finish();
             }
         }

@@ -9,7 +9,6 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
@@ -84,7 +83,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                 }
                 objectListFragment = (ObjectListFragment) getSupportFragmentManager()
                         .findFragmentById(R.id.position_fragment);
-                objectListFragment.createFragmentObjects(selectedEvent.getPositions(), selectedEvent, "Position");
+                objectListFragment.updateObjectList(selectedEvent.getPositions(), selectedEvent);
             });
         } else {
             finish();
@@ -131,9 +130,6 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
             case R.id.position_menu_done:
                 // return Event to EventActivity
                 DatabaseHandler.updateEvent(selectedEvent);
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("editedEventUid", selectedEvent.getEid());
-                setResult(Activity.RESULT_OK, returnIntent);
                 finish();
                 break;
         }
@@ -148,7 +144,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                     String eventEid = Objects.requireNonNull(data.getExtras()).getString("createdPositionEid");
                     DatabaseHandler.queryEvent(eventEid, result -> {
                         selectedEvent = result;
-                        objectListFragment.updateFragmentObjects(selectedEvent.getPositions(), selectedEvent, "Position");
+                        objectListFragment.updateObjectList(selectedEvent.getPositions(), selectedEvent);
                     });
                     break;
             }
@@ -264,14 +260,14 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                                 "' could not be updated in Event '" + selectedEvent.getName() + "'");
                     } else {
                         DatabaseHandler.updateEvent(selectedEvent);
-                        objectListFragment.updateFragmentObjects(selectedEvent.getPositions(),
-                                selectedEvent, "Position");
+                        objectListFragment.updateObjectList(selectedEvent.getPositions(),
+                                selectedEvent);
                     }
 
                 }
                 if (position_deleted)
-                    objectListFragment.updateFragmentObjects(selectedEvent.getPositions(),
-                            selectedEvent, "Removal");
+                    objectListFragment.updateObjectList(selectedEvent.getPositions(),
+                            selectedEvent);
             });
         }
 
@@ -394,6 +390,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                     position.setInfo(input);
                     positionInfo.setText(input);
                 }
+                position_edited = true;
                 resetBackToNormal("edit_info");
             });
 
