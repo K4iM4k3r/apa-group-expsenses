@@ -1,6 +1,7 @@
 package de.thm.ap.groupexpenses.model;
 
 import java.io.Serializable;
+
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -19,7 +20,9 @@ public class Event {
     private List<Position> positions;
 
     //region Constructor
-    public Event(){}
+    public Event() {
+    }
+
     public Event(String creatorId, String name, String date, String info, List<String> members, List<Position> positions) {
         this.name = name;
         this.date = date;
@@ -30,6 +33,7 @@ public class Event {
         addMember(creatorId);
         this.positions = positions;
     }
+
     public Event(String creatorId, String name, String date, String info, List<String> members) {
         this.creatorId = creatorId;
         this.name = name;
@@ -40,6 +44,7 @@ public class Event {
         addMember(creatorId);
         this.positions = new ArrayList<>();
     }
+
     public Event(String creatorId, String name, String date, String info) {
         this.creatorId = creatorId;
         this.name = name;
@@ -55,58 +60,76 @@ public class Event {
     public String getEid() {
         return eid;
     }
+
     public void setEid(String eid) {
         this.eid = eid;
     }
+
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
+
     public String getDate() {
         return date;
     }
+
     public void setDate(String date) {
         this.date = date;
     }
+
     public String getInfo() {
         return info;
     }
+
     public void setInfo(String info) {
         this.info = info;
     }
+
     public String getCreatorId() {
         return creatorId;
     }
+
     public List<String> getMembers() {
         return members;
     }
+
     public void addMember(String user) {
         if (!this.members.contains(user))
             this.members.add(user);
     }
-    public int getMemberCount(){
+
+    public void addMembers(String... users) {
+        for (String userUid : users)
+            if (!this.members.contains(userUid))
+                this.members.add(userUid);
+    }
+
+    public int getMemberCount() {
         return getMembers().size();
     }
+
     public List<Position> getPositions() {
         return positions;
     }
 
-    public void addPosition(Position position){
+    public void addPosition(Position position) {
         positions.add(position);
     }
 
-    public void addPositions(Position... positions){
+    public void addPositions(Position... positions) {
         for (Position position : positions) {
             addPosition(position);
         }
     }
     //endregion
 
-    public boolean updatePosition(Position position){
-        for(int idx = 0; idx < positions.size(); ++idx){
-            if(positions.get(idx).getDate().equals(position.getDate())){
+    public boolean updatePosition(Position position) {
+        for (int idx = 0; idx < positions.size(); ++idx) {
+            if (positions.get(idx).getDate().equals(position.getDate())) {
                 positions.set(idx, position);
                 return true;
             }
@@ -114,9 +137,9 @@ public class Event {
         return false;
     }
 
-    public boolean deletePosition(Position position){
-        for(int idx = 0; idx < positions.size(); ++idx){
-            if(positions.get(idx).getDate().equals(position.getDate())){
+    public boolean deletePosition(Position position) {
+        for (int idx = 0; idx < positions.size(); ++idx) {
+            if (positions.get(idx).getDate().equals(position.getDate())) {
                 positions.remove(idx);
                 return true;
             }
@@ -125,24 +148,24 @@ public class Event {
     }
 
     @Deprecated
-    public float getPositionFactor(boolean positive){
-        float posFactor = (float)(members.size()-1) / (float) members.size();
-        float negFactor = (float) (1.00/ members.size());
-        return positive? posFactor: negFactor;
+    public float getPositionFactor(boolean positive) {
+        float posFactor = (float) (members.size() - 1) / (float) members.size();
+        float negFactor = (float) (1.00 / members.size());
+        return positive ? posFactor : negFactor;
     }
 
     //region Expense-Management
-    public Map<String, Float> getBalanceTable(String userId){
+    public Map<String, Float> getBalanceTable(String userId) {
         Map<String, Float> result = new HashMap<>();
-        for(Position p : positions){
-            p.getBalanceMap(userId, members).forEach((k, v)-> result.merge(k,v,Float::sum));
+        for (Position p : positions) {
+            p.getBalanceMap(userId, members).forEach((k, v) -> result.merge(k, v, Float::sum));
         }
         return result;
     }
 
-    public float getBalance(String userId){
+    public float getBalance(String userId) {
         float balance = 0.f;
-        for(Position p : positions){
+        for (Position p : positions) {
             balance += p.getBalance(userId, members);
         }
         return balance;

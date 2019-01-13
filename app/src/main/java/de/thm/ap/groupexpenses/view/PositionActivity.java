@@ -1,7 +1,6 @@
 package de.thm.ap.groupexpenses.view;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -27,12 +26,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.thm.ap.groupexpenses.App;
@@ -52,7 +50,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
     private Event selectedEvent;
     private EventLiveData eventLiveData;
     private UserListLiveData userListLiveData;
-    private List<User> selectedEventUserList;
+    private List<User> eventMembers;
     private ObjectListFragment objectListFragment;
 
     @Override
@@ -84,16 +82,23 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
 
             userListLiveData = DatabaseHandler.getAllMembersOfEvent(selectedEventEid);
             userListLiveData.observe(this, userList -> {
-                selectedEventUserList = userList;
+                eventMembers = userList;
             });
         } else {
             finish();
         }
         FloatingActionButton createPositionBtn = findViewById(R.id.create_position_btn);
         createPositionBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(PositionActivity.this, PositionFormActivity.class);
-            intent.putExtra("relatedEventEid", selectedEvent.getEid());
-            startActivity(intent);
+            List<String> members = selectedEvent.getMembers();
+            if(selectedEvent.getMembers() == null || selectedEvent.getMembers().size() == 1){
+                Toast error_no_members_toast = Toast.makeText(this, R.string.error_no_members,
+                        Toast.LENGTH_LONG);
+                error_no_members_toast.show();
+            } else {
+                Intent intent = new Intent(PositionActivity.this, PositionFormActivity.class);
+                intent.putExtra("relatedEventEid", selectedEvent.getEid());
+                startActivity(intent);
+            }
         });
     }
 
@@ -115,10 +120,9 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
 
         switch (id) {
             case R.id.position_menu_inspect_users:
-                DatabaseHandler.getAllMembersOfEvent(selectedEvent.getEid(), memberList -> {
-                    UserListFragmentDialog dialog = UserListFragmentDialog
-                            .newInstance(selectedEventUserList, memberList, selectedEvent.getCreatorId(),
-                                    !selectedEvent.getPositions().isEmpty());
+                DatabaseHandler.getAllFriendsOfUser(auth.getCurrentUser().getUid(), friendsList -> {
+                    UserListFragmentDialog dialog = new UserListFragmentDialog();
+                    dialog.build(selectedEvent, eventMembers, friendsList);
                     dialog.show(getFragmentManager(), "edit_event");
                 });
                 break;

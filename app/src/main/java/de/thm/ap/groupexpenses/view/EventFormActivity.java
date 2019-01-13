@@ -49,7 +49,8 @@ public class EventFormActivity extends BaseActivity {
         addMembersBtn.setOnClickListener(v -> {
             DatabaseHandler.getAllFriendsOfUser(auth.getCurrentUser().getUid(), result -> {
                 List<User> friendsList = result;
-                UserListFragmentDialog dialog = UserListFragmentDialog.newInstance(eventUsersList, friendsList);
+                UserListFragmentDialog dialog = new UserListFragmentDialog();
+                dialog.build(eventUsersList, friendsList);
                 dialog.show(getFragmentManager(), "create_event");
             });
 
@@ -101,11 +102,11 @@ public class EventFormActivity extends BaseActivity {
             } else if(!isValidDate(eventDateEditText.getText().toString())){
                 eventDateEditText.setError(getString(R.string.error_invalid_date));
                 eventDateEditText.requestFocus();
-            }  else if(eventUsersList == null || eventUsersList.isEmpty()){
+            } /* else if(eventUsersList == null || eventUsersList.isEmpty()){
                 eventUsersTextView.setText(getString(R.string.error_users_required));
                 addMembersBtn.setError("");
                 addMembersBtn.requestFocus();
-            } else {
+            } */ else {
                 // save event strings here
 
                 if(eventUsersList == null) eventUsersList = new ArrayList<>();

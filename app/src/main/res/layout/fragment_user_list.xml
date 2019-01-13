@@ -39,7 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/fragment_user_list_done_btn"
-        android:text="@string/add" />
+        android:text="@string/ok" />
 
     <Button
         android:id="@+id/fragment_user_list_done_btn"
