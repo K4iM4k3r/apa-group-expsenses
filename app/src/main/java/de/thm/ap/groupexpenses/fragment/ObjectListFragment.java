@@ -176,7 +176,7 @@ public class ObjectListFragment<T> extends Fragment
                 holder.object_creator.setText(spannable, TextView.BufferType.SPANNABLE);
                 holder.object_balance.setText(new DecimalFormat("0.00")
                         .format(balance)+ " " + getString(R.string.euro));
-            } else {
+            } else {    // its an Event
                 Event event = (Event)m_object;
                 balance = Stats.getEventBalance(event);
                 holder.object_name.setText(event.getName());
