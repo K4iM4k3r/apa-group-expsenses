@@ -51,5 +51,4 @@
         app:borderWidth="0dp"
         app:srcCompat="@drawable/ic_add_white_24dp" />
 
-
 </RelativeLayout>
