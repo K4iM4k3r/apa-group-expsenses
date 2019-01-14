@@ -5,6 +5,7 @@
     <string name="event_form_name">Name des Events</string>
     <string name="event_form_date">Datum</string>
     <string name="ok">OK</string>
+    <string name="unknown">Unbekannt</string>
     <string name="add_with_num">Hinzufügen (%1$d)</string>
     <string name="remove_with_num">Entfernen (%1$d)</string>
     <string name="add_remove">Hinzufügen/ Entfernen</string>

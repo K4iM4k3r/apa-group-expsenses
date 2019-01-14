@@ -48,8 +48,6 @@ import de.thm.ap.groupexpenses.model.User;
 public class PositionActivity extends BaseActivity implements ObjectListFragment.ItemClickListener {
 
     private Event selectedEvent;
-    private EventLiveData eventLiveData;
-    private UserListLiveData userListLiveData;
     private List<User> eventMembers;
     private ObjectListFragment objectListFragment;
 
@@ -72,7 +70,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
             selectedEventEid = savedInstanceState.getString("eventEid");
         }
         if (selectedEventEid != null) {
-            eventLiveData = DatabaseHandler.getEventLiveData(selectedEventEid);
+            EventLiveData eventLiveData = DatabaseHandler.getEventLiveData(selectedEventEid);
             eventLiveData.observe(this, event -> {
                 selectedEvent = event;
                 objectListFragment = (ObjectListFragment) getSupportFragmentManager()
@@ -80,7 +78,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                 objectListFragment.updateObjectList(event.getPositions(), event);
             });
 
-            userListLiveData = DatabaseHandler.getAllMembersOfEvent(selectedEventEid);
+            UserListLiveData userListLiveData = DatabaseHandler.getAllMembersOfEvent(selectedEventEid);
             userListLiveData.observe(this, userList -> {
                 eventMembers = userList;
             });
@@ -89,8 +87,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
         }
         FloatingActionButton createPositionBtn = findViewById(R.id.create_position_btn);
         createPositionBtn.setOnClickListener(v -> {
-            List<String> members = selectedEvent.getMembers();
-            if(selectedEvent.getMembers() == null || selectedEvent.getMembers().size() == 1){
+            if (selectedEvent.getMembers() == null || selectedEvent.getMembers().size() == 1) {
                 Toast error_no_members_toast = Toast.makeText(this, R.string.error_no_members,
                         Toast.LENGTH_LONG);
                 error_no_members_toast.show();
@@ -144,7 +141,14 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
     @Override
     public void onFragmentObjectClick(Object object) {
         // show a custom alert dialog with position information
-        new PositionAlertDialog((Position) object);
+        Position selectedPosition = (Position) object;
+        if (App.CurrentUser.getUid().equals(selectedPosition.getCreatorId())) {
+            new PositionAlertDialog(selectedPosition, null);
+        } else {
+            DatabaseHandler.queryUser(selectedPosition.getCreatorId(), positionCreator -> {
+                new PositionAlertDialog(selectedPosition, positionCreator.getNickname());
+            });
+        }
     }
 
     private class PositionAlertDialog {
@@ -157,8 +161,11 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
         private Button valueEditBtn, payBtn;
         private TextView dept_val, positionDepts;
         private AtomicBoolean clickable;
+        private TextView positionCreatorAndDate;
+        private String creatorNickname;
 
-        PositionAlertDialog(Position selectedPosition) {
+        PositionAlertDialog(Position selectedPosition, String creatorNickname) {
+            this.creatorNickname = creatorNickname;
             positionDialog = new AlertDialog.Builder(PositionActivity.this);
             position = selectedPosition;
             view = getLayoutInflater().inflate(R.layout.dialog_position_view, null);
@@ -173,13 +180,13 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
         private void createDialog() {
             TextView positionName = view.findViewById(R.id.position_dialog_name);
             positionDepts = view.findViewById(R.id.position_dialog_your_depts);
-            TextView positionCreatorAndDate = view.findViewById(R.id.position_dialog_creator_and_date);
+            positionCreatorAndDate = view.findViewById(R.id.position_dialog_creator_and_date);
             positionInfo = view.findViewById(R.id.position_dialog_info);
 
-            String creator;
             String positionDeptValue;
+            String creator;
 
-            if (App.CurrentUser.getUid().equals(position.getCreatorId())) {
+            if (creatorNickname == null) {
                 // user is creator
                 creator = getString(R.string.you);
                 positionInfo.setCompoundDrawablesWithIntrinsicBounds(0, 0,
@@ -211,28 +218,24 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                         return clickable.get() && infoEditBtnClicked(event);
                     }
                 });
-
-                // close btn clicked
-                positionName.setOnTouchListener(new RightDrawableOnTouchListener(positionName) {
-                    @Override
-                    public boolean onDrawableTouch(final MotionEvent event) {
-                        dialog.dismiss();
-                        return clickable.get();
-                    }
-                });
-
-
             } else {
-                creator = position.getCreatorId();
+                creator = creatorNickname;
                 positionDeptValue = getResources().getString(R.string.your_depts);
+                payBtn.setOnClickListener(v -> {
+                    // pay btn clicked
+                    // TODO: pay with paypal here
+                });
             }
+            displayCreator(creator);
+            // close btn clicked
+            positionName.setOnTouchListener(new RightDrawableOnTouchListener(positionName) {
+                @Override
+                public boolean onDrawableTouch(final MotionEvent event) {
+                    dialog.dismiss();
+                    return clickable.get();
+                }
+            });
             positionName.setText(position.getTopic());
-            String date = new Date(position.getDate()).toString();
-            String creatorAndDate = getResources().getString(R.string.creator_and_date_position, creator, date);
-            creatorAndDateDefaultVal = new SpannableString(creatorAndDate);
-            creatorAndDateDefaultVal.setSpan(new ForegroundColorSpan(Color.parseColor("#3a90e0")),
-                    13, 13 + creator.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            positionCreatorAndDate.setText(creatorAndDateDefaultVal, TextView.BufferType.SPANNABLE);
             positionDepts.setText(positionDeptValue);
             dept_val.setText(new DecimalFormat("0.00")
                     .format(Stats.getPositionBalance(position, selectedEvent)) + " " + getString(R.string.euro));
@@ -242,6 +245,15 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
             positionDialog.setView(view);
             dialog = positionDialog.create();
             dialog.show();
+        }
+
+        private void displayCreator(String creator) {
+            String date = new Date(position.getDate()).toString();
+            String creatorAndDate = getResources().getString(R.string.creator_and_date_position, creator, date);
+            creatorAndDateDefaultVal = new SpannableString(creatorAndDate);
+            creatorAndDateDefaultVal.setSpan(new ForegroundColorSpan(Color.parseColor("#3a90e0")),
+                    13, 13 + creator.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            positionCreatorAndDate.setText(creatorAndDateDefaultVal, TextView.BufferType.SPANNABLE);
         }
 
         @SuppressLint("SetTextI18n")
@@ -264,7 +276,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                 dept_val.setText(new DecimalFormat("0.00")
                         .format(Stats.getPositionBalance(position, selectedEvent)) + " " + getString(R.string.euro));
 
-                if(!selectedEvent.updatePosition(position)){
+                if (!selectedEvent.updatePosition(position)) {
                     throw new IllegalAccessError("Position '" + position.getTopic() +
                             "' could not be updated in Event '" + selectedEvent.getName() + "'");
                 } else
@@ -367,7 +379,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                     position.setInfo(input);
                     positionInfo.setText(input);
                 }
-                if(!selectedEvent.updatePosition(position)){
+                if (!selectedEvent.updatePosition(position)) {
                     throw new IllegalAccessError("Position '" + position.getTopic() +
                             "' could not be updated in Event '" + selectedEvent.getName() + "'");
                 } else
