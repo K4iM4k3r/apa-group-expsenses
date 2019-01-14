@@ -37,7 +37,6 @@ import de.thm.ap.groupexpenses.view.EventFormActivity;
 public class UserListFragmentDialog extends DialogFragment {
 
     private View view;
-    private TextView headerTextView;
     private ListView userListView;
     private Button addBtn, doneBtn;
     private UserArrayAdapter userArrayAdapter;
@@ -62,7 +61,7 @@ public class UserListFragmentDialog extends DialogFragment {
     public void build(Event selectedEvent, List<User> selectedUsers, List<User> friendsList) {
         build(selectedUsers, friendsList);
         this.selectedEvent = selectedEvent;
-        if(!selectedEvent.getPositions().isEmpty()) hasPositions = true;
+        if (!selectedEvent.getPositions().isEmpty()) hasPositions = true;
         if (App.CurrentUser.getUid().equals(selectedEvent.getCreatorId())) isCreator = true;
     }
 
@@ -75,6 +74,8 @@ public class UserListFragmentDialog extends DialogFragment {
             parent.removeView(view);
         }
         EditText userSearchEditText = view.findViewById(R.id.fragment_user_list_search_editText);
+        ImageView closeIconImageView = view.findViewById(R.id.fragment_user_list_close_imageView);
+        TextView headerTextView = view.findViewById(R.id.fragment_user_list_users_textView);
         userListView = view.findViewById(R.id.fragment_user_list_listView);
         addBtn = view.findViewById(R.id.fragment_user_list_add_btn);
         doneBtn = view.findViewById(R.id.fragment_user_list_done_btn);
@@ -95,12 +96,10 @@ public class UserListFragmentDialog extends DialogFragment {
             else addBtn.setVisibility(View.GONE);
 
             if (hasPositions) addBtn.setText(R.string.event_form_add_members);
-
-            headerTextView = view.findViewById(R.id.fragment_user_list_users_textView);
-            headerTextView.setVisibility(View.VISIBLE);
             userArrayAdapter = new UserArrayAdapter(getActivity(), selectedUsers);
         } else {
-            doneBtn.setText(R.string.cancel);
+            headerTextView.setText(R.string.event_form_add_members);
+            doneBtn.setVisibility(View.GONE);
             userArrayAdapter = new UserArrayAdapter(getActivity(), friendsList);
         }
         userListView.setAdapter(userArrayAdapter);
@@ -252,6 +251,10 @@ public class UserListFragmentDialog extends DialogFragment {
             }
         });
 
+        closeIconImageView.setOnClickListener(v -> {
+            getDialog().dismiss();
+        });
+
         return view;
     }
 
@@ -265,7 +268,7 @@ public class UserListFragmentDialog extends DialogFragment {
                     showConfirmDialog(addableUsersSelected.size(), usersDeleted.size());
                 }
             } else if (addableUsersSelected != null) {
-                if(addableUsersSelected.size() > 0){
+                if (addableUsersSelected.size() > 0) {
                     showConfirmDialog(addableUsersSelected.size(), 0);
                 }
             }
@@ -310,8 +313,8 @@ public class UserListFragmentDialog extends DialogFragment {
         });
 
         confirmBtn.setOnClickListener(v -> {
-            String [] addableUsersSelectedUids = new String[addableUsersSelected.size()];
-            for(int idx = 0; idx < addableUsersSelected.size(); ++idx)
+            String[] addableUsersSelectedUids = new String[addableUsersSelected.size()];
+            for (int idx = 0; idx < addableUsersSelected.size(); ++idx)
                 addableUsersSelectedUids[idx] = addableUsersSelected.get(idx).getUid();
             selectedEvent.addMembers(addableUsersSelectedUids);
             DatabaseHandler.updateEvent(selectedEvent);
@@ -380,6 +383,8 @@ public class UserListFragmentDialog extends DialogFragment {
                         case EDIT_STATE_DELETE_USERS:
                             image = listItem.findViewById(R.id.fragment_user_list_row_image_delete);
                             image.setVisibility(View.VISIBLE);
+                            if(currentUser.getUid().equals(selectedEvent.getCreatorId()))
+                                image.setVisibility(View.GONE);
                             if (addableUsersSelected != null) {
                                 for (int idx = 0; idx < addableUsersSelected.size(); ++idx) {
                                     if (userId == addableUsersSelected.get(idx).getUid()) {
