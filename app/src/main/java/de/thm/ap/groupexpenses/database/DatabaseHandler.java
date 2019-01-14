@@ -11,7 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.thm.ap.groupexpenses.model.Event;
+import de.thm.ap.groupexpenses.livedata.EventListLiveData;
+import de.thm.ap.groupexpenses.livedata.EventLiveData;
 import de.thm.ap.groupexpenses.model.User;
+import de.thm.ap.groupexpenses.livedata.UserListLiveData;
+import de.thm.ap.groupexpenses.livedata.UserLiveData;
 
 public class DatabaseHandler {
 
@@ -93,7 +97,7 @@ public class DatabaseHandler {
             });
 
             event.getMembers().forEach(m -> queryUser(m, member -> {
-                if(member != null){
+                if(member != null && !member.getEvents().contains(event.getEid())){
                     member.addEvent(event.getEid());
                     updateUser(member);
                 }
@@ -104,13 +108,19 @@ public class DatabaseHandler {
     public static void updateEvent(Event event){
         DocumentReference documentReference = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS).document(event.getEid());
         documentReference.set(event).addOnCompleteListener(c -> event.getMembers().forEach(m -> queryUser(m, member -> {
-            if(member != null){
+            if(member != null && !member.getEvents().contains(event.getEid())){
                 member.addEvent(event.getEid());
                 updateUser(member);
             }
         })));
     }
 
+    public static UserLiveData qetUserLiveData(String uid){
+        DocumentReference docRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_USERS).document(uid);
+        return new UserLiveData(docRef);
+    }
+
+    @Deprecated
     public static void onUserChangeListener(String uid, Callback<User> callback){
         DocumentReference docRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_USERS).document(uid);
         docRef.addSnapshotListener((snapshot, e) -> {
@@ -143,6 +153,29 @@ public class DatabaseHandler {
     }
 
 
+    public static EventLiveData getEventLiveData(String eid){
+        DocumentReference docRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS).document(eid);
+        return new EventLiveData(docRef);
+    }
+
+    public static EventListLiveData getEventListLiveData(String uid){
+        CollectionReference usersRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS);
+        Query query = usersRef.whereArrayContains(Constants.DOC_EVENTS_MEMBERS, uid);
+        return new EventListLiveData(query);
+    }
+
+    public static UserListLiveData getAllMembersOfEvent(String eid){
+        CollectionReference usersRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_USERS);
+        Query query = usersRef.whereArrayContains(Constants.DOC_USERS_EVENTS, eid);
+        return new UserListLiveData(query);
+    }
+
+    /**
+     * @deprecated use instead getEventListLiveData
+     * @param uid
+     * @param callback
+     */
+    @Deprecated
     public static void getAllUserEvents(String uid, Callback<List<Event>> callback){
         List<Event> result = new ArrayList<>();
         queryUser(uid, user -> {
@@ -161,23 +194,48 @@ public class DatabaseHandler {
         });
     }
 
-    public static void getAllFriendsOfUser(String uid, Callback<List<User>> callback){
+
+    public static void getAllFriendsOfUser(String uid, Callback<List<User>> callback) {
         List<User> result = new ArrayList<>();
         queryUser(uid, user -> {
-            final int lengthFriends = user.getFriendsIds().size();
-            if(lengthFriends == 0){
-                callback.onResult(result);
-            }
-            else{
-                user.getFriendsIds().forEach(fid -> queryUser(fid, friend -> {
-                    result.add(friend);
-                    if(result.size() == lengthFriends){
-                        callback.onResult(result);
-                    }
-                }));
+            if (user.getFriendsIds() != null) {
+                final int lengthFriends = user.getFriendsIds().size();
+                if (lengthFriends == 0) {
+                    callback.onResult(result);
+                } else {
+                    user.getFriendsIds().forEach(fid -> queryUser(fid, friend -> {
+                        result.add(friend);
+                        if (result.size() == lengthFriends) {
+                            callback.onResult(result);
+                        }
+                    }));
+                }
             }
         });
+    }
 
+    /**
+     * @deprecated Use getAllMembersOfEvent without callback
+     */
+    @Deprecated
+    public static void getAllMembersOfEvent(String eid, Callback<List<User>> callback){
+        List<User> result = new ArrayList<>();
+        queryEvent(eid, event -> {
+            if(event.getMembers() != null){
+                final int lengthMembers = event.getMembers().size();
+                if(lengthMembers == 0){
+                    callback.onResult(result);
+                }
+                else{
+                    event.getMembers().forEach(fid -> queryUser(fid, member -> {
+                        result.add(member);
+                        if(result.size() == lengthMembers){
+                            callback.onResult(result);
+                        }
+                    }));
+                }
+            }
+        });
     }
 
 }

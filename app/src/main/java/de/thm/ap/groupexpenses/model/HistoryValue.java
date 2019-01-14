@@ -5,7 +5,6 @@ import java.io.Serializable;
 import android.support.annotation.NonNull;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 

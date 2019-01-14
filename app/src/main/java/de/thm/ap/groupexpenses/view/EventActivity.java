@@ -1,11 +1,8 @@
 package de.thm.ap.groupexpenses.view;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,23 +17,21 @@ import de.thm.ap.groupexpenses.App;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.fragment.ObjectListFragment;
 import de.thm.ap.groupexpenses.model.Event;
-import de.thm.ap.groupexpenses.model.Position;
-import de.thm.ap.groupexpenses.model.User;
+import de.thm.ap.groupexpenses.livedata.EventListLiveData;
 
-public class EventActivity extends BaseActivity implements ObjectListFragment.ItemClickListener{
+public class EventActivity extends BaseActivity implements ObjectListFragment.ItemClickListener {
 
     private List<Event> events;
     private ObjectListFragment objectListFragment;
-
-    private static final int EVENT_CREATE_SUCCESS = 19438;
-    private static final int EVENT_INSPECT_SUCCESS = 26374;
+    private EventListLiveData listLiveData;
 
     private static final String TAG = "EventActivity";
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,90 +44,24 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
 
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = auth.getCurrentUser();
-        if(currentUser == null || !currentUser.isEmailVerified()){
+        if (currentUser == null || !currentUser.isEmailVerified()) {
             startActivity(new Intent(this, LoginActivity.class));
-        }
-        else{
-            DatabaseHandler.getAllUserEvents(currentUser.getUid(), result -> {
+        } else {
+            setCurrentUser(currentUser);
+            listLiveData = DatabaseHandler.getEventListLiveData(currentUser.getUid());
+            listLiveData.observe(this, eventList -> {
                 eventsLoadingTextView.setVisibility(View.GONE);
-                events = result;
-                if(events == null) events = new ArrayList<>();
-                objectListFragment = (ObjectListFragment)getSupportFragmentManager()
+                events = eventList;
+                if (events == null) events = new ArrayList<>();
+                objectListFragment = (ObjectListFragment) getSupportFragmentManager()
                         .findFragmentById(R.id.event_fragment);
-                objectListFragment.createFragmentObjects(result, "Event");
-
+                objectListFragment.updateObjectList(eventList, null);
             });
-//            DatabaseHandler.onUserChangeListener(currentUser.getUid(), us ->{
-//                App.CurrentUser = us;
-//
-//                User s = App.CurrentUser;
-//            });
         }
-
-
-
-
-//                DatabaseHandler.createEvent(App.TestValues.EVENT1);
-//                DatabaseHandler.queryEvent("n3YmRXOCPmZtCU1BsJq5", event ->{
-//                    Log.d(TAG, event.toString());
-//                });
-//                String uid = FirebaseAuth.getInstance().getUid();
-//                DatabaseHandler.getAllUserEvents(uid, result -> {
-//
-//                    Log.d(TAG, result.toString());
-//                });
-
-
-
-
-
         FloatingActionButton createEventBtn = findViewById(R.id.create_event_btn);
-        createEventBtn.setOnClickListener(v -> startActivityForResult(
-                new Intent(EventActivity.this, EventFormActivity.class),
-                EVENT_CREATE_SUCCESS)
-        );
-
+        createEventBtn.setOnClickListener(v -> startActivity(
+                new Intent(EventActivity.this, EventFormActivity.class)));
         auth = FirebaseAuth.getInstance();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode == Activity.RESULT_OK){
-            Event event;
-            switch(requestCode) {
-                case EVENT_CREATE_SUCCESS:
-                    event = (Event) data.getExtras().getSerializable("createdEvent");
-                    events.add(event);
-                    DatabaseHandler.createEvent(event);
-                    objectListFragment.updateFragmentObjects(events, null, "Event");
-                    break;
-
-                case EVENT_INSPECT_SUCCESS: // get inspected Event and update it (its positions)
-                    event = (Event) data.getExtras().getSerializable("inspectedEvent");
-                    boolean eventFound = false;
-
-                    for(int idx = 0; idx < events.size(); ++idx) {
-                        if (event.getEid().equals((events.get(idx)).getEid())) {
-                            events.set(idx, event);
-                            eventFound = true;
-                            break;
-                        }
-                    }
-
-                    if(!eventFound)
-                        throw new IllegalStateException("Inspected Event not found!");
-                    else {
-                        objectListFragment.updateFragmentObjects(events, null, "Event");
-                    }
-
-                    break;
-            }
-        }
     }
 
     @Override
@@ -153,7 +82,6 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -165,7 +93,13 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
     @Override
     public void onFragmentObjectClick(Object event) {
         Intent intent = new Intent(EventActivity.this, PositionActivity.class);
-        intent.putExtra("event", (Event)event);
-        startActivityForResult(intent, EVENT_INSPECT_SUCCESS);
+        intent.putExtra("eventEid", ((Event) event).getEid());
+        startActivity(intent);
+    }
+
+    private void setCurrentUser(FirebaseUser currentUser) {
+        DatabaseHandler.queryUser(currentUser.getUid(), result -> {
+            App.CurrentUser = result;
+        });
     }
 }

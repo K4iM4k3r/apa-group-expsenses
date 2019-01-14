@@ -10,6 +10,7 @@ import android.widget.EditText;
 
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
+import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.User;
@@ -26,24 +27,6 @@ public class PositionFormActivity extends BaseActivity {
         positionNameEditText = findViewById(R.id.position_form_name_edit);
         positionInfoEditText = findViewById(R.id.position_form_info_edit);
         positionValEditText = findViewById(R.id.position_form_value_edit);
-
-        Position position;
-
-        if (savedInstanceState == null) {
-            Bundle extras = getIntent().getExtras();
-            if(extras == null) {
-                return;
-            } else {
-                position = (Position) extras.getSerializable("position");
-            }
-        } else {
-            position = (Position) savedInstanceState.getSerializable("position");
-        }
-        if(position != null){
-            positionNameEditText.setText(position.getTopic());
-            positionInfoEditText.setText(position.getInfo());
-            positionValEditText.setText(Float.toString(position.getValue()));
-        }
     }
 
     @Override
@@ -57,31 +40,39 @@ public class PositionFormActivity extends BaseActivity {
         int id = item.getItemId();
 
         if (id == R.id.position_form_create_position_btn) {
-            if(positionNameEditText.getText().toString().isEmpty()){
+            if (positionNameEditText.getText().toString().isEmpty()) {
                 positionNameEditText.setError(getString(R.string.error_field_required));
                 positionNameEditText.requestFocus();
-            } else if(positionValEditText.getText().toString().isEmpty()){
+            } else if (positionValEditText.getText().toString().isEmpty()) {
                 positionValEditText.setError(getString(R.string.error_field_required));
                 positionValEditText.requestFocus();
             } else {
-                // save position name sting and value here
+                // update position name, info and value here
                 User creator = App.CurrentUser;
                 String positionName = positionNameEditText.getText().toString().trim();
-                positionName = positionName.substring(0,1).toUpperCase() + positionName.substring(1);
-
-                Position position = new Position(12, creator.getUid(), positionName,
+                positionName = positionName.substring(0, 1).toUpperCase() + positionName.substring(1);
+                Position position = new Position(
+                        creator.getUid(),
+                        positionName,
+                        positionInfoEditText.getText().toString(),
                         Float.parseFloat(positionValEditText.getText().toString())
                 );
-                String positionInfo = positionInfoEditText.getText().toString();
-                if(!positionInfo.isEmpty())
-                    position.setInfo(positionInfo);
 
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("createdPosition", position);
-                setResult(Activity.RESULT_OK, returnIntent);
-                finish();
+                Bundle extras = getIntent().getExtras();
+                if (extras == null) {
+                    throw new IllegalStateException("Related Event to created Position '" +
+                            positionName + "' not found!");
+                } else {
+                    String relatedEventEid = extras.getString("relatedEventEid");
+                    DatabaseHandler.queryEvent(relatedEventEid, relatedEvent -> {
+                        relatedEvent.addPosition(position);
+                        DatabaseHandler.updateEvent(relatedEvent);
+                        finish();
+                    });
+                }
             }
         }
         return super.onOptionsItemSelected(item);
     }
 }
+

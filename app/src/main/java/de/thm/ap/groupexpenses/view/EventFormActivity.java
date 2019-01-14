@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
+import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.fragment.UserListFragmentDialog;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.User;
@@ -46,8 +47,13 @@ public class EventFormActivity extends BaseActivity {
         eventUsersTextView = findViewById(R.id.event_form_users_textView);
 
         addMembersBtn.setOnClickListener(v -> {
-            UserListFragmentDialog dialog = UserListFragmentDialog.newInstance(eventUsersList);
-            dialog.show(getFragmentManager(), "create_event");
+            DatabaseHandler.getAllFriendsOfUser(auth.getCurrentUser().getUid(), result -> {
+                List<User> friendsList = result;
+                UserListFragmentDialog dialog = new UserListFragmentDialog();
+                dialog.build(eventUsersList, friendsList);
+                dialog.show(getFragmentManager(), "create_event");
+            });
+
         });
 
         eventDateEditText.setOnFocusChangeListener((view, hasFocus) -> {
@@ -120,10 +126,7 @@ public class EventFormActivity extends BaseActivity {
                         eventInfoEditText.getText().toString(),
                         eventUserListStrings
                         );
-
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("createdEvent", event);
-                setResult(Activity.RESULT_OK, returnIntent);
+                DatabaseHandler.createEvent(event);
                 finish();
             }
         }

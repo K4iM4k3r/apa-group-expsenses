@@ -4,7 +4,8 @@
     <string name="title_activity_position">PositionActivity</string>
     <string name="event_form_name">Name des Events</string>
     <string name="event_form_date">Datum</string>
-    <string name="add">Hinzufügen</string>
+    <string name="ok">OK</string>
+    <string name="unknown">Unbekannt</string>
     <string name="add_with_num">Hinzufügen (%1$d)</string>
     <string name="remove_with_num">Entfernen (%1$d)</string>
     <string name="add_remove">Hinzufügen/ Entfernen</string>
@@ -13,6 +14,7 @@
     <string name="info">Info</string>
     <string name="inspect_users">Teilnehmer inspizieren</string>
     <string name="you">Dir</string>
+    <string name="yourself">Du</string>
     <string name="no_position_info">Keine Positionsinfo vorhanden!</string>
     <string name="no_event_info">Keine Eventinfo vorhanden!</string>
     <string name="your_depts">Deine Schulden:</string>
@@ -85,6 +87,7 @@
     <string name="cancel">Abbrechen</string>
     <string name="error_invalid_name">invalid</string>
     <string name="error_invalid_input">required</string>
+    <string name="error_no_members">Sie müssen erst Mitglieder hinzufügen, bevor Sie eine Position erstellen können!</string>
     <string name="file_provider_authority">de.thm.ap.groupexpenses.fileprovider</string>
     <string name="error_file_not_found">File not found</string>
     <string name="error_file_couldnt_upload">File could not uploaded</string>
@@ -98,6 +101,7 @@
     <string name="enableEditMode">Editmode</string>
     <string name="labelLastName">lastname</string>
     <string name="labelFirstName">First name</string>
+    <string name="no_bounty">Sie haben keine offenen Positionen</string>
     <string name="error_already_in_use">Nickname exists already</string>
     <string name="hint_nickname">nickname</string>
     <string name="menu_item_friends">Friends</string>

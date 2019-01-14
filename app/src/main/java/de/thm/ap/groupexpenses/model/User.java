@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class User implements Comparable<User>, Serializable {
+public class User implements Comparable<User> {
 
 
     private String uid;
@@ -113,10 +113,6 @@ public class User implements Comparable<User>, Serializable {
         }
         this.events.add(event);
     }
-
-//    public boolean equals(User otherUser){
-//        return this.id == otherUser.getId();
-//    }
 
     @NonNull
     @Override

@@ -17,6 +17,7 @@ import java.util.List;
 
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
+import de.thm.ap.groupexpenses.adapter.UserArrayAdapter;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.model.User;
 
@@ -26,7 +27,7 @@ public class FriendsActivity extends BaseActivity {
     ListView friendListView;
 
     List<User> friends;
-    ArrayAdapter<User> friendsAdapter;
+    UserArrayAdapter friendsAdapter;
 
 
     @Override
@@ -88,7 +89,7 @@ public class FriendsActivity extends BaseActivity {
             this.friends = friends;
             Collections.sort(friends); //alphabetical sort
 
-            friendsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_activated_1, friends);
+            friendsAdapter = new UserArrayAdapter(this, friends);
             friendListView.setAdapter(friendsAdapter);
         });
 
