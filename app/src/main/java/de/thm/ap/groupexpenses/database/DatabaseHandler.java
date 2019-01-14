@@ -1,14 +1,24 @@
 package de.thm.ap.groupexpenses.database;
 
+import android.content.Context;
+import android.net.Uri;
+import android.support.annotation.NonNull;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.livedata.EventListLiveData;
@@ -118,6 +128,19 @@ public class DatabaseHandler {
     public static UserLiveData qetUserLiveData(String uid){
         DocumentReference docRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_USERS).document(uid);
         return new UserLiveData(docRef);
+    }
+
+    public static void getUserProfilePic(Context ctx, String uid, Callback<Optional<Uri>> callback){
+        String filename = uid + ".jpg";
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("ProfilePictures").child(filename);
+        File file = new File(ctx.getExternalFilesDir(null), filename);
+
+        storageRef.getFile(file).addOnSuccessListener(taskSnapshot -> {
+            callback.onResult(Optional.of(Uri.fromFile(file)));
+            // Local temp file has been created
+        }).addOnFailureListener(exception -> {
+            callback.onResult(Optional.empty());
+        });
     }
 
     @Deprecated

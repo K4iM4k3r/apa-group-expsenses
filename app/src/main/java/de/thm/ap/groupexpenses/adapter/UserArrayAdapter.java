@@ -1,6 +1,7 @@
 package de.thm.ap.groupexpenses.adapter;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import de.thm.ap.groupexpenses.R;
+import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.model.User;
 
 public class UserArrayAdapter extends ArrayAdapter<User> {
@@ -22,8 +24,9 @@ public class UserArrayAdapter extends ArrayAdapter<User> {
 
     }
 
+    @NonNull
     @Override
-    public View getView(int pos, View view, ViewGroup parent) {
+    public View getView(int pos, View view, @NonNull ViewGroup parent) {
 
         if (view == null) {
             LayoutInflater vi = (LayoutInflater) getContext().getSystemService(
@@ -35,7 +38,7 @@ public class UserArrayAdapter extends ArrayAdapter<User> {
         if(user != null){
             CircleImageView picture = view.findViewById(R.id.user_pic);
             if(user.getProfilePic() != null){
-                picture.setImageURI(user.getProfilePic());
+                DatabaseHandler.getUserProfilePic(parent.getContext(), user.getUid(), opPictureUri -> opPictureUri.ifPresent(picture::setImageURI));
             }
             TextView nickname = view.findViewById(R.id.list_item_nickname);
             nickname.setText(user.getNickname());

@@ -72,9 +72,6 @@ public class FriendsActivity extends BaseActivity {
                 }
             });
             builder.show();
-
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
         });
 
         friendListView = findViewById(R.id.friends_list);
