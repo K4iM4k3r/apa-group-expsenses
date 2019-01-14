@@ -92,6 +92,8 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
 
     @Override
     public void onFragmentObjectClick(Object event) {
+        if (event == null) return;
+
         Intent intent = new Intent(EventActivity.this, PositionActivity.class);
         intent.putExtra("eventEid", ((Event) event).getEid());
         startActivity(intent);

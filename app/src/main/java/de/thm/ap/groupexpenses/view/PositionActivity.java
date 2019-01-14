@@ -140,6 +140,8 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
 
     @Override
     public void onFragmentObjectClick(Object object) {
+        if (object == null) return;
+        
         // show a custom alert dialog with position information
         Position selectedPosition = (Position) object;
         if (App.CurrentUser.getUid().equals(selectedPosition.getCreatorId())) {
