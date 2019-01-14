@@ -2,7 +2,6 @@ package de.thm.ap.groupexpenses.database;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -10,22 +9,20 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.livedata.EventListLiveData;
 import de.thm.ap.groupexpenses.livedata.EventLiveData;
-import de.thm.ap.groupexpenses.model.User;
 import de.thm.ap.groupexpenses.livedata.UserListLiveData;
 import de.thm.ap.groupexpenses.livedata.UserLiveData;
+import de.thm.ap.groupexpenses.model.Event;
+import de.thm.ap.groupexpenses.model.User;
 
 public class DatabaseHandler {
 
@@ -66,6 +63,11 @@ public class DatabaseHandler {
         docRef.get().addOnSuccessListener(documentSnapshot -> callback.onResult(documentSnapshot.toObject(User.class)));
     }
 
+    /**
+     * Checks if the Nickname exits
+     * @param nickname User nickname
+     * @param callback boolean if nickname exists
+     */
     public static void isNicknameExist(String nickname, Callback<Boolean> callback){
         CollectionReference usersRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_USERS);
         Query query = usersRef.whereEqualTo(Constants.DOC_USERS_NICKNAME, nickname);
@@ -115,6 +117,10 @@ public class DatabaseHandler {
         });
     }
 
+    /**
+     * Updates the Event in the DB
+     * @param event updated Event
+     */
     public static void updateEvent(Event event){
         DocumentReference documentReference = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS).document(event.getEid());
         documentReference.set(event).addOnCompleteListener(c -> event.getMembers().forEach(m -> queryUser(m, member -> {
@@ -125,22 +131,30 @@ public class DatabaseHandler {
         })));
     }
 
+    /**
+     * Returns LiveData of the user
+     * @param uid User Id
+     * @return LiveData of requested User
+     */
     public static UserLiveData qetUserLiveData(String uid){
         DocumentReference docRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_USERS).document(uid);
         return new UserLiveData(docRef);
     }
 
+    /**
+     * Return in the callback the uri of the ProfilePic
+     * @param ctx Context
+     * @param uid User Id
+     * @param callback Optional of the downloaded ProfilePic
+     */
     public static void getUserProfilePic(Context ctx, String uid, Callback<Optional<Uri>> callback){
         String filename = uid + ".jpg";
         StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("ProfilePictures").child(filename);
         File file = new File(ctx.getExternalFilesDir(null), filename);
 
-        storageRef.getFile(file).addOnSuccessListener(taskSnapshot -> {
-            callback.onResult(Optional.of(Uri.fromFile(file)));
-            // Local temp file has been created
-        }).addOnFailureListener(exception -> {
-            callback.onResult(Optional.empty());
-        });
+        storageRef.getFile(file)
+                .addOnSuccessListener(taskSnapshot -> callback.onResult(Optional.of(Uri.fromFile(file))))
+                .addOnFailureListener(exception -> callback.onResult(Optional.empty()));
     }
 
     @Deprecated
@@ -175,18 +189,32 @@ public class DatabaseHandler {
         docRef.get().addOnSuccessListener(documentSnapshot -> callback.onResult(documentSnapshot.toObject(Event.class)));
     }
 
-
+    /**
+     * Returns LiveData Object which includes the requested Event
+     * @param eid Event Id
+     * @return LiveDataObject of requested Object
+     */
     public static EventLiveData getEventLiveData(String eid){
         DocumentReference docRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS).document(eid);
         return new EventLiveData(docRef);
     }
 
+    /**
+     * Returns LiveData Object which includes the Events of an user
+     * @param uid User Id
+     * @return LiveDataObject of EventList
+     */
     public static EventListLiveData getEventListLiveData(String uid){
         CollectionReference usersRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS);
         Query query = usersRef.whereArrayContains(Constants.DOC_EVENTS_MEMBERS, uid);
         return new EventListLiveData(query);
     }
 
+    /**
+     * Returns LiveData Object which includes the all members of an Event
+     * @param eid Event id
+     * @return LiveData Object which includes all members
+     */
     public static UserListLiveData getAllMembersOfEvent(String eid){
         CollectionReference usersRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_USERS);
         Query query = usersRef.whereArrayContains(Constants.DOC_USERS_EVENTS, eid);
@@ -195,8 +223,6 @@ public class DatabaseHandler {
 
     /**
      * @deprecated use instead getEventListLiveData
-     * @param uid
-     * @param callback
      */
     @Deprecated
     public static void getAllUserEvents(String uid, Callback<List<Event>> callback){
@@ -217,7 +243,11 @@ public class DatabaseHandler {
         });
     }
 
-
+    /**
+     * Returns in the callback a list of all friends(user) of the user(Requester)
+     * @param uid User Id
+     * @param callback list of all fiends
+     */
     public static void getAllFriendsOfUser(String uid, Callback<List<User>> callback) {
         List<User> result = new ArrayList<>();
         queryUser(uid, user -> {

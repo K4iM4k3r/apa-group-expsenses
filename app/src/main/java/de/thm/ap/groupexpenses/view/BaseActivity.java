@@ -11,6 +11,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -214,10 +215,12 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = auth.getCurrentUser();
         if(currentUser == null || !currentUser.isEmailVerified()){
+            Log.i(TAG, "no user logged in");
             startActivity(new Intent(this, LoginActivity.class));
             finish();
         }
         else{
+            Log.i(TAG, "User is logged in: " + userLiveData.getValue());
             File pic = new File(getExternalFilesDir(null), "profilePic.jpg");
             if(pic.exists()){
                 picture.setImageURI(Uri.fromFile(pic));

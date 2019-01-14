@@ -221,6 +221,7 @@ public class ProfileActivity extends BaseActivity {
                                     .build();
                             currentUser.updateProfile(profileUpdate);
 
+                            assert downloadUri != null;
                             user.setProfilePic(downloadUri.toString());
                             DatabaseHandler.updateUser(user);
                         } else {
