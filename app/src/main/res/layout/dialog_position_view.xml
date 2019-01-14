@@ -6,16 +6,26 @@
     android:orientation="vertical">
 
     <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/app_blue"
+        android:fontFamily="monospace"
+        android:gravity="center"
+        android:text="POSITION"
+        android:textColor="@android:color/white"
+        android:textSize="30sp" />
+
+    <TextView
         android:id="@+id/position_dialog_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:drawableRight="@drawable/ic_close_grey_24dp"
-        android:drawablePadding="-20sp"
         android:layout_marginEnd="@dimen/app_margin"
         android:layout_marginStart="@dimen/app_margin"
         android:layout_marginTop="@dimen/app_margin"
+        android:drawablePadding="-20sp"
+        android:drawableRight="@drawable/ic_close_grey_24dp"
         android:gravity="center"
-        android:text="Position"
+        android:text="Positionsname"
         android:textColor="@android:color/black"
         android:textSize="22sp" />
 

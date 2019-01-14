@@ -248,7 +248,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
         }
 
         private void displayCreator(String creator) {
-            String date = new Date(position.getDate()).toString();
+            String date = position.getDateString();
             String creatorAndDate = getResources().getString(R.string.creator_and_date_position, creator, date);
             creatorAndDateDefaultVal = new SpannableString(creatorAndDate);
             creatorAndDateDefaultVal.setSpan(new ForegroundColorSpan(Color.parseColor("#3a90e0")),

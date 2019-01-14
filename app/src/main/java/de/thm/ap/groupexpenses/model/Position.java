@@ -7,8 +7,11 @@ import com.google.firebase.firestore.IgnoreExtraProperties;
 import org.apache.commons.lang3.NotImplementedException;
 
 import java.io.Serializable;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +68,11 @@ public class Position {
     }
     public Long getDate() {
         return date;
+    }
+    public String getDateString() {
+        Date date = new Date(this.date);
+        Format format = new SimpleDateFormat("dd.MM.yyyy");
+        return format.format(date);
     }
     public void setDate(Long date) {
         this.date = date;

@@ -5,6 +5,7 @@
     <color name="colorAccent">#FFA000</color>
     <color name="colorPassword">#066ba3</color>
     <color name="app_grey">#868686</color>
+    <color name="app_blue">#bfddfc</color>
 
     <color name="grey_100">#F5F5F5</color>
     <color name="grey_300">#8ae0e0e0</color>
