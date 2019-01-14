@@ -197,7 +197,7 @@ public class UserListFragmentDialog extends DialogFragment {
                             break;
 
                         case EDIT_STATE_ADD_USERS: // add btn was pressed in edit state
-                            setEditState(EDIT_STATE_DELETE_USERS);
+                            setEditState(EDIT_STATE_INSPECT_USERS);
                             for (int idx = 0; idx < addableUsersSelected.size(); ++idx) {
                                 boolean userFound = false;
                                 for (int idx2 = selectedUsers.size() - 1; idx2 >= 0; --idx2) {
