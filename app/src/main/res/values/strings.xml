@@ -85,6 +85,7 @@
     <string name="edit_profile_name">Edit Name</string>
     <string name="btn_save_profile">Speichern</string>
     <string name="cancel">Abbrechen</string>
+    <string name="back">Zurück</string>
     <string name="error_invalid_name">invalid</string>
     <string name="error_invalid_input">required</string>
     <string name="error_no_members">Sie müssen erst Mitglieder hinzufügen, bevor Sie eine Position erstellen können!</string>
