@@ -37,8 +37,8 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event);
-        Toolbar toolbar = findViewById(R.id.event_toolbar);
-        setSupportActionBar(toolbar);
+//        Toolbar toolbar = findViewById(R.id.event_toolbar);
+//        setSupportActionBar(toolbar);
 
         TextView eventsLoadingTextView = findViewById(R.id.events_loading_textView);
 

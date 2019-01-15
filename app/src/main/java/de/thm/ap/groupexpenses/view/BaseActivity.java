@@ -163,6 +163,13 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
     protected void onResume() {
         super.onResume();
         checkLoginState();
+        userLiveData.observe(this, user -> {
+            if(user != null){
+                App.CurrentUser = user;
+                name.setText(user.getNickname());
+                checkNickname();
+            }
+        });
     }
 
     @Override
