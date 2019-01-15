@@ -276,7 +276,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 signOut();
                 break;
             case R.id.completeCreation:
-                completeCreation();
+                sendEmailVerification();
                 break;
             case R.id.passwordForgot:
                 showPasswordForgot(true);
@@ -288,26 +288,25 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    private void completeCreation() {
-        EditText edNick = findViewById(R.id.setNickname);
-        if(TextUtils.isEmpty(edNick.getText())) {
-            edNick.setError(getString(R.string.error_invalid_input));
-        }
-        else {
-            DatabaseHandler.isNicknameExist(edNick.getText().toString(), exists ->{
-                if(exists){
-                    edNick.setError(getString(R.string.error_already_in_use));
-                }
-                else{
-                    DatabaseHandler.queryUser(auth.getUid(), user ->{
-                        user.setNickname(edNick.getText().toString());
-                        DatabaseHandler.updateUser(user);
-                    });
-                    sendEmailVerification();
-                }
-            });
-        }
-    }
+//    private void completeCreation() {
+//        EditText edNick = findViewById(R.id.setNickname);
+//        if(TextUtils.isEmpty(edNick.getText())) {
+//            edNick.setError(getString(R.string.error_invalid_input));
+//        }
+//        else {
+//            DatabaseHandler.isNicknameExist(edNick.getText().toString(), exists ->{
+//                if(exists){
+//                    edNick.setError(getString(R.string.error_already_in_use));
+//                }
+//                else{
+//                    DatabaseHandler.queryUser(auth.getUid(), user ->{
+//                        user.setNickname(edNick.getText().toString());
+//                        DatabaseHandler.updateUser(user);
+//                    });
+//                }
+//            });
+//        }
+//    }
 
     private void sendPasswordResetEmail() {
         showProgressDialog();

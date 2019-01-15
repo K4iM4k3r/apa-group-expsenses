@@ -38,6 +38,9 @@ public class FriendsActivity extends BaseActivity {
         setContentView(R.layout.activity_friends);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        if(getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         setTitle(getString(R.string.FriendsActivityTitle));
 

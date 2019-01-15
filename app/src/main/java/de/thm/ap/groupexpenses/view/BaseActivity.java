@@ -82,9 +82,11 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
                 if(user != null){
                     App.CurrentUser = user;
                     name.setText(user.getNickname());
+                    checkNickname();
                 }
             });
         }
+
         checkLoginState();
     }
 
@@ -225,6 +227,17 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
             if(pic.exists()){
                 picture.setImageURI(Uri.fromFile(pic));
             }
+        }
+    }
+
+    public void goToProfile(View view) {
+        startActivity(new Intent(this, ProfileActivity.class));
+        finish();
+    }
+
+    private void checkNickname(){
+        if(App.CurrentUser.getNickname().isEmpty()){
+           findViewById(R.id.notification_nickname).setVisibility(View.VISIBLE);
         }
     }
 }

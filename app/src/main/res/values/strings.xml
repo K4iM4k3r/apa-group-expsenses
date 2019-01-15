@@ -118,5 +118,6 @@
     <string name="dialog_friend_delete_ok">delete</string>
     <string name="success_remove_friend">successful remove friend</string>
     <string name="error_remove_friend">could not remove friend</string>
+    <string name="notification_nickname_not_set">your nickname has not been set  yet</string>
 </resources>
 
