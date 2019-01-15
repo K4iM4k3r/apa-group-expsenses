@@ -111,7 +111,9 @@ public class Event {
     public int getMemberCount() {
         return getMembers().size();
     }
+    //endregion
 
+    //region Position-Management
     public List<Position> getPositions() {
         return positions;
     }
@@ -125,7 +127,6 @@ public class Event {
             addPosition(position);
         }
     }
-    //endregion
 
     public boolean updatePosition(Position position) {
         for (int idx = 0; idx < positions.size(); ++idx) {
@@ -146,13 +147,7 @@ public class Event {
         }
         return false;
     }
-
-    @Deprecated
-    public float getPositionFactor(boolean positive) {
-        float posFactor = (float) (members.size() - 1) / (float) members.size();
-        float negFactor = (float) (1.00 / members.size());
-        return positive ? posFactor : negFactor;
-    }
+    //endregion
 
     //region Expense-Management
     public Map<String, Float> getBalanceTable(String userId) {
