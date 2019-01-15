@@ -126,7 +126,13 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
 
             case R.id.position_menu_info:
                 // display event info including a cash check btn
-                new EventInfoDialog(selectedEvent);
+                if (App.CurrentUser.getUid().equals(selectedEvent.getCreatorId())) {
+                    new EventInfoDialog(selectedEvent, null);
+                } else {
+                    DatabaseHandler.queryUser(selectedEvent.getCreatorId(), eventCreator -> {
+                        new EventInfoDialog(selectedEvent, eventCreator.getNickname());
+                    });
+                }
                 break;
 
             case R.id.position_menu_done:
@@ -141,7 +147,7 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
     @Override
     public void onFragmentObjectClick(Object object) {
         if (object == null) return;
-        
+
         // show a custom alert dialog with position information
         Position selectedPosition = (Position) object;
         if (App.CurrentUser.getUid().equals(selectedPosition.getCreatorId())) {
@@ -454,10 +460,12 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
         private TextView eventName, eventInfo, eventDepts;
         private Button cash_check_btn;
         private TextView dept_val;
+        private String creatorNickname;
 
-        EventInfoDialog(Event object) {
+        EventInfoDialog(Event object, String creatorNickname) {
             eventDialog = new AlertDialog.Builder(PositionActivity.this);
             event = object;
+            this.creatorNickname = creatorNickname;
             view = getLayoutInflater().inflate(R.layout.dialog_event_view, null);
             cash_check_btn = view.findViewById(R.id.event_dialog_cach_check_btn);
             dept_val = view.findViewById(R.id.event_dialog_dept_val);
@@ -475,12 +483,9 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
 
             String creator;
 
-            if (App.CurrentUser.getUid().equals(event.getCreatorId())) {
-                // user is creator
-                creator = getString(R.string.you);
-            } else {
-                creator = event.getCreatorId();
-            }
+            if (creatorNickname == null) creator = getString(R.string.you);
+            else creator = creatorNickname;
+
             String creatorAndDate = getResources().getString(R.string.creator_and_date_event, creator, event.getDate());
             Spannable creatorAndDateDefaultVal = new SpannableString(creatorAndDate);
             creatorAndDateDefaultVal.setSpan(new ForegroundColorSpan(Color.parseColor("#3a90e0")),
