@@ -32,11 +32,7 @@ public class Position {
     private List<String> peopleThatDontHaveToPay;
     
     //region constructor
-    public Position(){
-        // this should not be user - only for firebase!
-        // throw Exception on use maybe
-        peopleThatDontHaveToPay = new ArrayList<>();
-    }
+    public Position(){}
 
     public Position(@NonNull String creatorId, @NonNull String topic, @NonNull Float value){
         this(creatorId, topic, value, null);
@@ -98,6 +94,10 @@ public class Position {
     public String getCreatorId() {
         return creatorId;
     }
+    public List<String> getPeopleThatDontHaveToPay() {
+        return peopleThatDontHaveToPay;
+    }
+
     //endregion
 
     //region expense-management
