@@ -1,15 +1,22 @@
 package de.thm.ap.groupexpenses;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.User;
+
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.TestCase.assertSame;
+import static org.junit.Assert.assertEquals;
 
 public class EventTest {
 
@@ -40,6 +47,7 @@ public class EventTest {
         event.addPositions(positions);
     }
 
+    @Ignore("Test does not assert things. Gotta look if its fine.")
     @Test
     public void getBalanceTableTest(){
 
@@ -62,6 +70,79 @@ public class EventTest {
 
 
         int brea = 0;
+    }
+
+    @Test
+    public void removeAllDebtsOfTest(){
+
+        // Nils has no credits, only debts. Those get removed, Nils has nothing.
+
+        event.removeAllDebtsOf("Nils");
+        float nilsBalance = event.getBalance("Nils");
+
+        assertEquals(0f, nilsBalance, 0.01);
+
+
+        // Sina gets released from all payments, yet still gets 9€ for her expenses (nils was removed before)
+
+        event.removeAllDebtsOf("Sina");
+        float sinasBalance = event.getBalance("Sina");
+
+        assertEquals(9f, sinasBalance, 0.01);
+    }
+
+    @Test
+    public void removeAllDebtsOfUserOwedToOtherUserTest1(){
+
+        float nilsBalanceBefore = event.getBalance("Nils");
+        Map<String, Float> nilsBalanceTableBefore = event.getBalanceTable("Nils");
+
+        assertEquals(-45, nilsBalanceBefore, 0.01);
+        assertTrue(nilsBalanceTableBefore.containsKey("Jan"));
+
+        event.removeAllDebtsOfUserOwedToOtherUser("Nils", "Jan");
+
+        float nilsBalanceAfter = event.getBalance("Nils");
+        Map<String, Float> nilsBalanceTableAfter = event.getBalanceTable("Nils");
+
+        assertEquals(-45, nilsBalanceBefore, 0.01);
+        assertTrue(nilsBalanceTableBefore.containsKey("Jan"));
+
+        int breaki = 0;
+    }
+
+    @Test
+    public void removeAllDebtsOfUserOwedToOtherUserTest2(){
+
+        event.addPosition(new Position("Jan", "Spielzeug", 50f));
+
+        float nilsBalanceBefore = event.getBalance("Nils");
+        Map<String, Float> nilsBalanceTableBefore = event.getBalanceTable("Nils");
+
+        assertEquals(-55, nilsBalanceBefore, 0.01);
+        assertTrue(nilsBalanceTableBefore.containsKey("Jan"));
+
+        event.removeAllDebtsOfUserOwedToOtherUser("Nils", "Jan");
+
+        float nilsBalanceAfter = event.getBalance("Nils");
+        Map<String, Float> nilsBalanceTableAfter = event.getBalanceTable("Nils");
+
+        assertEquals(-27, nilsBalanceAfter, 0.01);
+        assertFalse(nilsBalanceTableAfter.containsKey("Jan"));
+
+        int breaki = 0;
+    }
+
+    @Test
+    public void removePositionsOfTest(){
+
+        // Jan occurs 1 time
+        assertEquals(1, event.getPositions().stream().map(Position::getCreatorId).filter(id -> id.equals("Jan")).count());
+
+        event.removePositionsOf("Jan");
+
+        // Jan does not occure.
+        assertEquals(0, event.getPositions().stream().map(Position::getCreatorId).filter(id -> id.equals("Jan")).count());
 
     }
 }

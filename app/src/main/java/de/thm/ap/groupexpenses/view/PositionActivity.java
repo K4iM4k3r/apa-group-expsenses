@@ -513,6 +513,11 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
 
             cash_check_btn.setOnClickListener(v -> {
                 // do cash check here
+                Intent intent = new Intent(PositionActivity.this, BountyActivity.class);
+                Bundle b = new Bundle();
+                b.putString("eventId", selectedEvent.getEid());
+                intent.putExtras(b);
+                startActivity(intent);
             });
             eventDialog.setView(view);
             dialog = eventDialog.create();
