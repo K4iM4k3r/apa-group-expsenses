@@ -35,6 +35,7 @@ public class Position {
     public Position(){
         // this should not be user - only for firebase!
         // throw Exception on use maybe
+        peopleThatDontHaveToPay = new ArrayList<>();
     }
 
     public Position(@NonNull String creatorId, @NonNull String topic, @NonNull Float value){
