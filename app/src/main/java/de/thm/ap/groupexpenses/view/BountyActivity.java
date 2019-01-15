@@ -2,8 +2,10 @@ package de.thm.ap.groupexpenses.view;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,26 +15,16 @@ import java.util.stream.Collectors;
 
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
+import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.User;
 
-public class BountyActivity extends AppCompatActivity {
+public class BountyActivity extends BaseActivity {
 
-    //region testdata
+    private static final String TAG = BaseActivity.class.getName();
 
-    Position[] testPositions = new Position[]{
-            new Position(App.TestValues.USERS[1].getUid(), "Bier", 90f),
-            new Position(App.TestValues.USERS[2].getUid(), "Sprit", 120f),
-            new Position(App.TestValues.USERS[3].getUid(), "Essen", 15f),
-            new Position(App.TestValues.USERS[3].getUid(), "Kuchen", 30f),
-            new Position(App.TestValues.USER.getUid(), "App", 300f)
-    };
-
-    Event testEvent = new Event(App.TestValues.USER.getUid(), "Festival", "11.01.2015", "",
-            Arrays.stream(App.TestValues.USERS).map(User::getUid).collect(Collectors.toList()), Arrays.asList(testPositions));
-
-    // endregion
+    private Event event;
 
     ListView bountyListView;
     ArrayAdapter<String> bountyAdapter;
@@ -49,23 +41,45 @@ public class BountyActivity extends AppCompatActivity {
         setTitle("Bounty");
         data = new ArrayList<>();
 
+        Bundle b = getIntent().getExtras();
+        if (b==null) throw new IllegalStateException("Called bounty activity without event id");
+        if (App.CurrentUser == null) throw new IllegalStateException("Appuser not specified!");
+
         bountyListView = findViewById(R.id.bounty_list);
         bountyListView.setEmptyView(findViewById(R.id.bounty_list_empty));
 
-        currentBounty = getBounty(App.TestValues.USER.getUid(), testEvent);
-        currentBounty.forEach((k,v)->data.add(k+": "+v.toString()));
-
         bountyAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_activated_1, data);
         bountyListView.setAdapter(bountyAdapter);
+
+
+        DatabaseHandler.queryEvent(b.getString("eventId"), event -> {
+            if (event==null) return; // illegalstate
+            showProgressDialog();
+            Toast.makeText(this, App.CurrentUser.getNickname(), Toast.LENGTH_LONG).show();
+            currentBounty = event.getBalanceTable(App.CurrentUser.getUid());
+            currentBounty.forEach((k,v)-> {
+                DatabaseHandler.queryUser(k, user -> {
+                    showProgressDialog();
+                    if (user == null) {
+                        Toast.makeText(this, "Failed to retrieve data for user " + k, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    String username = user.getNickname()==null?user.getUid():user.getNickname();
+                    float negativeValue = -v;
+                    String text = (v<0?"You owe "+username+" "+negativeValue+"€":"You get "+v.toString()+"€ from "+username);
+
+                    data.add(text);
+                    bountyAdapter.notifyDataSetChanged();
+                    hideProgressDialog();
+                });
+            });
+            hideProgressDialog();
+        });
     }
 
     @Override
-    protected void onStart(){
+    public void onStart(){
         super.onStart();
-        bountyAdapter.notifyDataSetChanged();
-    }
-
-    private Map<String, Float> getBounty(String userId, Event event){
-        return event.getBalanceTable(userId);
     }
 }
