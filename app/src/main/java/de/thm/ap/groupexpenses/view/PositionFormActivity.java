@@ -54,8 +54,8 @@ public class PositionFormActivity extends BaseActivity {
                 Position position = new Position(
                         creator.getUid(),
                         positionName,
-                        positionInfoEditText.getText().toString(),
-                        Float.parseFloat(positionValEditText.getText().toString())
+                        Float.parseFloat(positionValEditText.getText().toString()),
+                        positionInfoEditText.getText().toString()
                 );
 
                 Bundle extras = getIntent().getExtras();

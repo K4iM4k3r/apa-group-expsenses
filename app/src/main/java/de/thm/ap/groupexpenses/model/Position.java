@@ -1,6 +1,7 @@
 package de.thm.ap.groupexpenses.model;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.firebase.firestore.IgnoreExtraProperties;
 
@@ -21,30 +22,46 @@ public class Position {
 
     //private HistoryValue<String> topic;
     //private HistoryValue<Float> value;
-    private float value;
+    private String creatorId;
     private String topic;
+    private float value;
+
     private String info;
     private Long date;
-    private String creatorId;
+
     private List<String> peopleThatDontHaveToPay;
     
     //region constructor
-    public Position(){}
+    public Position(){
+        // this should not be user - only for firebase!
+        // throw Exception on use maybe
+    }
 
-    public Position(String creatorId, String topic, String info, Float value){
+    public Position(@NonNull String creatorId, @NonNull String topic, @NonNull Float value){
+        this(creatorId, topic, value, null);
+    }
+
+    public Position(@NonNull String creatorId, @NonNull String topic, @NonNull Float value, @Nullable String info){
+        this(creatorId, topic, value, info, null);
+    }
+
+    public Position(@NonNull String creatorId, @NonNull String topic, @NonNull Float value,
+                    @Nullable String info, @Nullable List<String> excludedPeople) {
+
         this.creatorId = creatorId;
-        this.date = Calendar.getInstance().getTimeInMillis();
         this.topic = topic;
-        this.info = info;
+        this.info = info==null?"":info;
         this.value = value;
+        this.date = Calendar.getInstance().getTimeInMillis();
+
         this.peopleThatDontHaveToPay = new ArrayList<>();
         this.peopleThatDontHaveToPay.add(creatorId);
+
+        if (excludedPeople != null)
+            this.peopleThatDontHaveToPay.addAll(excludedPeople);
     }
 
-    public Position(String creatorId, String topic, String info, Float value, List<String> excludedPeople){
-        this(creatorId, topic, info, value);
-        this.peopleThatDontHaveToPay.addAll(excludedPeople);
-    }
+
     //endregion
 
     //region getter/setter

@@ -56,6 +56,19 @@ public class PositionTest {
 //    }
 
     @Test
+    public void constructorTest() {
+        Position p1 = new Position("creatorId", "topic", 60f, "infotext", involvedPeople);
+
+        Position p2 = new Position("creatorId", "topic", 60f, "infotext", null);
+        Position p3 = new Position("creatorId", "topic", 60f, "infotext");
+
+        Position p4 = new Position("creatorId", "topic", 60f, null, null);
+        Position p5 = new Position("creatorId", "topic", 60f);
+
+        int x = 0;
+    }
+
+    @Test
     public void getDebtTest(){
 
         int randomUserCount = getRandomInt();
