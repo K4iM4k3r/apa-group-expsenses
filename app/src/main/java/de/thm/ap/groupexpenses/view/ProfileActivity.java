@@ -126,41 +126,7 @@ public class ProfileActivity extends BaseActivity {
             profile_pic.setImageURI(Uri.fromFile(pic));
         }
 
-        profile_pic.setOnClickListener(l ->{
-            pickPhoto();
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            assert currentUser != null;
-            StorageReference storageRef = storage.getReference().child("ProfilePictures").child(currentUser.getUid()+".jpg");
-            File file = new File(getExternalFilesDir(null), "profilePic.jpg");
-            Uri uriFile = Uri.fromFile(file);
-
-            UploadTask uploadTask = storageRef.putFile(uriFile);
-
-            uploadTask.continueWithTask(task -> {
-                if (!task.isSuccessful()) {
-                    Snackbar.make(tvEmail, getString(R.string.error_file_couldnt_upload), Snackbar.LENGTH_LONG).show();
-                }
-
-                // Continue with the task to get the download URL
-                return storageRef.getDownloadUrl();
-            }).addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    Uri downloadUri = task.getResult();
-                    Snackbar.make(tvEmail, getString(R.string.success_profile_pic_uploaded), Snackbar.LENGTH_LONG).show();
-                    UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
-                            .setPhotoUri(downloadUri)
-                            .build();
-                    currentUser.updateProfile(profileUpdate);
-
-                    user.setProfilePic(downloadUri);
-                    DatabaseHandler.updateUser(user);
-                } else {
-                    // Handle failures
-                    Log.i(TAG, "Error:" + task.toString());
-
-                }
-            });
-        });
+        profile_pic.setOnClickListener(l -> pickPhoto());
 
     }
 
@@ -221,13 +187,51 @@ public class ProfileActivity extends BaseActivity {
             if(requestCode == REQUEST_IMAGE_PICK) {
                 if(data == null || data.getData() == null) {
                     Log.i(TAG, "onResult Data is empty");
+                    Snackbar.make(tvEmail, getString(R.string.error_file_couldnt_upload), Snackbar.LENGTH_LONG).show();
                     return;
                 }
+                else{
 
-                Uri selectedImage = data.getData();
-                profile_pic.setImageURI(selectedImage);
-                savePicToAppStorage(selectedImage);
-                compressPicture();
+                    Uri selectedImage = data.getData();
+                    profile_pic.setImageURI(selectedImage);
+                    savePicToAppStorage(selectedImage);
+                    compressPicture();
+
+                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                    assert currentUser != null;
+                    StorageReference storageRef = storage.getReference().child("ProfilePictures").child(currentUser.getUid()+".jpg");
+                    File file = new File(getExternalFilesDir(null), "profilePic.jpg");
+                    Uri uriFile = Uri.fromFile(file);
+
+                    UploadTask uploadTask = storageRef.putFile(uriFile);
+
+                    uploadTask.continueWithTask(task -> {
+                        if (!task.isSuccessful()) {
+                            Snackbar.make(tvEmail, getString(R.string.error_file_couldnt_upload), Snackbar.LENGTH_LONG).show();
+                        }
+
+                        // Continue with the task to get the download URL
+                        return storageRef.getDownloadUrl();
+                    }).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Uri downloadUri = task.getResult();
+                            Snackbar.make(tvEmail, getString(R.string.success_profile_pic_uploaded), Snackbar.LENGTH_LONG).show();
+                            UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
+                                    .setPhotoUri(downloadUri)
+                                    .build();
+                            currentUser.updateProfile(profileUpdate);
+
+                            assert downloadUri != null;
+                            user.setProfilePic(downloadUri.toString());
+                            DatabaseHandler.updateUser(user);
+                        } else {
+                            // Handle failures
+                            Log.i(TAG, "Error:" + task.toString());
+
+                        }
+                    });
+
+                }
             }
         }
 

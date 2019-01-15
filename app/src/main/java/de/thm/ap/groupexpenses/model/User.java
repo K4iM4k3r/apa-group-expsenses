@@ -19,7 +19,7 @@ public class User implements Comparable<User> {
     private List<String> events;
 
     private List<String> friendsIds;
-    private Uri profilePic;
+    private String profilePic;
 
     public User(){}
 
@@ -33,7 +33,7 @@ public class User implements Comparable<User> {
         this.profilePic = null;
     }
 
-    public User(String uid, String firstName, String lastName, String nickname, String email, List<String> events, Uri profilePic) {
+    public User(String uid, String firstName, String lastName, String nickname, String email, List<String> events, String profilePic) {
         this.uid = uid;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -67,7 +67,7 @@ public class User implements Comparable<User> {
         return events;
     }
 
-    public Uri getProfilePic() {
+    public String getProfilePic() {
         return profilePic;
     }
 
@@ -80,6 +80,11 @@ public class User implements Comparable<User> {
     public void addFriend(String friendId){
         if (friendsIds == null) friendsIds = new ArrayList<>();
         if (!friendsIds.contains(friendId)) friendsIds.add(friendId);
+    }
+
+    public void removeFriend(String friendId){
+        if (friendsIds == null) friendsIds = new ArrayList<>();
+        friendsIds.remove(friendId);
     }
 
     public void setFirstName(String firstName) {
@@ -102,7 +107,7 @@ public class User implements Comparable<User> {
         this.events = events;
     }
 
-    public void setProfilePic(Uri profilePic) {
+    public void setProfilePic(String profilePic) {
         this.profilePic = profilePic;
     }
 

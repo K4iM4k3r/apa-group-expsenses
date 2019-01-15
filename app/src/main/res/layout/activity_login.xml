@@ -150,15 +150,6 @@
 
             android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/setNickname"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:inputType="textPersonName"
-                android:text=""
-                android:hint="@string/hint_nickname"/>
-
             <TextView
                 android:id="@+id/status"
                 style="@style/ThemeOverlay.MyTextDetail"
