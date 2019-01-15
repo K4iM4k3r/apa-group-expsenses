@@ -130,7 +130,11 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
                     new EventInfoDialog(selectedEvent, null);
                 } else {
                     DatabaseHandler.queryUser(selectedEvent.getCreatorId(), eventCreator -> {
-                        new EventInfoDialog(selectedEvent, eventCreator.getNickname());
+                        if(eventCreator == null){
+                            new EventInfoDialog(selectedEvent, getString(R.string.deleted_user));
+                        } else {
+                            new EventInfoDialog(selectedEvent, eventCreator.getNickname());
+                        }
                     });
                 }
                 break;
@@ -154,7 +158,11 @@ public class PositionActivity extends BaseActivity implements ObjectListFragment
             new PositionAlertDialog(selectedPosition, null);
         } else {
             DatabaseHandler.queryUser(selectedPosition.getCreatorId(), positionCreator -> {
-                new PositionAlertDialog(selectedPosition, positionCreator.getNickname());
+                if(positionCreator == null){
+                    new PositionAlertDialog(selectedPosition, getString(R.string.deleted_user));
+                } else {
+                    new PositionAlertDialog(selectedPosition, positionCreator.getNickname());
+                }
             });
         }
     }
