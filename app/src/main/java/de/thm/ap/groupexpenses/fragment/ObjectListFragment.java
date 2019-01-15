@@ -20,7 +20,12 @@ import android.widget.TextView;
 import org.w3c.dom.Text;
 
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
@@ -30,14 +35,14 @@ import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.Stats;
 import de.thm.ap.groupexpenses.model.User;
 
-public class ObjectListFragment<T> extends Fragment
-{
+public class ObjectListFragment<T> extends Fragment {
     private View view;
     private ListView object_listView;
     private TextView noObjects_textView;
     private View headerView;
     private CustomCallLogListAdapter adapter;
     private Event relatedEventToPosition;
+    private HashMap<String, String> creatorMap;
 
     ItemClickListener itemClickListener;
 
@@ -46,20 +51,20 @@ public class ObjectListFragment<T> extends Fragment
     }
 
     @Override
-    public void onAttach(Activity activity){
+    public void onAttach(Activity activity) {
         super.onAttach(activity);
-        try{
-            itemClickListener = (ItemClickListener)activity;
-        }catch (ClassCastException e){
+        try {
+            itemClickListener = (ItemClickListener) activity;
+        } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString());
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        if(view == null) {
-            view = inflater.inflate(R.layout.fragment_object_list, container,false);
-        }else {
+        if (view == null) {
+            view = inflater.inflate(R.layout.fragment_object_list, container, false);
+        } else {
             ViewGroup parent = (ViewGroup) view.getParent();
             parent.removeView(view);
         }
@@ -67,34 +72,49 @@ public class ObjectListFragment<T> extends Fragment
         return view;
     }
 
-    public void updateObjectList(List<T> objectList, Event relatedEvent){
+    public void updateObjectList(List<T> objectList, Event relatedEvent) {
         boolean isPosition = relatedEvent != null;
         noObjects_textView = view.findViewById(R.id.fragment_no_object_text);
-        if(!objectList.isEmpty()){
-            if(isPosition) relatedEventToPosition = relatedEvent;
+        if (!objectList.isEmpty()) {
+            if (isPosition) relatedEventToPosition = relatedEvent;
             noObjects_textView.setVisibility(View.GONE);
             updateTotalBalance(objectList, isPosition);
-            if(adapter == null){
-                adapter = new CustomCallLogListAdapter(getActivity(),
-                        R.layout.fragment_object_list_row, objectList, isPosition);
-                object_listView = view.findViewById(R.id.fragment_listView);
-                object_listView.addHeaderView(headerView);
-                object_listView.setAdapter(adapter);
-                object_listView.setOnItemClickListener((parent, view, position, id) ->
-                        itemSelected(object_listView.getItemAtPosition(position)));
+
+            if (creatorMap == null) creatorMap = new HashMap<>();
+            if (isPosition) {
+                for (int idx = 0; idx < objectList.size(); ++idx) {
+                    creatorMap.putIfAbsent(((Position) objectList.get(idx)).getCreatorId(), "");
+                }
             } else {
-                adapter.clear();
-                adapter.addAll(objectList);
-                adapter.notifyDataSetChanged();
+                for (int idx = 0; idx < objectList.size(); ++idx) {
+                    creatorMap.putIfAbsent(((Event) objectList.get(idx)).getCreatorId(), "");
+                }
+            }
+            if (creatorMap.containsValue("")) {
+                Set<String> keysWithoutVal = getKeysByValue(creatorMap, "");
+                for (String uid : keysWithoutVal) {
+                    DatabaseHandler.queryUser(uid, user -> {
+                        if (user != null) {
+                            creatorMap.put(uid, user.getNickname());
+                        } else {    // USER NOT FOUND!!!
+                            creatorMap.put(uid, getString(R.string.deleted_user));
+                        }
+                        if (!creatorMap.containsValue("")) {
+                            buildAdapter(objectList, isPosition);
+                        }
+                    });
+                }
+            } else {
+                buildAdapter(objectList, isPosition);
             }
         } else {
             noObjects_textView.setVisibility(View.VISIBLE);
-            if(!isPosition){
+            if (!isPosition) {
                 noObjects_textView.setText(R.string.no_events);
             } else {
                 noObjects_textView.setText(R.string.no_positions);
             }
-            if(adapter != null){
+            if (adapter != null) {
                 object_listView.removeHeaderView(headerView);
                 adapter.notifyDataSetChanged();
             }
@@ -102,13 +122,37 @@ public class ObjectListFragment<T> extends Fragment
 
     }
 
-    private void updateTotalBalance(List<T> objectList, boolean isPosition){
+    private void buildAdapter(List<T> objectList, boolean isPosition) {
+        if (adapter == null) {
+            adapter = new CustomCallLogListAdapter(getActivity(),
+                    R.layout.fragment_object_list_row, objectList, isPosition);
+            object_listView = view.findViewById(R.id.fragment_listView);
+            object_listView.addHeaderView(headerView);
+            object_listView.setAdapter(adapter);
+            object_listView.setOnItemClickListener((parent, view, position, id) ->
+                    itemSelected(object_listView.getItemAtPosition(position)));
+        } else {
+            adapter.clear();
+            adapter.addAll(objectList);
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    public static <T, E> Set<T> getKeysByValue(Map<T, E> map, E value) {
+        return map.entrySet()
+                .stream()
+                .filter(entry -> Objects.equals(entry.getValue(), value))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+    }
+
+    private void updateTotalBalance(List<T> objectList, boolean isPosition) {
         TextView obj_val = headerView.findViewById(R.id.object_balance_summary_val);
         float balance = 0;
 
-        if(isPosition){
-            for(int idx = 0; idx < objectList.size(); ++idx)
-                balance += Stats.getPositionBalance((Position)objectList.get(idx),
+        if (isPosition) {
+            for (int idx = 0; idx < objectList.size(); ++idx)
+                balance += Stats.getPositionBalance((Position) objectList.get(idx),
                         relatedEventToPosition);
 
             obj_val.setText(new DecimalFormat("0.00").format(balance)
@@ -121,13 +165,13 @@ public class ObjectListFragment<T> extends Fragment
                     + " " + getString(R.string.euro));
         }
         TextView headerVal = headerView.findViewById(R.id.object_balance_summary_val);
-        if(balance < 0)
+        if (balance < 0)
             headerVal.setTextColor(Color.parseColor("#ef4545"));    // red
         else
             headerVal.setTextColor(Color.parseColor("#2ba050"));    // green
     }
 
-    public void itemSelected(Object object){
+    public void itemSelected(Object object) {
         itemClickListener.onFragmentObjectClick(object);
     }
 
@@ -139,6 +183,7 @@ public class ObjectListFragment<T> extends Fragment
         boolean isPosition;
         private Holder holder;
         private Object m_object;
+
         public CustomCallLogListAdapter(Context context, int resource, List<T> objects, boolean isPosition) {
             super(context, resource, objects);
             this.isPosition = isPosition;
@@ -149,8 +194,8 @@ public class ObjectListFragment<T> extends Fragment
 
         @Override
         public View getView(int index, View convertView, ViewGroup parent) {
-            LayoutInflater inflater=(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(resource, parent,false);
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            view = inflater.inflate(resource, parent, false);
             holder = new Holder();
             holder.object_name = view.findViewById(R.id.name);
             holder.object_creator = view.findViewById(R.id.creator);
@@ -162,29 +207,30 @@ public class ObjectListFragment<T> extends Fragment
             String wholePart;
             Spannable spannable;
 
-            if(isPosition) {
+            if (isPosition) {
                 Position position = (Position) m_object;
                 balance = Stats.getPositionBalance(position, relatedEventToPosition);
                 holder.object_name.setText(position.getTopic());
-                if(position.getCreatorId().equals(App.CurrentUser.getUid()))
+                if (position.getCreatorId().equals(App.CurrentUser.getUid())) {
                     creatorPart = getString(R.string.you);
-                else creatorPart = position.getCreatorId();
+                } else {
+                    creatorPart = creatorMap.get(position.getCreatorId());
+                }
                 wholePart = fromPart + " " + creatorPart;
                 spannable = new SpannableString(wholePart);
                 spannable.setSpan(new ForegroundColorSpan(Color.parseColor("#3a90e0")),
                         fromPart.length(), wholePart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 holder.object_creator.setText(spannable, TextView.BufferType.SPANNABLE);
                 holder.object_balance.setText(new DecimalFormat("0.00")
-                        .format(balance)+ " " + getString(R.string.euro));
+                        .format(balance) + " " + getString(R.string.euro));
             } else {    // its an Event
-                Event event = (Event)m_object;
+                Event event = (Event) m_object;
                 balance = Stats.getEventBalance(event);
                 holder.object_name.setText(event.getName());
-                if(event.getCreatorId().equals(App.CurrentUser.getUid()))
+                if (event.getCreatorId().equals(App.CurrentUser.getUid())) {
                     creatorPart = getString(R.string.you);
-                else {
-                    String uid = event.getCreatorId();
-                    creatorPart = uid;
+                } else {
+                    creatorPart = creatorMap.get(event.getCreatorId());
                 }
                 wholePart = fromPart + " " + creatorPart;
                 spannable = new SpannableString(wholePart);
@@ -194,7 +240,7 @@ public class ObjectListFragment<T> extends Fragment
                 holder.object_balance.setText(new DecimalFormat("0.00")
                         .format(balance) + " " + getString(R.string.euro));
             }
-            if(balance < 0)
+            if (balance < 0)
                 holder.object_balance.setTextColor(Color
                         .parseColor("#ef4545"));    // red
             else

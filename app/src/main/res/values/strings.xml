@@ -105,6 +105,7 @@
     <string name="no_bounty">Sie haben keine offenen Positionen</string>
     <string name="error_already_in_use">Nickname exists already</string>
     <string name="hint_nickname">nickname</string>
+    <string name="deleted_user">Gelöschter Nutzer</string>
     <string name="menu_item_friends">Friends</string>
     <string name="dialog_friend_title">Add new Friend</string>
     <string name="dialog_friends_message">Add Friend with nickname</string>
