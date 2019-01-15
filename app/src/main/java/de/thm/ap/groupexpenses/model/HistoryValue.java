@@ -4,11 +4,14 @@ import java.io.Serializable;
 
 import android.support.annotation.NonNull;
 
+import com.google.common.annotations.Beta;
+
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HistoryValue<T> implements Serializable {
+@Beta
+public class HistoryValue<T> {
 
     private T value;
     private Map<Long, T> history;
