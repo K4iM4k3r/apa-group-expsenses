@@ -82,6 +82,11 @@ public class User implements Comparable<User> {
         if (!friendsIds.contains(friendId)) friendsIds.add(friendId);
     }
 
+    public void removeFriend(String friendId){
+        if (friendsIds == null) friendsIds = new ArrayList<>();
+        friendsIds.remove(friendId);
+    }
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }

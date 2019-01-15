@@ -110,5 +110,13 @@
     <string name="dialog_friends_positiveBtn">add</string>
     <string name="error_user_not_found">User not found</string>
     <string name="dialog_friend_retry">try again</string>
+    <string name="CABTitle">Friends selected</string>
+    <string name="menu_item_remove_friend">Remove friend</string>
+    <string name="dialog_friend_delete">Delete friends</string>
+    <string name="dialog_friend_delete_message">Are you sure you want to delete these friends</string>
+    <string name="close">Close</string>
+    <string name="dialog_friend_delete_ok">delete</string>
+    <string name="success_remove_friend">successful remove friend</string>
+    <string name="error_remove_friend">could not remove friend</string>
 </resources>
 

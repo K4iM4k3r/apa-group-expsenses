@@ -243,11 +243,19 @@ public class DatabaseHandler {
         });
     }
 
-    /**
-     * Returns in the callback a list of all friends(user) of the user(Requester)
-     * @param uid User Id
-     * @param callback list of all fiends
-     */
+
+//    public static UserListLiveData getAllFriendsOfUser(List<String> friends) {
+//        CollectionReference usersRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_USERS);
+//
+//        Query query = usersRef.whereE(Constants.DOC_USERS_UID, friends)
+//        friends.forEach(f -> );
+//    }
+
+        /**
+         * Returns in the callback a list of all friends(user) of the user(Requester)
+         * @param uid User Id
+         * @param callback list of all fiends
+         */
     public static void getAllFriendsOfUser(String uid, Callback<List<User>> callback) {
         List<User> result = new ArrayList<>();
         queryUser(uid, user -> {
