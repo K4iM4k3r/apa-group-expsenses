@@ -158,12 +158,41 @@ public class Event {
         return result;
     }
 
+    /**
+     * Returns the global event balance of the specified user.
+     */
     public float getBalance(String userId) {
         float balance = 0.f;
         for (Position p : positions) {
             balance += p.getBalance(userId, members);
         }
         return balance;
+    }
+
+    /**
+     * Removes the specified users debts from all positions
+     */
+    public void removeAllDebtsOf(String userId){
+        positions.forEach(pos -> pos.removeDebtor(userId));
+    }
+
+    /**
+     * Removes all debts from the user with
+     * @param userId owed to
+     * @param otherUserId
+     */
+    public void removeAllDebtsOfUserOwedToOtherUser(String userId, String otherUserId){
+        positions.stream()
+             .filter(position -> position.getCreatorId().equals(otherUserId))
+             .forEach(position -> position.removeDebtor(userId));
+    }
+
+    /**
+     * Removes all positions made by the specified user.
+     * Can be used if someone was paid out by everyone or renounces his credits.
+     */
+    public void removePositionsOf(String userId) {
+        positions.removeIf(position -> position.getCreatorId().equals(userId));
     }
     //endregion
 

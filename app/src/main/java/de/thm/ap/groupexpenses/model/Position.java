@@ -144,11 +144,22 @@ public class Position {
      * Simpler form of getBalanceMap without information who owes whom.
      */
     public float getBalance(String userId, List<String> involvedPeople){
+
+        // user is not involved
+        if (!involvedPeople.contains(userId)) return 0f;
+
+        // user is creator - gets money
         if (isCreator(userId)) {
-            float factor = (involvedPeople.size()-1f)/involvedPeople.size();
+            List<String> debtors = new ArrayList<>(involvedPeople);
+            debtors.removeAll(peopleThatDontHaveToPay);
+            float factor = ((float)debtors.size())/involvedPeople.size();
             return value*factor;
         }
 
+        // user is not the creator but excluded from all payments - he has no debts or credits.
+        if (isExcludedFromPayments(userId)) return 0f;
+
+        // user is debtor, has to pay 1 part of the price
         float factor = 1f/involvedPeople.size();
         return -(value*factor);
     }
@@ -160,9 +171,11 @@ public class Position {
     public Map<String,Float> getBalanceMap(String userId, List<String> involvedPeople){
         Map<String, Float> result = new HashMap<>();
 
+        // user is not related to the position
         if(!involvedPeople.contains(userId))
             return result;
 
+        // user created the position - gets money from others
         if (isCreator(userId)){
             for(String person: involvedPeople){
                 float debt = getDebtOfUser(person, involvedPeople.size());
@@ -171,9 +184,11 @@ public class Position {
             return result;
         }
 
+        // user is not the creator but excluded from all payments - he has no debts or credits.
         if(isExcludedFromPayments(userId))
             return result;
 
+        // user is debtor, owes to creator only
         result.put(creatorId, -getDebtOfUser(userId, involvedPeople.size()));
         return result;
     }
