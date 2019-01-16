@@ -38,7 +38,7 @@ public class BountyActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bounty);
 
-        setTitle("Bounty");
+        setTitle("Kassensturz");
         data = new ArrayList<>();
 
         Bundle b = getIntent().getExtras();
