@@ -48,13 +48,14 @@
     <string name="edit">Bearbeiten</string>
     <string name="confirm">Bestätigen</string>
     <string name="nobody">Niemand</string>
-    <string name="events_loading">Events werden geladen...</string>
+    <string name="events_loading">Events werden geladen …</string>
     <string name="no_events">Keine Events vorhanden!</string>
     <string name="no_positions">Keine Positionen vorhanden!</string>
     <string name="total_balance">Gesamtbilanz</string>
     <string name="position_inspect_positions">Event-Positionen</string>
     <string name="euro">€</string>
     <string name="title_activity_friends">FriendsActivity</string>
+    <string name="load_friends">Freundesliste wird geladen …</string>
     <string name="no_friends">Sie haben noch keine Freunde</string>
     <string name="FriendsActivityTitle">Freunde</string>
     <string name="loading">loading</string>
@@ -110,18 +111,18 @@
     <string name="deleted_user">Gelöschter Nutzer</string>
     <string name="menu_item_friends">Friends</string>
     <string name="dialog_friend_title">Add new Friend</string>
-    <string name="dialog_friends_message">Add Friend with nickname</string>
+    <string name="dialog_friends_message">Add friend by nickname</string>
     <string name="dialog_friends_positiveBtn">add</string>
     <string name="error_user_not_found">User not found</string>
     <string name="dialog_friend_retry">try again</string>
     <string name="CABTitle">Friends selected</string>
     <string name="menu_item_remove_friend">Remove friend</string>
     <string name="dialog_friend_delete">Delete friends</string>
-    <string name="dialog_friend_delete_message">Are you sure you want to delete these friends</string>
+    <string name="dialog_friend_delete_message">Are you sure you want to delete these friends?</string>
     <string name="close">Close</string>
-    <string name="dialog_friend_delete_ok">delete</string>
-    <string name="success_remove_friend">successful remove friend</string>
-    <string name="error_remove_friend">could not remove friend</string>
-    <string name="notification_nickname_not_set">your nickname has not been set  yet</string>
+    <string name="dialog_friend_delete_ok">Delete</string>
+    <string name="success_remove_friend">Friend successfully removed!</string>
+    <string name="error_remove_friend">Friend could not  be removed!</string>
+    <string name="notification_nickname_not_set">Your nickname has not been set yet!</string>
 </resources>
 

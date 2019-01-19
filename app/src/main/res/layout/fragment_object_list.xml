@@ -8,9 +8,11 @@
         android:id="@+id/fragment_no_object_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/app_margin"
         android:textAlignment="center"
-        android:layout_marginTop="8dp"
-        android:textAppearance="?android:textAppearanceListItem" />
+        android:textAppearance="?android:textAppearanceListItem"
+        android:textColor="@color/app_grey"
+        android:textSize="18sp" />
 
     <ListView
         android:id="@+id/fragment_listView"

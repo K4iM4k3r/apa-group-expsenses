@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import de.thm.ap.groupexpenses.App;
 
@@ -34,8 +35,7 @@ public class EventActivity extends BaseActivity implements PositionEventListFrag
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event);
-//        Toolbar toolbar = findViewById(R.id.event_toolbar);
-//        setSupportActionBar(toolbar);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         TextView eventsLoadingTextView = findViewById(R.id.events_loading_textView);
 

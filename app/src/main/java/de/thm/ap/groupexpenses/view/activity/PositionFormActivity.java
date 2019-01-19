@@ -1,6 +1,7 @@
 package de.thm.ap.groupexpenses.view.activity;
 
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -19,7 +20,11 @@ public class PositionFormActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_position_form);
-        getSupportActionBar().setTitle(R.string.position_form_create_position);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null){
+            actionBar.setTitle(R.string.position_form_create_position);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
         positionNameEditText = findViewById(R.id.position_form_name_edit);
         positionInfoEditText = findViewById(R.id.position_form_info_edit);
         positionValEditText = findViewById(R.id.position_form_value_edit);

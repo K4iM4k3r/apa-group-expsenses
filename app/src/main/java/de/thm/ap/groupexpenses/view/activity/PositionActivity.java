@@ -3,6 +3,7 @@ package de.thm.ap.groupexpenses.view.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.ActionBar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -33,8 +34,11 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_position);
-        getSupportActionBar().setTitle(R.string.position_inspect_positions);
-
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null){
+            actionBar.setTitle(R.string.position_inspect_positions);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
         String selectedEventEid = null;
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
@@ -122,13 +126,6 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
             case R.id.position_menu_cash_check:
                 // display event cash check
                 new CashCheckDialog(this, selectedEvent);
-                /*
-                Intent intent = new Intent(PositionActivity.this, BountyActivity.class);
-                Bundle b = new Bundle();
-                b.putString("eventId", selectedEvent.getEid());
-                intent.putExtras(b);
-                startActivity(intent);
-                */
                 break;
         }
         return super.onOptionsItemSelected(item);
