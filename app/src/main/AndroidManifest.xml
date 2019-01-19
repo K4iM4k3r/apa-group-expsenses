@@ -15,7 +15,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity
-            android:name=".view.EventActivity"
+            android:name=".view.activity.EventActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,23 +23,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.EventFormActivity" />
-        <activity android:name=".view.PositionActivity" />
-        <activity android:name=".view.PositionFormActivity" />
+        <activity android:name=".view.activity.EventFormActivity" />
+        <activity android:name=".view.activity.PositionActivity" />
+        <activity android:name=".view.activity.PositionFormActivity" />
         <!--<activity android:name=".view.PositionInspectActivity" />-->
         <!--<activity android:name=".view.AddUsersActivity" />-->
         <activity
-            android:name=".view.FriendsActivity"
+            android:name=".view.activity.FriendsActivity"
             android:exported="true"
             android:label="@string/title_activity_friends"/>
         <activity
-            android:name=".view.BountyActivity"
+            android:name=".view.activity.BountyActivity"
             android:exported="true" />
         <activity
-            android:name=".view.LoginActivity"
+            android:name=".view.activity.LoginActivity"
             android:exported="true"
             android:theme="@style/ThemeOverlay.MyNoTitleActivity" />
-        <activity android:name=".view.ProfileActivity" />
+        <activity android:name=".view.activity.ProfileActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

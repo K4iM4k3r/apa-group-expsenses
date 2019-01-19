@@ -1,11 +1,8 @@
-package de.thm.ap.groupexpenses.view;
+package de.thm.ap.groupexpenses.view.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -19,14 +16,14 @@ import com.google.firebase.auth.FirebaseUser;
 
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
-import de.thm.ap.groupexpenses.fragment.ObjectListFragment;
+import de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.livedata.EventListLiveData;
 
-public class EventActivity extends BaseActivity implements ObjectListFragment.ItemClickListener {
+public class EventActivity extends BaseActivity implements PositionEventListFragment.ItemClickListener {
 
     private List<Event> events;
-    private ObjectListFragment objectListFragment;
+    private PositionEventListFragment positionEventListFragment;
     private EventListLiveData listLiveData;
 
     private static final String TAG = "EventActivity";
@@ -47,16 +44,19 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
         if (currentUser == null || !currentUser.isEmailVerified()) {
             startActivity(new Intent(this, LoginActivity.class));
         } else {
-            setCurrentUser(currentUser);
-            listLiveData = DatabaseHandler.getEventListLiveData(currentUser.getUid());
-            listLiveData.observe(this, eventList -> {
-                eventsLoadingTextView.setVisibility(View.GONE);
-                events = eventList;
-                if (events == null) events = new ArrayList<>();
-                objectListFragment = (ObjectListFragment) getSupportFragmentManager()
-                        .findFragmentById(R.id.event_fragment);
-                objectListFragment.updateObjectList(eventList, null);
+            DatabaseHandler.queryUser(currentUser.getUid(), result -> {
+                App.CurrentUser = result;
+                listLiveData = DatabaseHandler.getEventListLiveData(currentUser.getUid());
+                listLiveData.observe(this, eventList -> {
+                    eventsLoadingTextView.setVisibility(View.GONE);
+                    events = eventList;
+                    if (events == null) events = new ArrayList<>();
+                    positionEventListFragment = (PositionEventListFragment) getSupportFragmentManager()
+                            .findFragmentById(R.id.event_fragment);
+                    positionEventListFragment.updateList(eventList, null);
+                });
             });
+
         }
         FloatingActionButton createEventBtn = findViewById(R.id.create_event_btn);
         createEventBtn.setOnClickListener(v -> startActivity(
@@ -76,11 +76,5 @@ public class EventActivity extends BaseActivity implements ObjectListFragment.It
         Intent intent = new Intent(EventActivity.this, PositionActivity.class);
         intent.putExtra("eventEid", ((Event) event).getEid());
         startActivity(intent);
-    }
-
-    private void setCurrentUser(FirebaseUser currentUser) {
-        DatabaseHandler.queryUser(currentUser.getUid(), result -> {
-            App.CurrentUser = result;
-        });
     }
 }

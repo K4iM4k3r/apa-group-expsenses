@@ -34,7 +34,7 @@
 
     <fragment
         android:id="@+id/event_fragment"
-        android:name="de.thm.ap.groupexpenses.fragment.ObjectListFragment"
+        android:name="de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"

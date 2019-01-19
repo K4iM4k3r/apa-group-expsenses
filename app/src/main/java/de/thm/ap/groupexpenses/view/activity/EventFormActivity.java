@@ -1,8 +1,6 @@
-package de.thm.ap.groupexpenses.view;
+package de.thm.ap.groupexpenses.view.activity;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -12,7 +10,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -22,7 +19,7 @@ import java.util.regex.Pattern;
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
-import de.thm.ap.groupexpenses.fragment.UserListFragmentDialog;
+import de.thm.ap.groupexpenses.view.fragment.UserListDialogFragment;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.User;
 
@@ -49,7 +46,7 @@ public class EventFormActivity extends BaseActivity {
         addMembersBtn.setOnClickListener(v -> {
             DatabaseHandler.getAllFriendsOfUser(auth.getCurrentUser().getUid(), result -> {
                 List<User> friendsList = result;
-                UserListFragmentDialog dialog = new UserListFragmentDialog();
+                UserListDialogFragment dialog = new UserListDialogFragment();
                 dialog.build(eventUsersList, friendsList);
                 dialog.show(getFragmentManager(), "create_event");
             });
