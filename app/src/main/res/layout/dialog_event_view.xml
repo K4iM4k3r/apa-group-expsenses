@@ -86,6 +86,7 @@
         android:id="@+id/event_dialog_dept_val"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/app_margin"
         android:layout_marginEnd="@dimen/app_margin"
         android:layout_marginStart="@dimen/app_margin"
         android:layout_marginTop="@dimen/app_margin"
@@ -94,15 +95,5 @@
         android:textColor="#ef4545"
         android:textSize="24sp"
         android:textStyle="bold" />
-
-    <Button
-        android:id="@+id/event_dialog_cach_check_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/app_margin"
-        android:layout_marginEnd="@dimen/app_margin"
-        android:layout_marginStart="@dimen/app_margin"
-        android:layout_marginTop="@dimen/app_margin"
-        android:text="@string/event_cash_check" />
 
 </LinearLayout>

@@ -10,7 +10,6 @@ import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
@@ -18,7 +17,6 @@ import java.text.DecimalFormat;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Stats;
-import de.thm.ap.groupexpenses.view.activity.BountyActivity;
 
 public class EventInfoDialog {
     private AlertDialog.Builder eventDialog;
@@ -26,7 +24,6 @@ public class EventInfoDialog {
     private Event event;
     private View view;
     private TextView eventName, eventInfo, eventDepts;
-    private Button cash_check_btn;
     private TextView dept_val;
     private String creatorNickname;
     private Context context;
@@ -38,7 +35,6 @@ public class EventInfoDialog {
         this.creatorNickname = creatorNickname;
         view = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
                 .inflate(R.layout.dialog_event_view, null);
-        cash_check_btn = view.findViewById(R.id.event_dialog_cach_check_btn);
         dept_val = view.findViewById(R.id.event_dialog_dept_val);
         createDialog();
     }
@@ -81,22 +77,8 @@ public class EventInfoDialog {
                 return true;
             }
         });
-
-        /*
-        cash_check_btn.setOnClickListener(v -> {
-            // do cash check here
-            Intent intent = new Intent(context, BountyActivity.class);
-            Bundle b = new Bundle();
-            b.putString("eventId", event.getEid());
-            intent.putExtras(b);
-            startActivity(intent);
-        });
-        */
         eventDialog.setView(view);
         dialog = eventDialog.create();
         dialog.show();
-        dialog.setOnDismissListener(dialog1 -> {
-            // save changes to database ?!
-        });
     }
 }

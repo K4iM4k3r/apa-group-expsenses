@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/border"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/app_blue"
+        android:fontFamily="monospace"
+        android:gravity="center"
+        android:text="@string/cash_check_caps"
+        android:textColor="@android:color/white"
+        android:textSize="30sp" />
+
+    <TextView
+        android:id="@+id/dialog_cash_check_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/app_margin"
+        android:layout_marginStart="@dimen/app_margin"
+        android:layout_marginTop="@dimen/app_margin"
+        android:drawablePadding="-20sp"
+        android:drawableRight="@drawable/ic_close_grey_24dp"
+        android:gravity="center"
+        android:text="Eventname"
+        android:textColor="@android:color/black"
+        android:textSize="22sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/app_margin"
+        android:layout_marginStart="@dimen/app_margin"
+        android:layout_marginTop="@dimen/app_margin"
+        android:drawableStart="@drawable/ic_info_outline_grey_24dp"
+        android:gravity="center"
+        android:text="@string/cash_check_info"
+        android:textSize="12sp" />
+
+    <ListView
+        android:id="@+id/dialog_cash_check_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/app_margin"
+        android:layout_marginEnd="@dimen/app_margin"
+        android:layout_marginStart="@dimen/app_margin"
+        android:layout_marginTop="@dimen/app_margin"
+        android:visibility="visible" />
+
+</LinearLayout>

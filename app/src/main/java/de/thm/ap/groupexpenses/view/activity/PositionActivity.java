@@ -12,6 +12,7 @@ import java.util.List;
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
+import de.thm.ap.groupexpenses.view.dialog.CashCheckDialog;
 import de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment;
 import de.thm.ap.groupexpenses.view.fragment.UserListDialogFragment;
 import de.thm.ap.groupexpenses.livedata.EventLiveData;
@@ -94,6 +95,7 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
 
         switch (id) {
             case R.id.position_menu_inspect_users:
+                // display event user list
                 DatabaseHandler.getAllFriendsOfUser(auth.getCurrentUser().getUid(), friendsList -> {
                     UserListDialogFragment dialog = new UserListDialogFragment();
                     dialog.build(selectedEvent, eventMembers, friendsList);
@@ -102,7 +104,7 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
                 break;
 
             case R.id.position_menu_info:
-                // display event info including a cash check btn
+                // display event info
                 if (App.CurrentUser.getUid().equals(selectedEvent.getCreatorId())) {
                     new EventInfoDialog(selectedEvent, null, this);
                 } else {
@@ -117,10 +119,16 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
                 }
                 break;
 
-            case R.id.position_menu_done:
-                // return Event to EventActivity
-                DatabaseHandler.updateEvent(selectedEvent);
-                finish();
+            case R.id.position_menu_cash_check:
+                // display event cash check
+                new CashCheckDialog(this, selectedEvent);
+                /*
+                Intent intent = new Intent(PositionActivity.this, BountyActivity.class);
+                Bundle b = new Bundle();
+                b.putString("eventId", selectedEvent.getEid());
+                intent.putExtras(b);
+                startActivity(intent);
+                */
                 break;
         }
         return super.onOptionsItemSelected(item);

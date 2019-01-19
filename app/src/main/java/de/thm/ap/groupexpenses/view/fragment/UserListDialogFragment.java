@@ -214,6 +214,7 @@ public class UserListDialogFragment extends DialogFragment {
                             userListView.setAdapter(userArrayAdapter);
                             doneBtn.setText(R.string.ok);
                             addBtn.setText(R.string.event_form_add_members);
+                            headerTextView.setText(R.string.event_form_users);
                             break;
                     }
                     break;

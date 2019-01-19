@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/dialog_cash_check_name"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="@dimen/app_margin"
+        android:gravity="center_vertical"
+        android:text="TestName"
+        android:textColor="#3a90e0"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/dialog_cash_check_balance"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/app_margin"
+        android:gravity="center_vertical"
+        android:text="0.00 €"
+        android:textColor="#3c4948"
+        android:textSize="20sp" />
+
+    <ImageView
+        android:id="@+id/dialog_cash_check_arrow_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/ic_arrow_back_red_24dp"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/dialog_cash_check_arrow_forward"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/ic_arrow_forward_green_24dp"
+        android:visibility="gone" />
+
+</RelativeLayout>
+
+
+
+
+
+
+
