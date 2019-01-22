@@ -31,7 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="@string/load_friends"
+        android:text="@string/no_friends"
         android:textColor="@color/app_grey"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
