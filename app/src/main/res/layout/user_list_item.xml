@@ -1,42 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="@dimen/app_margin">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="60dp">
+
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/user_pic"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:cropToPadding="true"
+        android:layout_marginStart="@dimen/app_margin"
+        android:layout_gravity="center_vertical"
         android:src="@drawable/ic_user_image_with_black_background" />
 
     <TextView
         android:id="@+id/list_item_nickname"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:text="@string/hint_nickname" />
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/list_item_nickname"
-        android:layout_marginTop="@dimen/app_small_margin">
-        <TextView
-            android:id="@+id/list_item_firstname"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/app_margin"
-            android:text="" />
-
-        <TextView
-            android:id="@+id/list_item_lastname"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="" />
-
-    </LinearLayout>
+        android:layout_marginEnd="@dimen/app_margin"
+        android:layout_marginStart="@dimen/app_margin"
+        android:layout_gravity="center_vertical"
+        android:text="@string/hint_nickname"
+        android:textColor="#3a90e0"
+        android:textSize="20sp" />
 
 
-</RelativeLayout>
+</LinearLayout>

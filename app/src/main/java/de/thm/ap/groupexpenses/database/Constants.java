@@ -1,16 +1,15 @@
 package de.thm.ap.groupexpenses.database;
 
-public class Constants {
+class Constants {
 
-    public static final String COLLECTION_USERS = "users";
-    public static final String COLLECTION_EVENTS = "events";
+    static final String COLLECTION_USERS = "users";
+    static final String COLLECTION_EVENTS = "events";
 
-    public static final String DOC_USERS_UID = "uid";
-    public static final String DOC_USERS_FIRST_NAME = "firstName";
-    public static final String DOC_USERS_LAST_NAME = "lastName";
-    public static final String DOC_USERS_NICKNAME = "nickname";
-    public static final String DOC_USERS_PROFILE_PIC_URL = "profilePic";
-    public static final String DOC_USERS_EVENTS = "events";
+//    public static final String DOC_USERS_UID = "uid";
+//    public static final String DOC_USERS_LAST_NAME = "lastName";
+    static final String DOC_USERS_NICKNAME = "nickname";
+    static final String DOC_USERS_FRIENDS_IDS = "friendsIds";
+    static final String DOC_USERS_EVENTS = "events";
 
-    public static final String DOC_EVENTS_MEMBERS = "members";
+    static final String DOC_EVENTS_MEMBERS = "members";
 }

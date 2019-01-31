@@ -1,77 +1,80 @@
 
-package de.thm.ap.groupexpenses.view;
+package de.thm.ap.groupexpenses.view.activity;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.Collections;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
-import de.thm.ap.groupexpenses.adapter.UserArrayAdapter;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
+import de.thm.ap.groupexpenses.livedata.UserListLiveData;
 import de.thm.ap.groupexpenses.model.User;
 
 public class FriendsActivity extends BaseActivity {
-    ListView friendListView;
-    List<User> friends;
-    UserArrayAdapter friendsAdapter;
+    private ListView friendListView;
+    private UserArrayAdapter friendsAdapter;
+    private TextView friendsListInfo;
+    private UserListLiveData listLiveData;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friends);
-//        Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-        if(getSupportActionBar() != null){
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(R.string.FriendsActivityTitle);
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
+        friendsListInfo = findViewById(R.id.friends_list_info);
 
-        setTitle(getString(R.string.FriendsActivityTitle));
-
-        FloatingActionButton fab = findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.friends_activity_add_friends_btn);
         fab.setOnClickListener(view -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(this).setTitle(R.string.dialog_friend_title);
 
             EditText input = new EditText(this);
             input.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
             input.setHint(getString(R.string.hint_nickname));
-            input.setPadding(32,32,32,32);
+            input.setPadding(32, 32, 32, 32);
             builder.setView(input);
             builder.setTitle(R.string.dialog_friends_message);
             builder.setPositiveButton(R.string.dialog_friends_positiveBtn, (dialog, which) -> {
                 final String userInput = input.getText().toString();
 
-                if(TextUtils.isEmpty(userInput)) {
+                if (TextUtils.isEmpty(userInput)) {
                     Snackbar.make(view, getString(R.string.error_user_not_found), Snackbar.LENGTH_LONG)
-                            .setAction(getString(R.string.dialog_friend_retry),  l -> fab.callOnClick()).show();
-                }
-                else {
+                            .setAction(getString(R.string.dialog_friend_retry), l -> fab.callOnClick()).show();
+                } else {
                     DatabaseHandler.isNicknameExist(userInput, exists -> {
                         if (!exists) {
                             Snackbar.make(view, getString(R.string.error_user_not_found), Snackbar.LENGTH_LONG)
-                                    .setAction(getString(R.string.dialog_friend_retry),  l -> fab.callOnClick()).show();
+                                    .setAction(getString(R.string.dialog_friend_retry), l -> fab.callOnClick()).show();
                         } else {
-                            DatabaseHandler.queryUserByNickname(userInput, friend -> {
-                                App.CurrentUser.addFriend(friend.getUid());
-                                DatabaseHandler.updateUser(App.CurrentUser);
-                                loadFriends();
-                            });
+                            DatabaseHandler.queryUserByNickname(userInput, friend -> DatabaseHandler.makeFriendship(App.CurrentUser, friend));
                         }
                     });
                 }
@@ -80,7 +83,6 @@ public class FriendsActivity extends BaseActivity {
         });
 
         friendListView = findViewById(R.id.friends_list);
-        friendListView.setEmptyView(findViewById(R.id.friends_list_empty));
         friendListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         friendListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
 
@@ -121,8 +123,16 @@ public class FriendsActivity extends BaseActivity {
                 return false;
             }
         });
-        loadFriends();
 
+        super.showProgressDialog();
+        listLiveData = DatabaseHandler.getAllFriendsOfUser(auth.getUid());
+        listLiveData.observe(this, this::loadFriends);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        listLiveData.observe(this, this::loadFriends);
     }
 
     private void deleteSelectedItems(ActionMode mode) {
@@ -130,35 +140,74 @@ public class FriendsActivity extends BaseActivity {
         SparseBooleanArray ids = friendListView.getCheckedItemPositions();
         builder.setTitle(R.string.dialog_friend_delete);
         builder.setMessage(R.string.dialog_friend_delete_message);
-        builder.setNeutralButton(R.string.close,null);
+        builder.setNeutralButton(R.string.close, null);
         builder.setPositiveButton(R.string.dialog_friend_delete_ok, (dialog, which) -> {
 
             for (int i = 0; i < friendsAdapter.getCount(); i++) {
-//                Log.i(Constants.RecAct, " i:" + i + "; " + ids.get(i));
                 User selectedUser = friendsAdapter.getItem(i);
                 if (ids.get(i) && selectedUser != null) {
-                    App.CurrentUser.removeFriend(selectedUser.getUid());
+                    DatabaseHandler.destroyFriendship(App.CurrentUser, selectedUser);
+                    super.showProgressDialog();
                 }
             }
-            DatabaseHandler.updateUserWithFeedback(App.CurrentUser, success -> {
-                Snackbar.make(friendListView, getString(R.string.success_remove_friend), Snackbar.LENGTH_LONG).show();
-                loadFriends();
-                },
-                failure -> Snackbar.make(friendListView, getString(R.string.error_remove_friend), Snackbar.LENGTH_LONG).show());
+            DatabaseHandler.updateUserWithFeedback(App.CurrentUser,
+                    success -> Snackbar.make(friendListView, getString(R.string.success_remove_friend), Snackbar.LENGTH_LONG).show(),
+                    failure -> Snackbar.make(friendListView, getString(R.string.error_remove_friend), Snackbar.LENGTH_LONG).show());
             mode.finish();
 
         });
         builder.show();
     }
 
-    private void loadFriends(){
-        DatabaseHandler.getAllFriendsOfUser(auth.getUid(), friends ->{
-            this.friends = friends;
-            Collections.sort(friends); //alphabetical sort
-
+    private void loadFriends(List<User> friends) {
+        super.hideProgressDialog();
+        if(friends.isEmpty()){
+            friendsListInfo.setVisibility(View.VISIBLE);
+            friendListView.setVisibility(View.GONE);
+        }
+        else {
+            friendsListInfo.setVisibility(View.GONE);
+            friendListView.setVisibility(View.VISIBLE);
+            Collections.sort(friends, Collections.reverseOrder()); //alphabetical sort
             friendsAdapter = new UserArrayAdapter(this, friends);
             friendListView.setAdapter(friendsAdapter);
-        });
+        }
+    }
 
+    private class UserArrayAdapter extends ArrayAdapter<User> {
+        private final static int VIEW_RESOURCE = R.layout.user_list_item;
+
+        private UserArrayAdapter(Context ctx, List<User> users) {
+            super(ctx, VIEW_RESOURCE, users);
+        }
+
+        @NonNull
+        @Override
+        public View getView(int pos, View view, @NonNull ViewGroup parent) {
+
+            if (view == null) {
+                LayoutInflater vi = (LayoutInflater) getContext().getSystemService(
+                        Context.LAYOUT_INFLATER_SERVICE);
+                view = vi.inflate(VIEW_RESOURCE, null);
+            }
+
+            User user = getItem(pos);
+            if (user != null) {
+                CircleImageView picture = view.findViewById(R.id.user_pic);
+                if (user.getProfilePic() != null) {
+                    DatabaseHandler.getUserProfilePic(parent.getContext(), user.getUid(), opPictureUri -> opPictureUri.ifPresent(picture::setImageURI));
+                }
+                TextView nickname = view.findViewById(R.id.list_item_nickname);
+                nickname.setText(user.getNickname());
+                /*
+                TextView firstname = view.findViewById(R.id.list_item_firstname);
+                firstname.setText(user.getFirstName());
+                TextView lastname = view.findViewById(R.id.list_item_lastname);
+                lastname.setText(user.getLastName());
+                */
+            }
+
+            return view;
+        }
     }
 }

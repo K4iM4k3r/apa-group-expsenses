@@ -1,28 +1,27 @@
-package de.thm.ap.groupexpenses.view;
+package de.thm.ap.groupexpenses.view.activity;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
-import de.thm.ap.groupexpenses.fragment.UserListFragmentDialog;
+import de.thm.ap.groupexpenses.view.fragment.UserListDialogFragment;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.User;
 
@@ -39,7 +38,11 @@ public class EventFormActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_form);
-        getSupportActionBar().setTitle(R.string.event_form_create_event);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null){
+            actionBar.setTitle(R.string.event_form_create_event);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
         eventNameEditText = findViewById(R.id.event_form_name_edit);
         eventDateEditText = findViewById(R.id.event_form_date_edit);
         eventInfoEditText = findViewById(R.id.event_form_info_edit);
@@ -49,7 +52,7 @@ public class EventFormActivity extends BaseActivity {
         addMembersBtn.setOnClickListener(v -> {
             DatabaseHandler.getAllFriendsOfUser(auth.getCurrentUser().getUid(), result -> {
                 List<User> friendsList = result;
-                UserListFragmentDialog dialog = new UserListFragmentDialog();
+                UserListDialogFragment dialog = new UserListDialogFragment();
                 dialog.build(eventUsersList, friendsList);
                 dialog.show(getFragmentManager(), "create_event");
             });

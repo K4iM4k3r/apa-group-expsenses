@@ -1,4 +1,4 @@
-package de.thm.ap.groupexpenses.fragment;
+package de.thm.ap.groupexpenses.view.fragment;
 
 import android.app.AlertDialog;
 import android.app.DialogFragment;
@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -21,10 +20,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseAuth;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import de.thm.ap.groupexpenses.App;
@@ -32,9 +28,9 @@ import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.User;
-import de.thm.ap.groupexpenses.view.EventFormActivity;
+import de.thm.ap.groupexpenses.view.activity.EventFormActivity;
 
-public class UserListFragmentDialog extends DialogFragment {
+public class UserListDialogFragment extends DialogFragment {
 
     private View view;
     private ListView userListView;
@@ -92,8 +88,12 @@ public class UserListFragmentDialog extends DialogFragment {
         if (TAG.equals("edit_event")) {
             setEditState(EDIT_STATE_INSPECT_USERS);
 
-            if (isCreator) addBtn.setText(R.string.add_remove);
-            else addBtn.setVisibility(View.GONE);
+            if (isCreator) {
+                addBtn.setText(R.string.add_remove);
+                doneBtn.setVisibility(View.GONE);
+            } else {
+                addBtn.setVisibility(View.GONE);
+            }
 
             if (hasPositions) addBtn.setText(R.string.event_form_add_members);
             userArrayAdapter = new UserArrayAdapter(getActivity(), selectedUsers);
@@ -166,6 +166,7 @@ public class UserListFragmentDialog extends DialogFragment {
                                 }
                                 userArrayAdapter.notifyDataSetChanged();
                                 addBtn.setText(R.string.event_form_add_members);
+                                doneBtn.setVisibility(View.VISIBLE);
                                 doneBtn.setText(R.string.ok);
                                 if (usersDeleted == null) usersDeleted = new ArrayList<>();
                                 break;
@@ -213,6 +214,7 @@ public class UserListFragmentDialog extends DialogFragment {
                             userListView.setAdapter(userArrayAdapter);
                             doneBtn.setText(R.string.ok);
                             addBtn.setText(R.string.event_form_add_members);
+                            headerTextView.setText(R.string.event_form_users);
                             break;
                     }
                     break;

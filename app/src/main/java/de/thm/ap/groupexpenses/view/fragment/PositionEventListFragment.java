@@ -1,4 +1,4 @@
-package de.thm.ap.groupexpenses.fragment;
+package de.thm.ap.groupexpenses.view.fragment;
 
 import android.app.Activity;
 import android.content.Context;
@@ -31,7 +31,7 @@ import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.Stats;
 
-public class ObjectListFragment<T> extends Fragment {
+public class PositionEventListFragment<T> extends Fragment {
     private View view;
     private ListView object_listView;
     private View headerView;
@@ -67,7 +67,7 @@ public class ObjectListFragment<T> extends Fragment {
         return view;
     }
 
-    public void updateObjectList(List<T> objectList, Event relatedEvent) {
+    public void updateList(List<T> objectList, Event relatedEvent) {
         boolean isPosition = relatedEvent != null;
         TextView noObjects_textView = view.findViewById(R.id.fragment_no_object_text);
         if (!objectList.isEmpty()) {

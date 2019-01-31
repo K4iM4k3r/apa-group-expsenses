@@ -1,4 +1,4 @@
-package de.thm.ap.groupexpenses.view;
+package de.thm.ap.groupexpenses.view.activity;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;

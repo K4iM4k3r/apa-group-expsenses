@@ -64,6 +64,25 @@ public class DatabaseHandler {
     }
 
     /**
+     * add User with uid will be added to the adder and also the adder will added of the friend list of uid
+     * @param first Adder
+     * @param second user who will added
+     */
+    public static void makeFriendship(User first, User second){
+        first.addFriend(second.getUid());
+        second.addFriend(first.getUid());
+        updateUser(first);
+        updateUser(second);
+    }
+
+    public static void destroyFriendship(User one, User two){
+        one.removeFriend(two.getUid());
+        two.removeFriend(one.getUid());
+        updateUser(one);
+        updateUser(two);
+    }
+
+    /**
      * Checks if the Nickname exits
      * @param nickname User nickname
      * @param callback boolean if nickname exists
@@ -243,13 +262,16 @@ public class DatabaseHandler {
         });
     }
 
-
-//    public static UserListLiveData getAllFriendsOfUser(List<String> friends) {
-//        CollectionReference usersRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_USERS);
-//
-//        Query query = usersRef.whereE(Constants.DOC_USERS_UID, friends)
-//        friends.forEach(f -> );
-//    }
+    /**
+     * Get all Friends of the user with the uid
+     * @param uid User
+     * @return LiveDate that contains FriendsList
+     */
+    public static UserListLiveData getAllFriendsOfUser(String uid) {
+        CollectionReference usersRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_USERS);
+        Query query = usersRef.whereArrayContains(Constants.DOC_USERS_FRIENDS_IDS, uid);
+        return new UserListLiveData(query);
+    }
 
         /**
          * Returns in the callback a list of all friends(user) of the user(Requester)
