@@ -1,19 +1,19 @@
 {
   "name": "functions",
-  "description": "Cloud Functions for Firebase",
+  "description": "Stripe Functions for Firebase",
   "scripts": {
     "serve": "firebase serve --only functions",
-    "shell": "firebase functions:shell",
+    "shell": "firebase experimental:functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log"
   },
   "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.16.4",
-    "firebase-admin": "~6.0.0",
-    "firebase-functions": "^2.1.0",
-    "stripe": "^6.20.0"
+    "cors": "^2.8.4",
+    "express": "^4.16.2",
+    "firebase-admin": "~5.8.1",
+    "firebase-functions": "^0.8.2",
+    "stripe": "^5.4.0"
   },
   "private": true
 }

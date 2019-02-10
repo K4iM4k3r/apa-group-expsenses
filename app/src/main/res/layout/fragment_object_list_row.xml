@@ -4,22 +4,29 @@ android:background="?android:activatedBackgroundIndicator"
 android:minHeight="?android:listPreferredItemHeight"
 xmlns:android="http://schemas.android.com/apk/res/android">
 
-<TextView
-    android:id="@+id/name"
-    android:layout_width="match_parent"
+<LinearLayout
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginStart="@dimen/app_margin"
-    android:layout_toStartOf="@id/balance"
-    android:textAppearance="?android:textAppearanceListItem" />
+    android:layout_alignParentStart="true"
+    android:layout_centerVertical="true"
+    android:layout_gravity="center_vertical"
+    android:orientation="vertical">
 
-<TextView
-    android:id="@+id/creator"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginStart="@dimen/app_margin"
-    android:layout_below="@id/name"
-    android:textAppearance="?android:textAppearanceListItemSmall"
-    android:textColor="?android:textColorHint" />
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/app_margin"
+        android:textAppearance="?android:textAppearanceListItem" />
+
+    <TextView
+        android:id="@+id/creator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/app_margin"
+        android:textAppearance="?android:textAppearanceListItemSmall"
+        android:textColor="?android:textColorHint" />
+</LinearLayout>
 
 <TextView
     android:id="@+id/balance"
