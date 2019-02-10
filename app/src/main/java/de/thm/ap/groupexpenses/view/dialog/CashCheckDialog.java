@@ -134,9 +134,20 @@ public class CashCheckDialog {
             if (currentUserValue.value < 0) { // App.CurrentUser owes money
                 back_arrow.setVisibility(View.VISIBLE);
                 forward_arrow.setVisibility(View.GONE);
+                back_arrow.setOnClickListener(v -> {
+                    // pay ALL depts to user here (multiple positions)
+                    // TODO: David pay system
+                    float val = currentUserValue.value * (-1);
+
+                    // TODO: After successful payment -> delete user from ALL positions he just payed for
+                });
             } else {    // App.CurrentUser gets money
                 forward_arrow.setVisibility(View.VISIBLE);
                 back_arrow.setVisibility(View.GONE);
+                forward_arrow.setOnClickListener(v -> {
+                    // TODO: remind user for payment here via e-mail
+                    float val = currentUserValue.value;
+                });
             }
 
 

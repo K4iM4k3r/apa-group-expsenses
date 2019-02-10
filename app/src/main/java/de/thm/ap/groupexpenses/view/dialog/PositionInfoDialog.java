@@ -46,6 +46,7 @@ public class PositionInfoDialog {
     private TextView positionCreatorAndDate;
     private String creatorNickname;
     private Context context;
+    private float pay_value;
 
     public PositionInfoDialog(Position selectedPosition, Event selectedEvent, String creatorNickname, Context context) {
         this.context = context;
@@ -108,8 +109,9 @@ public class PositionInfoDialog {
             creator = creatorNickname;
             positionDeptValue = context.getResources().getString(R.string.your_depts);
             payBtn.setOnClickListener(v -> {
-                // pay btn clicked
-                // TODO: pay with paypal here
+                // pay position dept to user here (just one position)
+                // TODO: David pay system
+                float val = pay_value * (-1);
             });
         }
         displayCreator(creator);
@@ -123,8 +125,9 @@ public class PositionInfoDialog {
         });
         positionName.setText(position.getTopic());
         positionDepts.setText(positionDeptValue);
+        pay_value = Stats.getPositionBalance(position, selectedEvent);
         dept_val.setText(new DecimalFormat("0.00")
-                .format(Stats.getPositionBalance(position, selectedEvent)) + " " + context.getString(R.string.euro));
+                .format(pay_value) + " " + context.getString(R.string.euro));
         String positionInfoString = position.getInfo();
         if (positionInfoString != null && !positionInfoString.isEmpty())
             positionInfo.setText(positionInfoString);
