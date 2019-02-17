@@ -1,12 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/position_menu_cash_check"
-        android:title="@string/cash_check"
-        android:icon="@drawable/ic_attach_money_white_24dp"
-        app:showAsAction="always"
-        />
-    <item
         android:id="@+id/position_menu_inspect_users"
         android:title="@string/inspect_users"
         android:icon="@drawable/ic_face_white_24dp"
