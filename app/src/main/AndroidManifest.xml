@@ -40,6 +40,8 @@
             android:exported="true"
             android:theme="@style/ThemeOverlay.MyNoTitleActivity" />
         <activity android:name=".view.activity.ProfileActivity" />
+        <activity android:name=".view.activity.TabTestActivity"
+            android:exported="true"/>
 
         <provider
             android:name="android.support.v4.content.FileProvider"

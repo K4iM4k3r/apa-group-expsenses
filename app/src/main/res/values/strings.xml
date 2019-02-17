@@ -124,5 +124,7 @@
     <string name="success_remove_friend">Friend successfully removed!</string>
     <string name="error_remove_friend">Friend could not  be removed!</string>
     <string name="notification_nickname_not_set">Your nickname has not been set yet!</string>
+    <string name="tab_event">Event</string>
+    <string name="tab_cash">Cash</string>
 </resources>
 

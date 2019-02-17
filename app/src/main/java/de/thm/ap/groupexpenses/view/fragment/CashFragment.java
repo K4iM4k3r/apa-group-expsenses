@@ -24,7 +24,7 @@ import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.livedata.EventLiveData;
 
 public class CashFragment extends Fragment {
-    private static final String SELECTED_EID = "seid";
+    public static final String SELECTED_EID = "seid";
     Map<String, Float> cash_check_map;
     ArrayList<UserValue> userValueList;
     private UserValueArrayAdapter userValueArrayAdapter;
