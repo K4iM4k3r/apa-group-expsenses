@@ -12,6 +12,14 @@ public class Stats {
 
     private static final String TAG = Stats.class.getName();
 
+    public static Map<String, Float> getGlobalBalanceTable(User user, List<Event> events){
+        Map<String, Float> result = new HashMap<>();
+        for (Event event : events){
+            event.getBalanceTable(user.getUid()).forEach((k, v) -> result.merge(k, v, Float::sum));
+        }
+        return result;
+    }
+
     public static Map<Event, Float> calculateAll(List<Event> events){
         if (App.CurrentUser == null)
             throw new IllegalStateException("User not specified!");

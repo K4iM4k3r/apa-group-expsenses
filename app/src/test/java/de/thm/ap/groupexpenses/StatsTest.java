@@ -2,7 +2,6 @@ package de.thm.ap.groupexpenses;
 
 import org.junit.Test;
 
-import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,12 +19,12 @@ import static junit.framework.TestCase.assertEquals;
 public class StatsTest {
 
     //region variablen
-    private User creator = new User("0", "Nils", "Müller", "", "nMueller@mail.de", null, null);
+    private User creator = new User("Nils (creator)", "Nils", "Müller", "", "nMueller@mail.de", null, null);
     private User[] member = new User[]{
-            new User("1", "Jan", "Müller","", "jMueller@mail.de", null, null),
-            new User("2", "Tom", "Müller","", "tMueller@mail.de", null, null),
-            new User("3", "Sina", "Müller","", "sMueller@mail.de", null, null),
-            new User("4", "Mia", "Müller","", "mMueller@mail.de", null, null)
+            new User("Jan", "Jan", "Müller","", "jMueller@mail.de", null, null),
+            new User("Tom", "Tom", "Müller","", "tMueller@mail.de", null, null),
+            new User("Sina", "Sina", "Müller","", "sMueller@mail.de", null, null),
+            new User("Mia", "Mia", "Müller","", "mMueller@mail.de", null, null)
     };
 
     private Position[] positions = new Position[]{
@@ -42,6 +41,29 @@ public class StatsTest {
 
     private Position creators_position =  new Position(creator.getUid(), "Tickets", 5000f);
     //endregion
+
+    @Test
+    public void getGlobalBalanceTest(){
+        int BREAKPOINT = 0;
+
+        Event event1 = new Event(creator.getUid(), "event1", "11.01.2018", "",
+                Arrays.stream(member).map(User::getUid).collect(Collectors.toList()), Arrays.asList(positions));
+
+        List<Event> events = new ArrayList<>();
+        events.add(event1);
+
+        Map<String, Float> actual = Stats.getGlobalBalanceTable(creator, events);
+        Map<String, Float> expected = event1.getBalanceTable(creator.getUid());
+
+        assertEquals(expected, actual);
+
+        events.add(event1);
+
+        actual = Stats.getGlobalBalanceTable(creator, events);
+        expected.forEach((k,v) -> expected.put(k,v*2));
+
+        assertEquals(expected, actual);
+    }
 
     @Test
     public void getEventBalanceTest(){
