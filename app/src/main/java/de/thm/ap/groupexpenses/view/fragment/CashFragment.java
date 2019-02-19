@@ -21,7 +21,10 @@ import java.util.Objects;
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
+import de.thm.ap.groupexpenses.livedata.EventListLiveData;
 import de.thm.ap.groupexpenses.livedata.EventLiveData;
+
+import static de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment.USERID;
 
 public class CashFragment extends Fragment {
     public static final String SELECTED_EID = "seid";
@@ -43,45 +46,53 @@ public class CashFragment extends Fragment {
         cash_check_list = rootView.findViewById(R.id.dialog_cash_check_list);
         Bundle args = getArguments();
 
-        EventLiveData eventLiveData;
         if (args != null) {
-            eventLiveData = DatabaseHandler.getEventLiveData(args.getString(SELECTED_EID));
-            eventLiveData.observe(this, event -> {
-                if (event != null) {
-                    event_name.setText(event.getName());
-                    userValueList = new ArrayList<>();
-                    cash_check_map = event.getBalanceTable(App.CurrentUser.getUid());
-                    List<String> keyList = new ArrayList<>(cash_check_map.keySet());
-                    int idx = 0;
-                    while (idx < keyList.size()) {
-                        userValueList.add(null);
-                        idx++;
-                    }
-                    for (idx = 0; idx < keyList.size(); ++idx) {
-                        final String key = keyList.get(idx);
-                        DatabaseHandler.queryUser(key, user -> {
-                            for (int idx2 = 0; idx2 < userValueList.size(); ++idx2) {
-                                if (userValueList.get(idx2) == null) {
-                                    if (user != null) {
-                                        userValueList.set(idx2, new UserValue(user.getNickname(), cash_check_map.get(key)));
-                                    } else {
-                                        userValueList.set(idx2, new UserValue(getString(R.string.unknown),
-                                                cash_check_map.get(key)));
+            String eid = args.getString(SELECTED_EID);
+            String uid = args.getString(USERID);
+            if (eid != null){
+                EventLiveData eventLiveData;
+                eventLiveData = DatabaseHandler.getEventLiveData(eid);
+                eventLiveData.observe(this, event -> {
+                    if (event != null) {
+                        event_name.setText(event.getName());
+                        userValueList = new ArrayList<>();
+                        cash_check_map = event.getBalanceTable(App.CurrentUser.getUid());
+                        List<String> keyList = new ArrayList<>(cash_check_map.keySet());
+                        int idx = 0;
+                        while (idx < keyList.size()) {
+                            userValueList.add(null);
+                            idx++;
+                        }
+                        for (idx = 0; idx < keyList.size(); ++idx) {
+                            final String key = keyList.get(idx);
+                            DatabaseHandler.queryUser(key, user -> {
+                                for (int idx2 = 0; idx2 < userValueList.size(); ++idx2) {
+                                    if (userValueList.get(idx2) == null) {
+                                        if (user != null) {
+                                            userValueList.set(idx2, new UserValue(user.getNickname(), cash_check_map.get(key)));
+                                        } else {
+                                            userValueList.set(idx2, new UserValue(getString(R.string.unknown),
+                                                    cash_check_map.get(key)));
+                                        }
+                                        break;
                                     }
-                                    break;
                                 }
-                            }
-
-                            if (!userValueList.contains(null)) {
-                                // create and set adapter
-                                userValueArrayAdapter = new UserValueArrayAdapter(Objects.requireNonNull(getContext()), userValueList);
-                                cash_check_list.setAdapter(userValueArrayAdapter);
-
-                            }
-                        });
+                                if (!userValueList.contains(null)) {
+                                    // create and set adapter
+                                    userValueArrayAdapter = new UserValueArrayAdapter(Objects.requireNonNull(getContext()), userValueList);
+                                    cash_check_list.setAdapter(userValueArrayAdapter);
+                                }
+                            });
+                        }
                     }
-                }
-            });
+                });
+            }
+            else if (uid != null){
+                EventListLiveData listLiveData = DatabaseHandler.getEventListLiveData(uid);
+                listLiveData.observe(this, eventList -> {
+
+                });
+            }
         }
 
 

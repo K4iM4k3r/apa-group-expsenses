@@ -37,7 +37,7 @@ import de.thm.ap.groupexpenses.model.Stats;
 import static de.thm.ap.groupexpenses.view.fragment.CashFragment.SELECTED_EID;
 
 public class PositionEventListFragment<T> extends Fragment {
-    private static final String USERID = "uid";
+    public static final String USERID = "uid";
     private View view;
     private ListView object_listView;
     private View headerView;
@@ -78,6 +78,9 @@ public class PositionEventListFragment<T> extends Fragment {
         if (args != null) {
             String eid = args.getString(SELECTED_EID);
             String uid = args.getString(USERID);
+
+            if (creatorMap == null) creatorMap = new HashMap<>();
+
             //if you want to show the list of positions of one Event
             if(eid != null){
                 EventLiveData eventLiveData = DatabaseHandler.getEventLiveData(eid);
@@ -87,8 +90,6 @@ public class PositionEventListFragment<T> extends Fragment {
                         relatedEventToPosition = event;
                         updateTotalBalanceOfPositions(event);
                         List<Position> positions = event.getPositions();
-                        if (creatorMap == null) creatorMap = new HashMap<>();
-
                         for (int idx = 0; idx < positions.size(); ++idx) {
                             creatorMap.putIfAbsent(positions.get(idx).getCreatorId(), "");
                         }

@@ -126,5 +126,6 @@
     <string name="notification_nickname_not_set">Your nickname has not been set yet!</string>
     <string name="tab_event">Event</string>
     <string name="tab_cash">Cash</string>
+    <string name="tab_events">Events</string>
 </resources>
 
