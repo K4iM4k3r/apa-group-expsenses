@@ -196,12 +196,13 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
             Bundle args = new Bundle();
             switch (i){
                 case 0:
-                    fragment = new CashFragment();
+                    fragment = new PositionEventListFragment<>();
                     args.putString(CashFragment.SELECTED_EID, eid);
                     break;
                 case 1:
-                    fragment = new PositionEventListFragment<>();
+                    fragment = new CashFragment();
                     args.putString(CashFragment.SELECTED_EID, eid);
+
                     break;
                 default:
                     fragment = new DemoObjectFragment();
