@@ -6,16 +6,6 @@
     android:orientation="vertical">
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/app_blue"
-        android:fontFamily="monospace"
-        android:gravity="center"
-        android:text="@string/cash_check_caps"
-        android:textColor="@android:color/white"
-        android:textSize="30sp" />
-
-    <TextView
         android:id="@+id/dialog_cash_check_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -23,9 +13,8 @@
         android:layout_marginStart="@dimen/app_margin"
         android:layout_marginTop="@dimen/app_margin"
         android:drawablePadding="-20sp"
-        android:drawableRight="@drawable/ic_close_grey_24dp"
         android:gravity="center"
-        android:text="Eventname"
+        android:text=""
         android:textColor="@android:color/black"
         android:textSize="22sp" />
 

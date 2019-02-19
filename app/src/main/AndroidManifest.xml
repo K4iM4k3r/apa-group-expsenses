@@ -26,8 +26,6 @@
         <activity android:name=".view.activity.EventFormActivity" />
         <activity android:name=".view.activity.PositionActivity" />
         <activity android:name=".view.activity.PositionFormActivity" />
-        <!--<activity android:name=".view.PositionInspectActivity" />-->
-        <!--<activity android:name=".view.AddUsersActivity" />-->
         <activity
             android:name=".view.activity.FriendsActivity"
             android:exported="true"

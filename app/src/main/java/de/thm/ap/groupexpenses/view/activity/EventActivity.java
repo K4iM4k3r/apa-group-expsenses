@@ -3,33 +3,34 @@ package de.thm.ap.groupexpenses.view.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
-import de.thm.ap.groupexpenses.App;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Objects;
+
+import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
-import de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment;
-import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.livedata.EventListLiveData;
+import de.thm.ap.groupexpenses.model.Event;
+import de.thm.ap.groupexpenses.view.fragment.CashFragment;
+import de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment;
+
+import static de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment.USERID;
 
 public class EventActivity extends BaseActivity implements PositionEventListFragment.ItemClickListener {
 
-    private List<Event> events;
-    private PositionEventListFragment positionEventListFragment;
     private EventListLiveData listLiveData;
-
+    private ViewPager mViewPager;
     private static final String TAG = "EventActivity";
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,14 +48,7 @@ public class EventActivity extends BaseActivity implements PositionEventListFrag
             DatabaseHandler.queryUser(currentUser.getUid(), result -> {
                 App.CurrentUser = result;
                 listLiveData = DatabaseHandler.getEventListLiveData(currentUser.getUid());
-                listLiveData.observe(this, eventList -> {
-                    eventsLoadingTextView.setVisibility(View.GONE);
-                    events = eventList;
-                    if (events == null) events = new ArrayList<>();
-                    positionEventListFragment = (PositionEventListFragment) getSupportFragmentManager()
-                            .findFragmentById(R.id.event_fragment);
-                    positionEventListFragment.updateList(eventList, null);
-                });
+                listLiveData.observe(this, eventList -> eventsLoadingTextView.setVisibility(View.GONE));
             });
 
         }
@@ -62,6 +56,32 @@ public class EventActivity extends BaseActivity implements PositionEventListFrag
         createEventBtn.setOnClickListener(v -> startActivity(
                 new Intent(EventActivity.this, EventFormActivity.class)));
         auth = FirebaseAuth.getInstance();
+
+        CollectionPagerAdapter mCollectionPagerAdapter = new CollectionPagerAdapter(
+                getSupportFragmentManager(), 2, auth.getUid());
+        mViewPager = findViewById(R.id.pagerEventList);
+        mViewPager.setAdapter(mCollectionPagerAdapter);
+
+        TabLayout tabLayout = findViewById(R.id.tab_layoutEventList);
+        tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.tab_events)));
+        tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.tab_cash)));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                mViewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
     }
 
     @Override
@@ -76,5 +96,49 @@ public class EventActivity extends BaseActivity implements PositionEventListFrag
         Intent intent = new Intent(EventActivity.this, PositionActivity.class);
         intent.putExtra("eventEid", ((Event) event).getEid());
         startActivity(intent);
+    }
+
+    private class CollectionPagerAdapter extends FragmentPagerAdapter {
+        private int numberPages;
+        private String uid;
+
+        CollectionPagerAdapter(FragmentManager fm, int numberPages, String uid) {
+            super(fm);
+            this.numberPages = numberPages;
+            this.uid = uid;
+        }
+
+        @Override
+        public Fragment getItem(int i) {
+            Fragment fragment;
+            Bundle args = new Bundle();
+            switch (i){
+                case 0:
+                    fragment = new PositionEventListFragment<>();
+                    args.putString(USERID, uid);
+                    break;
+                case 1:
+                    fragment = new CashFragment();
+                    args.putString(USERID, uid);
+                    break;
+                default:
+                    fragment = new PositionActivity.DemoObjectFragment();
+                    args.putInt(PositionActivity.DemoObjectFragment.ARG_OBJECT, i + 1);
+                    break;
+            }
+
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public int getCount() {
+            return this.numberPages;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return "OBJECT " + (position + 1);
+        }
     }
 }
