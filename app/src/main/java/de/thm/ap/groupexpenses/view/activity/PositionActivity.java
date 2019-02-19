@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
@@ -21,7 +23,6 @@ import java.util.Objects;
 
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
-import de.thm.ap.groupexpenses.adapter.CollectionPagerAdapter;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.livedata.EventLiveData;
 import de.thm.ap.groupexpenses.livedata.UserListLiveData;
@@ -30,6 +31,7 @@ import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.User;
 import de.thm.ap.groupexpenses.view.dialog.EventInfoDialog;
 import de.thm.ap.groupexpenses.view.dialog.PositionInfoDialog;
+import de.thm.ap.groupexpenses.view.fragment.CashFragment;
 import de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment;
 import de.thm.ap.groupexpenses.view.fragment.UserListDialogFragment;
 
@@ -37,7 +39,6 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
 
     private Event selectedEvent;
     private List<User> eventMembers;
-    private PositionEventListFragment positionEventListFragment;
     private ViewPager mViewPager;
 
     @Override
@@ -65,13 +66,7 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
         if (selectedEventEid != null) {
             EventLiveData eventLiveData = DatabaseHandler.getEventLiveData(selectedEventEid);
 
-            eventLiveData.observe(this, event -> {
-                selectedEvent = event;
-
-                positionEventListFragment = new PositionEventListFragment();
-                int i =0;
-                positionEventListFragment.updateList(event.getPositions(), event);
-            });
+            eventLiveData.observe(this, event -> selectedEvent = event);
 
             UserListLiveData userListLiveData = DatabaseHandler.getAllMembersOfEvent(selectedEventEid);
             userListLiveData.observe(this, userList -> eventMembers = userList);
@@ -110,12 +105,10 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-
             }
         });
     }
@@ -187,7 +180,49 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
         }
     }
 
+    private class CollectionPagerAdapter extends FragmentPagerAdapter {
+        private int numberPages;
+        private String eid;
 
+        CollectionPagerAdapter(FragmentManager fm, int numberPages, String eid) {
+            super(fm);
+            this.numberPages = numberPages;
+            this.eid = eid;
+        }
+
+        @Override
+        public Fragment getItem(int i) {
+            Fragment fragment ;
+            Bundle args = new Bundle();
+            switch (i){
+                case 0:
+                    fragment = new CashFragment();
+                    args.putString(CashFragment.SELECTED_EID, eid);
+                    break;
+                case 1:
+                    fragment = new PositionEventListFragment<>();
+                    args.putString(CashFragment.SELECTED_EID, eid);
+                    break;
+                default:
+                    fragment = new DemoObjectFragment();
+                    args.putInt(DemoObjectFragment.ARG_OBJECT, i + 1);
+                    break;
+            }
+
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public int getCount() {
+            return this.numberPages;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return "OBJECT " + (position + 1);
+        }
+    }
 
     public static class DemoObjectFragment extends Fragment {
         public static final String ARG_OBJECT = "object";
@@ -200,8 +235,10 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
             View rootView = inflater.inflate(
                     R.layout.fragment_1, container, false);
             Bundle args = getArguments();
-            ((TextView) rootView.findViewById(R.id.textView)).setText(
-                    Integer.toString(args.getInt(ARG_OBJECT)));
+            if (args != null) {
+                ((TextView) rootView.findViewById(R.id.textView)).setText(
+                        Integer.toString(args.getInt(ARG_OBJECT)));
+            }
             return rootView;
         }
     }

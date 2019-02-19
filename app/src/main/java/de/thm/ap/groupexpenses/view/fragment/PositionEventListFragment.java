@@ -27,11 +27,17 @@ import java.util.stream.Collectors;
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
+import de.thm.ap.groupexpenses.livedata.EventListLiveData;
+import de.thm.ap.groupexpenses.livedata.EventLiveData;
+import de.thm.ap.groupexpenses.livedata.UserListLiveData;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.Stats;
 
+import static de.thm.ap.groupexpenses.view.fragment.CashFragment.SELECTED_EID;
+
 public class PositionEventListFragment<T> extends Fragment {
+    private static final String USERID = "uid";
     private View view;
     private ListView object_listView;
     private View headerView;
@@ -46,12 +52,12 @@ public class PositionEventListFragment<T> extends Fragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
         try {
-            itemClickListener = (ItemClickListener) activity;
+            itemClickListener = (ItemClickListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString());
+            throw new ClassCastException(context.toString());
         }
     }
 
@@ -64,12 +70,74 @@ public class PositionEventListFragment<T> extends Fragment {
             parent.removeView(view);
         }
         headerView = getLayoutInflater().inflate(R.layout.fragment_object_list_header, null);
+
+        TextView noObjects_textView = view.findViewById(R.id.fragment_no_object_text);
+
+        Bundle args = getArguments();
+
+        if (args != null) {
+            String eid = args.getString(SELECTED_EID);
+            String uid = args.getString(USERID);
+            //if you want to show the list of positions of one Event
+            if(eid != null){
+                EventLiveData eventLiveData = DatabaseHandler.getEventLiveData(eid);
+                eventLiveData.observe(this, event -> {
+                    if (event != null) {
+                        noObjects_textView.setVisibility(View.GONE);
+                        relatedEventToPosition = event;
+                        updateTotalBalanceOfPositions(event);
+                        List<Position> positions = event.getPositions();
+                        if (creatorMap == null) creatorMap = new HashMap<>();
+
+                        for (int idx = 0; idx < positions.size(); ++idx) {
+                            creatorMap.putIfAbsent(positions.get(idx).getCreatorId(), "");
+                        }
+                        generateAdapter((List<T>) positions, true);
+                    }
+                });
+            }
+            // if you want to show the list of events
+            else if(uid != null) {
+                EventListLiveData listLiveData = DatabaseHandler.getEventListLiveData(uid);
+                listLiveData.observe(this, eventList ->{
+                    if (eventList != null) {
+                        noObjects_textView.setVisibility(View.GONE);
+                        updateTotalBalanceOfEvents(eventList);
+                        for (int idx = 0; idx < eventList.size(); ++idx) {
+                            creatorMap.putIfAbsent(eventList.get(idx).getCreatorId(), "");
+                        }
+                        generateAdapter((List<T>) eventList, false);
+
+                    }
+                });
+            }
+        }
         return view;
     }
 
+    private void generateAdapter(List<T> objectList, boolean isPosition){
+        if (creatorMap.containsValue("")) {
+            Set<String> keysWithoutVal = getKeysByValue(creatorMap, "");
+            for (String uid : keysWithoutVal) {
+                DatabaseHandler.queryUser(uid, user -> {
+                    if (user != null) {
+                        creatorMap.put(uid, user.getNickname());
+                    } else {    // USER NOT FOUND!!!
+                        creatorMap.put(uid, getString(R.string.deleted_user));
+                    }
+                    if (!creatorMap.containsValue("")) {
+                        buildAdapter(objectList, isPosition);
+                    }
+                });
+            }
+        } else {
+            buildAdapter(objectList, isPosition);
+        }
+    }
+
     public void updateList(List<T> objectList, Event relatedEvent) {
-        boolean isPosition = relatedEvent != null;
         TextView noObjects_textView = view.findViewById(R.id.fragment_no_object_text);
+        boolean isPosition = relatedEvent != null;
         if (!objectList.isEmpty()) {
             if (isPosition) relatedEventToPosition = relatedEvent;
             noObjects_textView.setVisibility(View.GONE);
@@ -141,6 +209,34 @@ public class PositionEventListFragment<T> extends Fragment {
                 .collect(Collectors.toSet());
     }
 
+    private void updateTotalBalanceOfPositions(Event event) {
+        TextView obj_val = headerView.findViewById(R.id.object_balance_summary_val);
+        List<Position> positions = event.getPositions();
+        float balance = 0;
+
+        for (int idx = 0; idx < positions.size(); ++idx) {
+            balance += Stats.getPositionBalance(positions.get(idx), event);
+        }
+        obj_val.setText(new DecimalFormat("0.00 €").format(balance));
+
+        if (balance < 0)
+            obj_val.setTextColor(Color.parseColor("#ef4545"));    // red
+        else
+            obj_val.setTextColor(Color.parseColor("#2ba050"));    // green
+    }
+
+    private void updateTotalBalanceOfEvents(List<Event> eventList) {
+        TextView obj_val = headerView.findViewById(R.id.object_balance_summary_val);
+        float balance = 0;
+
+        balance = Stats.getBalance(eventList);
+        obj_val.setText(new DecimalFormat("0.00 €").format(balance));
+
+        if (balance < 0)
+            obj_val.setTextColor(Color.parseColor("#ef4545"));    // red
+        else
+            obj_val.setTextColor(Color.parseColor("#2ba050"));    // green
+    }
     private void updateTotalBalance(List<T> objectList, boolean isPosition) {
         TextView obj_val = headerView.findViewById(R.id.object_balance_summary_val);
         float balance = 0;
@@ -216,8 +312,8 @@ public class PositionEventListFragment<T> extends Fragment {
                 spannable.setSpan(new ForegroundColorSpan(Color.parseColor("#3a90e0")),
                         fromPart.length(), wholePart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 holder.object_creator.setText(spannable, TextView.BufferType.SPANNABLE);
-                holder.object_balance.setText(new DecimalFormat("0.00")
-                        .format(balance) + " " + getString(R.string.euro));
+                holder.object_balance.setText(new DecimalFormat("0.00 €")
+                        .format(balance));
             } else {    // its an Event
                 Event event = (Event) m_object;
                 balance = Stats.getEventBalance(event);
@@ -232,8 +328,8 @@ public class PositionEventListFragment<T> extends Fragment {
                 spannable.setSpan(new ForegroundColorSpan(Color.parseColor("#3a90e0")),
                         fromPart.length(), wholePart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 holder.object_creator.setText(spannable, TextView.BufferType.SPANNABLE);
-                holder.object_balance.setText(new DecimalFormat("0.00")
-                        .format(balance) + " " + getString(R.string.euro));
+                holder.object_balance.setText(new DecimalFormat("0.00 €")
+                        .format(balance));
             }
             if (balance < 0)
                 holder.object_balance.setTextColor(Color
