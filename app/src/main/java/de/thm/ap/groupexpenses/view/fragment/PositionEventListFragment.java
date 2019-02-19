@@ -1,6 +1,5 @@
 package de.thm.ap.groupexpenses.view.fragment;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -29,7 +28,6 @@ import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.livedata.EventListLiveData;
 import de.thm.ap.groupexpenses.livedata.EventLiveData;
-import de.thm.ap.groupexpenses.livedata.UserListLiveData;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.Stats;
@@ -136,56 +134,6 @@ public class PositionEventListFragment<T> extends Fragment {
         }
     }
 
-    public void updateList(List<T> objectList, Event relatedEvent) {
-        TextView noObjects_textView = view.findViewById(R.id.fragment_no_object_text);
-        boolean isPosition = relatedEvent != null;
-        if (!objectList.isEmpty()) {
-            if (isPosition) relatedEventToPosition = relatedEvent;
-            noObjects_textView.setVisibility(View.GONE);
-            updateTotalBalance(objectList, isPosition);
-
-            if (creatorMap == null) creatorMap = new HashMap<>();
-            if (isPosition) {
-                for (int idx = 0; idx < objectList.size(); ++idx) {
-                    creatorMap.putIfAbsent(((Position) objectList.get(idx)).getCreatorId(), "");
-                }
-            } else {
-                for (int idx = 0; idx < objectList.size(); ++idx) {
-                    creatorMap.putIfAbsent(((Event) objectList.get(idx)).getCreatorId(), "");
-                }
-            }
-            if (creatorMap.containsValue("")) {
-                Set<String> keysWithoutVal = getKeysByValue(creatorMap, "");
-                for (String uid : keysWithoutVal) {
-                    DatabaseHandler.queryUser(uid, user -> {
-                        if (user != null) {
-                            creatorMap.put(uid, user.getNickname());
-                        } else {    // USER NOT FOUND!!!
-                            creatorMap.put(uid, getString(R.string.deleted_user));
-                        }
-                        if (!creatorMap.containsValue("")) {
-                            buildAdapter(objectList, isPosition);
-                        }
-                    });
-                }
-            } else {
-                buildAdapter(objectList, isPosition);
-            }
-        } else {
-            noObjects_textView.setVisibility(View.VISIBLE);
-            if (!isPosition) {
-                noObjects_textView.setText(R.string.no_events);
-            } else {
-                noObjects_textView.setText(R.string.no_positions);
-            }
-            if (adapter != null) {
-                object_listView.removeHeaderView(headerView);
-                adapter.notifyDataSetChanged();
-            }
-        }
-
-    }
-
     private void buildAdapter(List<T> objectList, boolean isPosition) {
         if (adapter == null) {
             adapter = new ObjectItemAdapter(getActivity(),
@@ -228,34 +176,9 @@ public class PositionEventListFragment<T> extends Fragment {
 
     private void updateTotalBalanceOfEvents(List<Event> eventList) {
         TextView obj_val = headerView.findViewById(R.id.object_balance_summary_val);
-        float balance = 0;
-
-        balance = Stats.getBalance(eventList);
+        float balance = Stats.getBalance(eventList);
         obj_val.setText(new DecimalFormat("0.00 €").format(balance));
 
-        if (balance < 0)
-            obj_val.setTextColor(Color.parseColor("#ef4545"));    // red
-        else
-            obj_val.setTextColor(Color.parseColor("#2ba050"));    // green
-    }
-    private void updateTotalBalance(List<T> objectList, boolean isPosition) {
-        TextView obj_val = headerView.findViewById(R.id.object_balance_summary_val);
-        float balance = 0;
-
-        if (isPosition) {
-            for (int idx = 0; idx < objectList.size(); ++idx)
-                balance += Stats.getPositionBalance((Position) objectList.get(idx),
-                        relatedEventToPosition);
-
-            obj_val.setText(new DecimalFormat("0.00").format(balance)
-                    + " " + getString(R.string.euro));
-        } else {
-            List<Event> eventList = (List<Event>) objectList;
-            balance = Stats.getBalance(eventList);
-
-            obj_val.setText(new DecimalFormat("0.00").format(balance)
-                    + " " + getString(R.string.euro));
-        }
         if (balance < 0)
             obj_val.setTextColor(Color.parseColor("#ef4545"));    // red
         else
@@ -285,7 +208,7 @@ public class PositionEventListFragment<T> extends Fragment {
 
         @NonNull
         @Override
-        public View getView(int index, View convertView, ViewGroup parent) {
+        public View getView(int index, View convertView, @NonNull ViewGroup parent) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(resource, parent, false);
             holder = new Holder();

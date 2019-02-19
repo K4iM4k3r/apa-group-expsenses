@@ -47,7 +47,6 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
         setContentView(R.layout.activity_position);
         ActionBar actionBar = getSupportActionBar();
         if(actionBar != null){
-            actionBar.setTitle(R.string.position_inspect_positions);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
@@ -66,7 +65,12 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
         if (selectedEventEid != null) {
             EventLiveData eventLiveData = DatabaseHandler.getEventLiveData(selectedEventEid);
 
-            eventLiveData.observe(this, event -> selectedEvent = event);
+            eventLiveData.observe(this, event -> {
+                selectedEvent = event;
+                if (actionBar != null && event != null) {
+                    actionBar.setTitle(event.getName());
+                }
+            });
 
             UserListLiveData userListLiveData = DatabaseHandler.getAllMembersOfEvent(selectedEventEid);
             userListLiveData.observe(this, userList -> eventMembers = userList);

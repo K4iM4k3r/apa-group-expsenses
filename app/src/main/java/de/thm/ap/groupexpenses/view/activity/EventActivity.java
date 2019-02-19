@@ -11,33 +11,26 @@ import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
-import de.thm.ap.groupexpenses.App;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Objects;
+
+import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
+import de.thm.ap.groupexpenses.livedata.EventListLiveData;
+import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.view.fragment.CashFragment;
 import de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment;
-import de.thm.ap.groupexpenses.model.Event;
-import de.thm.ap.groupexpenses.livedata.EventListLiveData;
 
 import static de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment.USERID;
 
 public class EventActivity extends BaseActivity implements PositionEventListFragment.ItemClickListener {
 
-    private List<Event> events;
-    private PositionEventListFragment positionEventListFragment;
     private EventListLiveData listLiveData;
     private ViewPager mViewPager;
     private static final String TAG = "EventActivity";
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,14 +48,7 @@ public class EventActivity extends BaseActivity implements PositionEventListFrag
             DatabaseHandler.queryUser(currentUser.getUid(), result -> {
                 App.CurrentUser = result;
                 listLiveData = DatabaseHandler.getEventListLiveData(currentUser.getUid());
-                listLiveData.observe(this, eventList -> {
-                    eventsLoadingTextView.setVisibility(View.GONE);
-                    events = eventList;
-//                    if (events == null) events = new ArrayList<>();
-//                    positionEventListFragment = (PositionEventListFragment) getSupportFragmentManager()
-//                            .findFragmentById(R.id.event_fragment);
-//                    positionEventListFragment.updateList(eventList, null);
-                });
+                listLiveData.observe(this, eventList -> eventsLoadingTextView.setVisibility(View.GONE));
             });
 
         }
