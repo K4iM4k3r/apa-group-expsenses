@@ -16,7 +16,7 @@
         />
     <android.support.v4.view.ViewPager
         android:id="@+id/pagerEventList"
-        android:layout_below="@id/tab_layout"
+        android:layout_below="@id/tab_layoutEventList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="visible" />

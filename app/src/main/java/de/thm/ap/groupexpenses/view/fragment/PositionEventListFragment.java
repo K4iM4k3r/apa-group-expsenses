@@ -177,6 +177,7 @@ public class PositionEventListFragment<T> extends Fragment {
     private void updateTotalBalanceOfEvents(List<Event> eventList) {
         TextView obj_val = headerView.findViewById(R.id.object_balance_summary_val);
         float balance = Stats.getBalance(eventList);
+
         obj_val.setText(new DecimalFormat("0.00 €").format(balance));
 
         if (balance < 0)
