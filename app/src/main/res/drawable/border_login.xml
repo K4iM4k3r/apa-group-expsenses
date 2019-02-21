@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle"
+    >
+
+    <gradient android:startColor="@color/common_google_signin_btn_text_light_disabled"
+        android:endColor="@color/common_google_signin_btn_text_light_disabled"
+        android:angle="0"/>
+    <stroke
+        android:width="5dip"
+        android:color="@color/app_blue" />
+</shape>

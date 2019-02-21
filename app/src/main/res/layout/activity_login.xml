@@ -3,44 +3,40 @@
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:weightSum="4">
+    android:orientation="vertical">
     <!--/    android:background="@drawable/login_background"-->
 
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/titleText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/login_title"
-            android:theme="@style/ThemeOverlay.MyTitleText" />
-
-
-
-    </LinearLayout>
-
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/login_title"
+        android:layout_gravity="center_horizontal"
+        android:theme="@style/ThemeOverlay.MyTitleText"
+        android:paddingBottom="@dimen/login_big_space"
+        />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="2"
-        android:background="@color/grey_300"
-        android:gravity="center_vertical">
-
+        android:background="@drawable/border_login"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="@dimen/login_big_space"
+        android:layout_margin="@dimen/login_normal"
+        >
         <LinearLayout
             android:id="@+id/emailPasswordFields"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingLeft="16dp"
-            android:paddingRight="16dp">
+            android:paddingRight="16dp"
+            android:layout_gravity="end"
+            android:visibility="gone"
+            >
+
 
             <EditText
                 android:id="@+id/fieldEmail"
@@ -67,21 +63,22 @@
             android:layout_below="@+id/emailPasswordFields"
             android:orientation="horizontal"
             android:paddingLeft="16dp"
-            android:paddingRight="16dp">
+            android:paddingRight="16dp"
+            android:weightSum="4">
 
             <Button
                 android:id="@+id/emailSignInButton"
                 style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="3"
                 android:text="@string/sign_in"
                 android:theme="@style/ThemeOverlay.MyDarkButton" />
 
             <Button
                 android:id="@+id/emailCreateAccountButton"
                 style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/create_account"
@@ -117,22 +114,22 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:visibility="gone"
-            android:weightSum="2.0">
+            android:weightSum="4.0">
 
 
             <Button
                 android:id="@+id/signOutButton"
                 style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1.0"
-                android:text="@string/sign_out"
+                android:layout_weight="3.0"
+                android:text="@string/back_creation"
                 android:theme="@style/ThemeOverlay.MyDarkButton" />
 
             <Button
-                android:id="@+id/completeCreation"
+                android:id="@+id/sendVerificationAgain"
                 style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.0"
                 android:text="@string/verify_email"
@@ -141,27 +138,31 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"
             android:id="@+id/info"
-            android:padding="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_above="@id/signedInButtons"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="0dp"
 
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:visibility="gone"
+            android:layout_centerVertical="true">
 
             <TextView
                 android:id="@+id/status"
+                android:singleLine="false"
                 style="@style/ThemeOverlay.MyTextDetail"
-                android:text="@string/signed_out" />
+                android:text="@string/back_creation" />
 
             <TextView
                 android:id="@+id/detail"
                 style="@style/ThemeOverlay.MyTextDetail"
+                android:singleLine="false"
                 tools:text="Firebase User ID: 123456789abc" />
 
         </LinearLayout>
-
     </RelativeLayout>
 
 </LinearLayout>
