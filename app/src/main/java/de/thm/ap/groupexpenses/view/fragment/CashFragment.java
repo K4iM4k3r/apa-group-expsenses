@@ -1,6 +1,7 @@
 package de.thm.ap.groupexpenses.view.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -23,16 +25,19 @@ import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.livedata.EventListLiveData;
 import de.thm.ap.groupexpenses.livedata.EventLiveData;
+import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Stats;
 
 import static de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment.USERID;
 
 public class CashFragment extends Fragment {
     public static final String SELECTED_EID = "seid";
-    Map<String, Float> cash_check_map;
-    ArrayList<UserValue> userValueList;
+    private Map<String, Float> cash_check_map;
+    private ArrayList<UserValue> userValueList;
     private UserValueArrayAdapter userValueArrayAdapter;
     private ListView cash_check_list;
+    private Event event;
+    private List<Event> eventList;
 
 
     @Override
@@ -48,24 +53,24 @@ public class CashFragment extends Fragment {
         if (args != null) {
             String eid = args.getString(SELECTED_EID);
             String uid = args.getString(USERID);
-            if (eid != null){
+            if (eid != null) {
                 EventLiveData eventLiveData;
                 eventLiveData = DatabaseHandler.getEventLiveData(eid);
                 eventLiveData.observe(this, event -> {
                     if (event != null) {
+                        this.event = event;
                         userValueList = new ArrayList<>();
                         cash_check_map = event.getBalanceTable(App.CurrentUser.getUid());
                         buildCashView();
                     }
                 });
-            }
-            else if (uid != null){
+            } else if (uid != null) {
                 EventListLiveData listLiveData = DatabaseHandler.getEventListLiveData(uid);
                 listLiveData.observe(this, eventList -> {
-
                     if (eventList != null) {
+                        this.eventList = eventList;
                         userValueList = new ArrayList<>();
-                        cash_check_map = Stats.getGlobalBalanceTable(App.CurrentUser,eventList);
+                        cash_check_map = Stats.getGlobalBalanceTable(App.CurrentUser, eventList);
                         buildCashView();
                     }
                 });
@@ -73,12 +78,15 @@ public class CashFragment extends Fragment {
         }
         return rootView;
     }
+
     private class UserValue {
-        private String name;
+        private String uid, name, email;
         private float value;
 
-        UserValue(String name, float value) {
+        UserValue(String uid, String name, String email, float value) {
+            this.uid = uid;
             this.name = name;
+            this.email = email;
             this.value = value;
         }
     }
@@ -121,8 +129,67 @@ public class CashFragment extends Fragment {
                 forward_arrow.setVisibility(View.VISIBLE);
                 back_arrow.setVisibility(View.GONE);
                 forward_arrow.setOnClickListener(v -> {
-                    // TODO: remind user for payment here via e-mail
-                    float val = currentUserValue.value;
+                    String[] email_address = {currentUserValue.email};
+                    String email_subject = getString(R.string.reminder);
+                    String eventListString = "";
+                    if (event != null) {
+                        email_subject += " " + getString(R.string.tab_event) + " " + event.getName();
+                        eventListString = event.getName() + "\n";
+                        event = null;
+                    } else if (eventList != null) {
+                        eventList = Stats.getOpenEvents(App.CurrentUser.getUid(), currentUserValue.uid, eventList);
+                        email_subject += " " + getString(R.string.tab_events);
+                        for (Event e : eventList) {
+                            eventListString += e.getName() + "\n";
+                        }
+                    }
+
+                    String email_body = getString(R.string.reminder_mail_body,
+                            currentUserValue.name,                // debtor name
+                            eventListString,                                  // event list
+                            new DecimalFormat("0.00")
+                                    .format(currentUserValue.value),          // dept value
+                            App.CurrentUser.getFirstName()
+                                    + " " + App.CurrentUser.getLastName());   // creditor name
+
+
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setType("text/html");
+                    intent.putExtra(Intent.EXTRA_EMAIL, email_address);
+                    intent.putExtra(Intent.EXTRA_SUBJECT, email_subject);
+                    intent.putExtra(Intent.EXTRA_TEXT, email_body);
+                    try {
+                        startActivity(Intent.createChooser(intent, getString(R.string.send_reminder_mail,
+                                currentUserValue.name)));
+                    } catch (android.content.ActivityNotFoundException ex) {
+                        Toast.makeText(getContext(), "There are no email clients installed.",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                    /*
+
+                    String subject = RecordsActivity.this.getString(R.string.my_records)
+                                + " " + selected_records.size();
+                        String text = "";
+                        for(int idx = 0; idx < selected_records.size(); ++idx){
+                            Optional<Record> optRecord = AppDatabase.getRecordDb(RecordsActivity.this)
+                                    .recordDAO()
+                                    .findById(selected_records.get(idx).getId());
+                            if(optRecord.isPresent()){
+                                Record record = optRecord.get();
+                                text += record.toString();
+                                text += "\n";
+                            }
+                        }
+                        Intent intent = new Intent(Intent.ACTION_SEND);
+                        intent.setType("text/html");
+                        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+                        intent.putExtra(Intent.EXTRA_TEXT, text);
+                        startActivity(Intent.createChooser(intent, RecordsActivity.this.getString(
+                                R.string.send_email)
+                        ));
+
+
+                    */
 
                     //example
 //                    Intent i = new Intent(Intent.ACTION_SEND);
@@ -149,7 +216,7 @@ public class CashFragment extends Fragment {
         }
     }
 
-    private void buildCashView(){
+    private void buildCashView() {
         List<String> keyList = new ArrayList<>(cash_check_map.keySet());
         int idx = 0;
         while (idx < keyList.size()) {
@@ -162,9 +229,16 @@ public class CashFragment extends Fragment {
                 for (int idx2 = 0; idx2 < userValueList.size(); ++idx2) {
                     if (userValueList.get(idx2) == null) {
                         if (user != null) {
-                            userValueList.set(idx2, new UserValue(user.getNickname(), cash_check_map.get(key)));
+                            userValueList.set(idx2, new UserValue(
+                                    user.getUid(),
+                                    user.getNickname(),
+                                    user.getEmail(),
+                                    cash_check_map.get(key)));
                         } else {
-                            userValueList.set(idx2, new UserValue(getString(R.string.unknown),
+                            userValueList.set(idx2, new UserValue(
+                                    getString(R.string.unknown),
+                                    getString(R.string.unknown),
+                                    getString(R.string.unknown),
                                     cash_check_map.get(key)));
                         }
                         break;

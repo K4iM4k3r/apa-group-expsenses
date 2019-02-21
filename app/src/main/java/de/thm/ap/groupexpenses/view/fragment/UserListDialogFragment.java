@@ -49,8 +49,12 @@ public class UserListDialogFragment extends DialogFragment {
     private static final int EDIT_STATE_ADD_USERS = 2;
     private static final int EDIT_STATE_DELETE_USERS = 3;
 
-    public void build(List<User> selectedUsers, List<User> friendsList) {
+    public void build(List<User> selectedUsers) {
         this.selectedUsers = selectedUsers;
+    }
+
+    public void build(List<User> selectedUsers, List<User> friendsList) {
+        build(selectedUsers);
         this.friendsList = friendsList;
     }
 
@@ -85,25 +89,33 @@ public class UserListDialogFragment extends DialogFragment {
         if (friendsList == null)
             friendsList = new ArrayList<>();
 
-        if (TAG.equals("edit_event")) {
-            setEditState(EDIT_STATE_INSPECT_USERS);
-
-            if (isCreator) {
-                addBtn.setText(R.string.add_remove);
+        switch (TAG) {
+            case "create_event":
+                headerTextView.setText(R.string.event_form_add_members);
                 doneBtn.setVisibility(View.GONE);
-            } else {
-                addBtn.setVisibility(View.GONE);
-            }
+                userArrayAdapter = new UserArrayAdapter(getActivity(), friendsList);
+                break;
 
-            if (hasPositions) addBtn.setText(R.string.event_form_add_members);
-            userArrayAdapter = new UserArrayAdapter(getActivity(), selectedUsers);
-        } else {
-            headerTextView.setText(R.string.event_form_add_members);
-            doneBtn.setVisibility(View.GONE);
-            userArrayAdapter = new UserArrayAdapter(getActivity(), friendsList);
+            case "edit_event":
+                setEditState(EDIT_STATE_INSPECT_USERS);
+
+                if (isCreator) {
+                    addBtn.setText(R.string.add_remove);
+                    doneBtn.setVisibility(View.GONE);
+                } else {
+                    addBtn.setVisibility(View.GONE);
+                }
+
+                if (hasPositions) addBtn.setText(R.string.event_form_add_members);
+                userArrayAdapter = new UserArrayAdapter(getActivity(), selectedUsers);
+                break;
+            case "pay_position":
+                headerTextView.setText(R.string.add_payment);
+                doneBtn.setVisibility(View.GONE);
+                userArrayAdapter = new UserArrayAdapter(getActivity(), selectedUsers);
+                break;
         }
         userListView.setAdapter(userArrayAdapter);
-
         userListView.setOnItemClickListener((parent, view, position, id) -> {
             User selectedUser = (User) userListView.getItemAtPosition(position);
             switch (TAG) {
@@ -385,7 +397,7 @@ public class UserListDialogFragment extends DialogFragment {
                         case EDIT_STATE_DELETE_USERS:
                             image = listItem.findViewById(R.id.fragment_user_list_row_image_delete);
                             image.setVisibility(View.VISIBLE);
-                            if(currentUser.getUid().equals(selectedEvent.getCreatorId()))
+                            if (currentUser.getUid().equals(selectedEvent.getCreatorId()))
                                 image.setVisibility(View.GONE);
                             if (addableUsersSelected != null) {
                                 for (int idx = 0; idx < addableUsersSelected.size(); ++idx) {

@@ -34,7 +34,7 @@
     <string name="position_form_create_position">Neue Position erstellen</string>
     <string name="position_inspect_position_info">Positionsinfo</string>
     <string name="position_inspect_clear_dept">Schulden begleichen</string>
-    <string name="position_inspect_release_dept_claim">Schulden erlassen</string>
+    <string name="add_payment">Zahlung hinzufügen</string>
     <string name="position_inspect_release_dept_claim_ask">Schulden wirklich erlassen?</string>
     <string name="position_inspect_change_dept_claim_val">Schuldbetrag bearbeiten</string>
     <string name="error_field_required">Feld darf nicht leer sein!</string>
@@ -110,6 +110,9 @@
     <string name="hint_nickname">nickname</string>
     <string name="deleted_user">Gelöschter Nutzer</string>
     <string name="menu_item_friends">Friends</string>
+    <string name="reminder">Zahlungserinnerung</string>
+    <string name="send_reminder_mail">Erinnerungsmail an %1$s senden</string>
+    <string name="reminder_mail_body">Hallo %1$s,\nfür folgende Events bekomme ich noch Geld:\n%2$s\nInsgesamt bekomme ich noch %3$s€!\nBitte sobald wie möglich bezahlen!\n\nMit freundlichen Grüßen,\n%4$s</string>
     <string name="dialog_friend_title">Add new Friend</string>
     <string name="dialog_friends_message">Add friend by nickname</string>
     <string name="dialog_friends_positiveBtn">add</string>

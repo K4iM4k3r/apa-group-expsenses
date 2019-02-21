@@ -1,10 +1,9 @@
 package de.thm.ap.groupexpenses.view.dialog;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.text.Spannable;
@@ -23,14 +22,20 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
+import de.thm.ap.groupexpenses.livedata.EventLiveData;
+import de.thm.ap.groupexpenses.livedata.UserListLiveData;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.Stats;
-import de.thm.ap.groupexpenses.view.activity.PositionActivity;
+import de.thm.ap.groupexpenses.model.User;
+import de.thm.ap.groupexpenses.view.fragment.UserListDialogFragment;
 
 public class PositionInfoDialog {
     private AlertDialog.Builder positionDialog;
@@ -81,21 +86,21 @@ public class PositionInfoDialog {
             positionInfo.setCompoundDrawablePadding(-20);
             positionDeptValue = context.getResources().getString(R.string.your_dept_claim);
             dept_val.setTextColor(Color.parseColor("#2ba050"));  //green
-            payBtn.setText(context.getString(R.string.position_inspect_release_dept_claim));
+            payBtn.setText(context.getString(R.string.add_payment));
             valueEditBtn.setVisibility(View.VISIBLE);
             valueEditBtn.setOnClickListener(v -> {
                 // value edit btn clicked
                 positionInfo.setCompoundDrawablesWithIntrinsicBounds(0, 0,
                         0, 0);
                 clickable.set(false);
-                valueEditBtnClicked();
+                onValueEditBtnClick();
             });
             payBtn.setOnClickListener(v2 -> {
                 // release dept btn clicked
                 positionInfo.setCompoundDrawablesWithIntrinsicBounds(0, 0,
                         0, 0);
                 clickable.set(false);
-                releaseDeptBtnClicked();
+                onPayBtnClick();
             });
 
             // info edit btn clicked
@@ -146,7 +151,7 @@ public class PositionInfoDialog {
     }
 
     @SuppressLint("SetTextI18n")
-    private void valueEditBtnClicked() {
+    private void onValueEditBtnClick() {
         EditText quickEditField = view.findViewById(R.id.position_dialog_quick_edit_field);
         Button saveBtn = view.findViewById(R.id.position_dialog_save_btn);
         Button cancelBtn = view.findViewById(R.id.position_dialog_cancel_btn);
@@ -175,7 +180,35 @@ public class PositionInfoDialog {
     }
 
     @SuppressLint("SetTextI18n")
-    private void releaseDeptBtnClicked() {
+    private void onPayBtnClick() {
+        /*
+        UserListLiveData userListLiveData = DatabaseHandler.getAllMembersOfEvent(selectedEvent.getEid());
+        userListLiveData.observe(this, membersList -> {
+            if (membersList != null) {
+                UserListDialogFragment dialog = new UserListDialogFragment();
+                dialog.build(membersList);
+                dialog.show(((Activity) context).getFragmentManager(), "create_event");
+            }
+        });
+        */
+
+        DatabaseHandler.getAllMembersOfEvent(selectedEvent.getEid(), membersList -> {
+            UserListDialogFragment dialog = new UserListDialogFragment();
+            dialog.build(membersList);
+            dialog.show(((Activity) context).getFragmentManager(), "pay_position");
+        });
+
+        /*
+        DatabaseHandler.getAllMembersOfEvent(auth.getCurrentUser().getUid());
+            List<User> friendsList = result;
+            UserListDialogFragment dialog = new UserListDialogFragment();
+            dialog.build(eventUsersList, friendsList);
+            dialog.show(getFragmentManager(), "create_event");
+        });
+        UserListDialogFragment dialog = new UserListDialogFragment();
+        dialog.build(selectedEvent);
+        dialog.show(((Activity) context).getFragmentManager(), "pay_position");
+
         Button saveBtn = view.findViewById(R.id.position_dialog_save_btn);
         Button cancelBtn = view.findViewById(R.id.position_dialog_cancel_btn);
         ColorStateList oldColors = positionDepts.getTextColors();
@@ -203,6 +236,7 @@ public class PositionInfoDialog {
             resetBackToNormal("release_dept");
             positionDepts.setTextColor(oldColors);
         });
+        */
     }
 
     @SuppressLint("SetTextI18n")
