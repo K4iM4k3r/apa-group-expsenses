@@ -34,7 +34,7 @@
     <string name="position_form_create_position">Neue Position erstellen</string>
     <string name="position_inspect_position_info">Positionsinfo</string>
     <string name="position_inspect_clear_dept">Schulden begleichen</string>
-    <string name="position_inspect_release_dept_claim">Schulden erlassen</string>
+    <string name="add_payment">Zahlung hinzufügen</string>
     <string name="position_inspect_release_dept_claim_ask">Schulden wirklich erlassen?</string>
     <string name="position_inspect_change_dept_claim_val">Schuldbetrag bearbeiten</string>
     <string name="error_field_required">Feld darf nicht leer sein!</string>
