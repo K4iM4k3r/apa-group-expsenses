@@ -2,6 +2,7 @@ package de.thm.ap.groupexpenses.model;
 
 import android.support.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,22 @@ public class Stats {
             event.getBalanceTable(user.getUid()).forEach((k, v) -> result.merge(k, v, Float::sum));
         }
         return result;
+    }
+
+    /**
+     * Returns the unsettled events between a creditor and a debtor
+     * @param creditorID ID of the creditor
+     * @param debtorID ID of the debtor
+     * @return List of unsettled events
+     */
+    public static List<Event> getOpenEvents(String creditorID, String debtorID, List<Event> events){
+        ArrayList<Event> openEvents = new ArrayList<>();
+        for (Event event : events){
+            Map<String, Float> table = event.getBalanceTable(creditorID);
+            if(table.containsKey(debtorID))
+                openEvents.add(event);
+        }
+        return openEvents;
     }
 
     public static Map<Event, Float> calculateAll(List<Event> events){

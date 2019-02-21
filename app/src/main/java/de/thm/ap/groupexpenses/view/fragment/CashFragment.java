@@ -32,8 +32,8 @@ import static de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment.US
 
 public class CashFragment extends Fragment {
     public static final String SELECTED_EID = "seid";
-    Map<String, Float> cash_check_map;
-    ArrayList<UserValue> userValueList;
+    private Map<String, Float> cash_check_map;
+    private ArrayList<UserValue> userValueList;
     private UserValueArrayAdapter userValueArrayAdapter;
     private ListView cash_check_list;
     private Event event;
@@ -80,10 +80,11 @@ public class CashFragment extends Fragment {
     }
 
     private class UserValue {
-        private String name, email;
+        private String uid, name, email;
         private float value;
 
-        UserValue(String name, String email, float value) {
+        UserValue(String uid, String name, String email, float value) {
+            this.uid = uid;
             this.name = name;
             this.email = email;
             this.value = value;
@@ -132,22 +133,24 @@ public class CashFragment extends Fragment {
                     String email_subject = getString(R.string.reminder);
                     String eventListString = "";
                     if (event != null) {
-                        email_subject += getString(R.string.tab_event) + event.getName();
-                        eventListString = event.getName();
+                        email_subject += " " + getString(R.string.tab_event) + " " + event.getName();
+                        eventListString = event.getName() + "\n";
+                        event = null;
                     } else if (eventList != null) {
-                        email_subject += getString(R.string.tab_events);
+                        eventList = Stats.getOpenEvents(App.CurrentUser.getUid(), currentUserValue.uid, eventList);
+                        email_subject += " " + getString(R.string.tab_events);
                         for (Event e : eventList) {
                             eventListString += e.getName() + "\n";
                         }
                     }
 
                     String email_body = getString(R.string.reminder_mail_body,
-                            currentUserValue.name,          // user who has to pay
-                            eventListString,                                // event list
+                            currentUserValue.name,                // debtor name
+                            eventListString,                                  // event list
                             new DecimalFormat("0.00")
-                                    .format(currentUserValue.value),    // dept value
+                                    .format(currentUserValue.value),          // dept value
                             App.CurrentUser.getFirstName()
-                                    + App.CurrentUser.getLastName());   // user who gets money
+                                    + " " + App.CurrentUser.getLastName());   // creditor name
 
 
                     Intent intent = new Intent(Intent.ACTION_SEND);
@@ -226,13 +229,15 @@ public class CashFragment extends Fragment {
                     if (userValueList.get(idx2) == null) {
                         if (user != null) {
                             userValueList.set(idx2, new UserValue(
+                                    user.getUid(),
                                     user.getNickname(),
                                     user.getEmail(),
                                     cash_check_map.get(key)));
                         } else {
                             userValueList.set(idx2, new UserValue(
                                     getString(R.string.unknown),
-                                    "Unbekannt",
+                                    getString(R.string.unknown),
+                                    getString(R.string.unknown),
                                     cash_check_map.get(key)));
                         }
                         break;

@@ -111,8 +111,7 @@
     <string name="deleted_user">Gelöschter Nutzer</string>
     <string name="menu_item_friends">Friends</string>
     <string name="reminder">Zahlungserinnerung</string>
-    <string name="reminder_mail_body">Hallo %1$s,\nfür folgende Events bekomme ich noch Geld:\n%2$s\n
-    Insgesamt bekomme ich %3$s€!\nBitte sobald wie möglich bezahlen!\n\nMit freundlichen Grüßen,\n%4$s</string>
+    <string name="reminder_mail_body">Hallo %1$s,\nfür folgende Events bekomme ich noch Geld:\n%2$s\nInsgesamt bekomme ich noch %3$s€!\nBitte sobald wie möglich bezahlen!\n\nMit freundlichen Grüßen,\n%4$s</string>
     <string name="dialog_friend_title">Add new Friend</string>
     <string name="dialog_friends_message">Add friend by nickname</string>
     <string name="dialog_friends_positiveBtn">add</string>
