@@ -159,7 +159,8 @@ public class CashFragment extends Fragment {
                     intent.putExtra(Intent.EXTRA_SUBJECT, email_subject);
                     intent.putExtra(Intent.EXTRA_TEXT, email_body);
                     try {
-                        startActivity(Intent.createChooser(intent, "Send reminder mail"));
+                        startActivity(Intent.createChooser(intent, getString(R.string.send_reminder_mail,
+                                currentUserValue.name)));
                     } catch (android.content.ActivityNotFoundException ex) {
                         Toast.makeText(getContext(), "There are no email clients installed.",
                                 Toast.LENGTH_SHORT).show();
