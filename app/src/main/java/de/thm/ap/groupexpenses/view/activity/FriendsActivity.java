@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -33,6 +34,7 @@ import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.livedata.UserListLiveData;
 import de.thm.ap.groupexpenses.model.User;
+import de.thm.ap.groupexpenses.view.dialog.ProfileInfoDialog;
 
 public class FriendsActivity extends BaseActivity {
     private ListView friendListView;
@@ -122,6 +124,11 @@ public class FriendsActivity extends BaseActivity {
             public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
                 return false;
             }
+        });
+
+        friendListView.setOnItemClickListener((parent, view, position, id) -> {
+            User selectedUser = ((User)friendListView.getItemAtPosition(position));
+            new ProfileInfoDialog(selectedUser, this);
         });
 
         super.showProgressDialog();
