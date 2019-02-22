@@ -51,14 +51,16 @@ public class PositionInfoDialog {
     private TextView dept_val, positionDepts;
     private AtomicBoolean clickable;
     private TextView positionCreatorAndDate;
-    private String creatorNickname;
+    private String creatorNickname, creatorUid;
     private Context context;
     private float pay_value;
     private boolean isPositionPaid;
 
-    public PositionInfoDialog(Position selectedPosition, Event selectedEvent, String creatorNickname, Context context) {
+    public PositionInfoDialog(Position selectedPosition, Event selectedEvent, String creatorNickname,
+                              String creatorUid, Context context) {
         this.context = context;
         this.creatorNickname = creatorNickname;
+        this.creatorUid = creatorUid;
         this.selectedEvent = selectedEvent;
         positionDialog = new AlertDialog.Builder(context);
         position = selectedPosition;
@@ -167,6 +169,13 @@ public class PositionInfoDialog {
         creatorAndDateDefaultVal.setSpan(new ForegroundColorSpan(Color.parseColor("#3a90e0")),
                 13, 13 + creator.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         positionCreatorAndDate.setText(creatorAndDateDefaultVal, TextView.BufferType.SPANNABLE);
+        positionCreatorAndDate.setOnClickListener(v -> {
+            if (creatorUid != null) {
+                DatabaseHandler.queryUser(creatorUid, user -> {
+                    new ProfileInfoDialog(user, context);
+                });
+            }
+        });
     }
 
     @SuppressLint("SetTextI18n")

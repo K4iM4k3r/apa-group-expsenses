@@ -46,7 +46,7 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_position);
         ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null){
+        if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
@@ -146,14 +146,16 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
             case R.id.position_menu_info:
                 // display event info
                 if (App.CurrentUser.getUid().equals(selectedEvent.getCreatorId())) {
-                    new EventInfoDialog(selectedEvent, null, this);
+                    new EventInfoDialog(selectedEvent, null, App.CurrentUser.getUid(),
+                            this);
                 } else {
                     DatabaseHandler.queryUser(selectedEvent.getCreatorId(), eventCreator -> {
                         if (eventCreator == null) {
-                            new EventInfoDialog(selectedEvent, getString(R.string.deleted_user), this);
+                            new EventInfoDialog(selectedEvent, getString(R.string.deleted_user), null,
+                                    this);
                         } else {
                             new EventInfoDialog(selectedEvent, eventCreator.getNickname(),
-                                    this);
+                                    eventCreator.getUid(), this);
                         }
                     });
                 }
@@ -170,22 +172,23 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
         // show a custom alert dialog with position information
         Position selectedPosition = (Position) object;
         if (App.CurrentUser.getUid().equals(selectedPosition.getCreatorId())) {
-            new PositionInfoDialog(selectedPosition, selectedEvent, null, this);
+            new PositionInfoDialog(selectedPosition, selectedEvent, null,
+                    App.CurrentUser.getUid(), this);
         } else {
             DatabaseHandler.queryUser(selectedPosition.getCreatorId(), positionCreator -> {
                 if (positionCreator == null) {
                     new PositionInfoDialog(selectedPosition, selectedEvent, getString(R.string.deleted_user),
-                            this);
+                            null, this);
                 } else {
                     new PositionInfoDialog(selectedPosition, selectedEvent, positionCreator.getNickname(),
-                            this);
+                            positionCreator.getUid(), this);
                 }
             });
         }
     }
 
-    public void setUsersPaid(List<User> usersPaidList, Position position){
-        for(User user : usersPaidList){
+    public void setUsersPaid(List<User> usersPaidList, Position position) {
+        for (User user : usersPaidList) {
             position.removeDebtor(user.getUid());
         }
         selectedEvent.updatePosition(position);
@@ -204,9 +207,9 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
 
         @Override
         public Fragment getItem(int i) {
-            Fragment fragment ;
+            Fragment fragment;
             Bundle args = new Bundle();
-            switch (i){
+            switch (i) {
                 case 0:
                     fragment = new PositionEventListFragment<>();
                     args.putString(CashFragment.SELECTED_EID, eid);

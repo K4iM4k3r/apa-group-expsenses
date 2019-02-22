@@ -15,6 +15,7 @@ import android.widget.TextView;
 import java.text.DecimalFormat;
 
 import de.thm.ap.groupexpenses.R;
+import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Stats;
 
@@ -23,16 +24,16 @@ public class EventInfoDialog {
     private AlertDialog dialog;
     private Event event;
     private View view;
-    private TextView eventName, eventInfo, eventDepts;
     private TextView dept_val;
-    private String creatorNickname;
+    private String creatorNickname, creatorUid;
     private Context context;
 
-    public EventInfoDialog(Event object, String creatorNickname, Context context) {
+    public EventInfoDialog(Event object, String creatorNickname, String creatorUid, Context context) {
         this.context = context;
         eventDialog = new AlertDialog.Builder(context);
         event = object;
         this.creatorNickname = creatorNickname;
+        this.creatorUid = creatorUid;
         view = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
                 .inflate(R.layout.dialog_event_view, null);
         dept_val = view.findViewById(R.id.event_dialog_dept_val);
@@ -41,10 +42,10 @@ public class EventInfoDialog {
 
     @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
     private void createDialog() {
-        eventName = view.findViewById(R.id.event_dialog_name);
-        eventDepts = view.findViewById(R.id.event_dialog_your_depts);
+        TextView eventName = view.findViewById(R.id.event_dialog_name);
+        TextView eventDepts = view.findViewById(R.id.event_dialog_your_depts);
         TextView positionCreatorAndDate = view.findViewById(R.id.event_dialog_creator_and_date);
-        eventInfo = view.findViewById(R.id.event_dialog_info);
+        TextView eventInfo = view.findViewById(R.id.event_dialog_info);
 
         eventName.setText(event.getName());
 
@@ -58,6 +59,13 @@ public class EventInfoDialog {
         creatorAndDateDefaultVal.setSpan(new ForegroundColorSpan(Color.parseColor("#3a90e0")),
                 13, 13 + creator.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         positionCreatorAndDate.setText(creatorAndDateDefaultVal, TextView.BufferType.SPANNABLE);
+        positionCreatorAndDate.setOnClickListener(v -> {
+            if (creatorUid != null) {
+                DatabaseHandler.queryUser(creatorUid, user -> {
+                    new ProfileInfoDialog(user, context);
+                });
+            }
+        });
 
         float balance = Stats.getEventBalance(event);
         if (balance >= 0) {

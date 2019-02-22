@@ -27,6 +27,7 @@ import de.thm.ap.groupexpenses.livedata.EventListLiveData;
 import de.thm.ap.groupexpenses.livedata.EventLiveData;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Stats;
+import de.thm.ap.groupexpenses.view.dialog.ProfileInfoDialog;
 
 import static de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment.USERID;
 
@@ -178,6 +179,11 @@ public class CashFragment extends Fragment {
                 userValueName.setText(currentUserValue.name);
             }
             userValueBalance.setText(new DecimalFormat("0.00€").format(currentUserValue.value));
+            userValueName.setOnClickListener(v -> {
+                DatabaseHandler.queryUser(currentUserValue.uid, user -> {
+                    new ProfileInfoDialog( user, mContext);
+                });
+            });
 
             return listItem;
         }
