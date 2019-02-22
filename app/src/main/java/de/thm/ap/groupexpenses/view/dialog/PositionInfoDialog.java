@@ -37,6 +37,8 @@ import de.thm.ap.groupexpenses.model.Stats;
 import de.thm.ap.groupexpenses.model.User;
 import de.thm.ap.groupexpenses.view.fragment.UserListDialogFragment;
 
+import static de.thm.ap.groupexpenses.App.getContext;
+
 public class PositionInfoDialog {
     private AlertDialog.Builder positionDialog;
     private AlertDialog dialog;
@@ -52,6 +54,7 @@ public class PositionInfoDialog {
     private String creatorNickname;
     private Context context;
     private float pay_value;
+    private boolean isPositionPaid;
 
     public PositionInfoDialog(Position selectedPosition, Event selectedEvent, String creatorNickname, Context context) {
         this.context = context;
@@ -59,6 +62,18 @@ public class PositionInfoDialog {
         this.selectedEvent = selectedEvent;
         positionDialog = new AlertDialog.Builder(context);
         position = selectedPosition;
+        int count = 0;
+        for (String uid : position.getPeopleThatDontHaveToPay()) {
+            for (String user : selectedEvent.getMembers()) {
+                if (user.equals(uid)) {
+                    count++;
+                    break;
+                }
+            }
+        }
+        if (count == selectedEvent.getMembers().size()) {
+            isPositionPaid = true;
+        }
         view = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
                 .inflate(R.layout.dialog_position_view, null);
         payBtn = view.findViewById(R.id.position_dialog_pay_btn);
@@ -86,7 +101,11 @@ public class PositionInfoDialog {
             positionInfo.setCompoundDrawablePadding(-20);
             positionDeptValue = context.getResources().getString(R.string.your_dept_claim);
             dept_val.setTextColor(Color.parseColor("#2ba050"));  //green
-            payBtn.setText(context.getString(R.string.add_payment));
+            if (!isPositionPaid) {
+                payBtn.setText(context.getString(R.string.add_payment));
+            } else {
+                payBtn.setText(context.getString(R.string.end_position));
+            }
             valueEditBtn.setVisibility(View.VISIBLE);
             valueEditBtn.setOnClickListener(v -> {
                 // value edit btn clicked
@@ -181,70 +200,23 @@ public class PositionInfoDialog {
 
     @SuppressLint("SetTextI18n")
     private void onPayBtnClick() {
-        /*
-        UserListLiveData userListLiveData = DatabaseHandler.getAllMembersOfEvent(selectedEvent.getEid());
-        userListLiveData.observe(this, membersList -> {
-            if (membersList != null) {
-                UserListDialogFragment dialog = new UserListDialogFragment();
-                dialog.build(membersList);
-                dialog.show(((Activity) context).getFragmentManager(), "create_event");
-            }
-        });
-        */
-
-        DatabaseHandler.getAllMembersOfEvent(selectedEvent.getEid(), membersList -> {
-            UserListDialogFragment dialog = new UserListDialogFragment();
-            for (String uid : position.getPeopleThatDontHaveToPay()) {
-                for (User user : membersList) {
-                    if (user.getUid().equals(uid)) {
-                        membersList.remove(user);
-                        break;
+        if (!isPositionPaid) {
+            DatabaseHandler.getAllMembersOfEvent(selectedEvent.getEid(), membersList -> {
+                UserListDialogFragment userListDialog = new UserListDialogFragment();
+                for (String uid : position.getPeopleThatDontHaveToPay()) {
+                    for (User user : membersList) {
+                        if (user.getUid().equals(uid)) {
+                            membersList.remove(user);
+                            break;
+                        }
                     }
                 }
-            }
-            dialog.build(membersList, position);
-            dialog.show(((Activity) context).getFragmentManager(), "pay_position");
-        });
-
-        /*
-        DatabaseHandler.getAllMembersOfEvent(auth.getCurrentUser().getUid());
-            List<User> friendsList = result;
-            UserListDialogFragment dialog = new UserListDialogFragment();
-            dialog.build(eventUsersList, friendsList);
-            dialog.show(getFragmentManager(), "create_event");
-        });
-        UserListDialogFragment dialog = new UserListDialogFragment();
-        dialog.build(selectedEvent);
-        dialog.show(((Activity) context).getFragmentManager(), "pay_position");
-
-        Button saveBtn = view.findViewById(R.id.position_dialog_save_btn);
-        Button cancelBtn = view.findViewById(R.id.position_dialog_cancel_btn);
-        ColorStateList oldColors = positionDepts.getTextColors();
-        saveBtn.setVisibility(View.VISIBLE);
-        cancelBtn.setVisibility(View.VISIBLE);
-        valueEditBtn.setVisibility(View.GONE);
-        payBtn.setVisibility(View.GONE);
-        dept_val.setTextColor(Color.parseColor("#ef4545"));  //red
-        positionDepts.setTextColor(Color.parseColor("#ef4545"));
-        positionDepts.setText(context.getString(R.string.position_inspect_release_dept_claim_ask).toUpperCase());
-        positionDepts.setTypeface(Typeface.DEFAULT_BOLD);
-        saveBtn.setText(context.getString(R.string.confirm));
-        saveBtn.setOnClickListener(v -> {
-            // delete position and close dialog
-            if (!selectedEvent.deletePosition(position)) {
-                throw new IllegalAccessError("Position '" + position.getTopic() +
-                        "' could not be deleted from Event '" + selectedEvent.getName() + "'");
-            } else {
-                DatabaseHandler.updateEvent(selectedEvent);
-                dialog.dismiss();
-            }
-        });
-
-        cancelBtn.setOnClickListener(v2 -> {
-            resetBackToNormal("release_dept");
-            positionDepts.setTextColor(oldColors);
-        });
-        */
+                userListDialog.build(membersList, position);
+                userListDialog.show(((Activity) context).getFragmentManager(), "pay_position");
+            });
+        } else {    // every member of position has paid, delete it and finish this dialog
+            showConfirmDialog();
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -372,5 +344,27 @@ public class PositionInfoDialog {
                 dept_val.setVisibility(View.VISIBLE);
                 break;
         }
+    }
+
+    private void showConfirmDialog() {
+        LayoutInflater layoutInflater = LayoutInflater.from(context);
+        View promptView = layoutInflater.inflate(R.layout.dialog_confirm_end_position, null);
+        final android.app.AlertDialog confirmDialogBuilder = new android.app.AlertDialog.Builder(context).create();
+        Button confirmBtn = promptView.findViewById(R.id.dialog_end_position_confirmBtn);
+        Button cancelBtn = promptView.findViewById(R.id.dialog_end_position_cancelBtn);
+
+        cancelBtn.setOnClickListener(v -> {
+            confirmDialogBuilder.dismiss();
+        });
+
+        confirmBtn.setOnClickListener(v -> {
+            selectedEvent.deletePosition(position);
+            DatabaseHandler.updateEvent(selectedEvent);
+            confirmDialogBuilder.dismiss();
+            dialog.dismiss();
+        });
+
+        confirmDialogBuilder.setView(promptView);
+        confirmDialogBuilder.show();
     }
 }

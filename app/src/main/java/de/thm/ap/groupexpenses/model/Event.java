@@ -107,10 +107,6 @@ public class Event {
             if (!this.members.contains(userUid))
                 this.members.add(userUid);
     }
-
-    public int getMemberCount() {
-        return getMembers().size();
-    }
     //endregion
 
     //region Position-Management
