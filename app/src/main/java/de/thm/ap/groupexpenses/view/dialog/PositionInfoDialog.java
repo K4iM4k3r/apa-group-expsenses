@@ -194,7 +194,15 @@ public class PositionInfoDialog {
 
         DatabaseHandler.getAllMembersOfEvent(selectedEvent.getEid(), membersList -> {
             UserListDialogFragment dialog = new UserListDialogFragment();
-            dialog.build(membersList);
+            for (String uid : position.getPeopleThatDontHaveToPay()) {
+                for (User user : membersList) {
+                    if (user.getUid().equals(uid)) {
+                        membersList.remove(user);
+                        break;
+                    }
+                }
+            }
+            dialog.build(membersList, position);
             dialog.show(((Activity) context).getFragmentManager(), "pay_position");
         });
 

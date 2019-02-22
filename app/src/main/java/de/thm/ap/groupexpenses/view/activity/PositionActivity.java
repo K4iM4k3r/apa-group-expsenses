@@ -184,6 +184,14 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
         }
     }
 
+    public void setUsersPaid(List<User> usersPaidList, Position position){
+        for(User user : usersPaidList){
+            position.removeDebtor(user.getUid());
+        }
+        selectedEvent.updatePosition(position);
+        DatabaseHandler.updateEvent(selectedEvent);
+    }
+
     private class CollectionPagerAdapter extends FragmentPagerAdapter {
         private int numberPages;
         private String eid;
