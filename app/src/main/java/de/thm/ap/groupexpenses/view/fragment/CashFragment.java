@@ -94,6 +94,7 @@ public class CashFragment extends Fragment {
     private class UserValueArrayAdapter extends ArrayAdapter<UserValue> {
         private Context mContext;
         private List<UserValue> usersValueList;
+        private final int MAX_NAME_LENGTH = 15;
 
         private UserValueArrayAdapter(@NonNull Context context, List<UserValue> list) {
             super(context, 0, list);
@@ -143,7 +144,6 @@ public class CashFragment extends Fragment {
                             eventListString += e.getName() + "\n";
                         }
                     }
-
                     String email_body = getString(R.string.reminder_mail_body,
                             currentUserValue.name,                // debtor name
                             eventListString,                                  // event list
@@ -151,7 +151,6 @@ public class CashFragment extends Fragment {
                                     .format(currentUserValue.value),          // dept value
                             App.CurrentUser.getFirstName()
                                     + " " + App.CurrentUser.getLastName());   // creditor name
-
 
                     Intent intent = new Intent(Intent.ACTION_SEND);
                     intent.setType("text/html");
@@ -165,43 +164,6 @@ public class CashFragment extends Fragment {
                         Toast.makeText(getContext(), "There are no email clients installed.",
                                 Toast.LENGTH_SHORT).show();
                     }
-                    /*
-
-                    String subject = RecordsActivity.this.getString(R.string.my_records)
-                                + " " + selected_records.size();
-                        String text = "";
-                        for(int idx = 0; idx < selected_records.size(); ++idx){
-                            Optional<Record> optRecord = AppDatabase.getRecordDb(RecordsActivity.this)
-                                    .recordDAO()
-                                    .findById(selected_records.get(idx).getId());
-                            if(optRecord.isPresent()){
-                                Record record = optRecord.get();
-                                text += record.toString();
-                                text += "\n";
-                            }
-                        }
-                        Intent intent = new Intent(Intent.ACTION_SEND);
-                        intent.setType("text/html");
-                        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
-                        intent.putExtra(Intent.EXTRA_TEXT, text);
-                        startActivity(Intent.createChooser(intent, RecordsActivity.this.getString(
-                                R.string.send_email)
-                        ));
-
-
-                    */
-
-                    //example
-//                    Intent i = new Intent(Intent.ACTION_SEND);
-//                    i.setType("message/rfc822");
-//                    i.putExtra(Intent.EXTRA_EMAIL  , new String[]{});
-//                    i.putExtra(Intent.EXTRA_SUBJECT, "You have to pay money");
-//                    i.putExtra(Intent.EXTRA_TEXT   , "body of email");
-//                    try {
-//                        startActivity(Intent.createChooser(i, "Send mail..."));
-//                    } catch (android.content.ActivityNotFoundException ex) {
-//                        Toast.makeText(getContext(), "There are no email clients installed.", Toast.LENGTH_SHORT).show();
-//                    }
                 });
             }
 
@@ -209,7 +171,12 @@ public class CashFragment extends Fragment {
             TextView userValueName = listItem.findViewById(R.id.dialog_cash_check_name);
             TextView userValueBalance = listItem.findViewById(R.id.dialog_cash_check_balance);
 
-            userValueName.setText(currentUserValue.name);
+            if(currentUserValue.name.length() > MAX_NAME_LENGTH){
+                userValueName.setText(currentUserValue.name.substring(0, MAX_NAME_LENGTH)
+                + "...");
+            } else {
+                userValueName.setText(currentUserValue.name);
+            }
             userValueBalance.setText(new DecimalFormat("0.00€").format(currentUserValue.value));
 
             return listItem;
