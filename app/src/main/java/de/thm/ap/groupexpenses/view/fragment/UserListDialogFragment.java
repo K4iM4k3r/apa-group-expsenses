@@ -31,6 +31,7 @@ import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.User;
 import de.thm.ap.groupexpenses.view.activity.EventFormActivity;
 import de.thm.ap.groupexpenses.view.activity.PositionActivity;
+import de.thm.ap.groupexpenses.view.dialog.ProfileInfoDialog;
 
 public class UserListDialogFragment extends DialogFragment {
 
@@ -55,7 +56,7 @@ public class UserListDialogFragment extends DialogFragment {
     public void build(List<User> selectedUsers, Position position) {
         this.position = position;
         this.selectedUsers = new ArrayList<>();
-        this.friendsList =  selectedUsers;      // friends list works as the members list here
+        this.friendsList = selectedUsers;      // friends list works as the members list here
     }
 
     public void build(List<User> selectedUsers, List<User> friendsList) {
@@ -135,7 +136,9 @@ public class UserListDialogFragment extends DialogFragment {
                 case "edit_event":
                     switch (edit_state) {
                         case EDIT_STATE_INSPECT_USERS:
-                            // do nothing, maybe see profile here ?!
+                            DatabaseHandler.queryUser(selectedUser.getUid(), user -> {
+                                new ProfileInfoDialog(user, getContext());
+                            });
                             break;
 
                         case EDIT_STATE_ADD_USERS:
