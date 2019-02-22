@@ -1,9 +1,13 @@
 package de.thm.ap.groupexpenses.view.activity;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -29,6 +33,7 @@ import de.thm.ap.groupexpenses.model.User;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "LoginActivity";
+    public static final String CONFIRM_PROCESS = "confirm_process";
     private FirebaseAuth auth;
     private TextView tvStatus;
     private TextView tvDetail;
@@ -62,7 +67,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         findViewById(R.id.emailSignInButton).setOnClickListener(this);
         findViewById(R.id.emailCreateAccountButton).setOnClickListener(this);
         findViewById(R.id.signOutButton).setOnClickListener(this);
-        findViewById(R.id.completeCreation).setOnClickListener(this);
+        findViewById(R.id.sendVerificationAgain).setOnClickListener(this);
         findViewById(R.id.sendNewPassword).setOnClickListener(this);
 
         tvForgot.setOnClickListener(this);
@@ -84,8 +89,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onStop();
         hideProgressDialog();
 
-        if(auth.getUid()!= null){
+        if (auth.getUid() != null) {
             DatabaseHandler.queryUser(auth.getUid(), user -> App.CurrentUser = user);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        if(sp.getBoolean(CONFIRM_PROCESS, false)){
+            new ConfirmTask().execute();
+            Log.i(TAG, "resume, confirmprozess");
+
         }
     }
 
@@ -103,12 +119,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         Log.d(TAG, "createUserWithEmail:success");
                         FirebaseUser user = auth.getCurrentUser();
                         Snackbar.make(tvStatus, getString(R.string.create_account_successful), Snackbar.LENGTH_LONG).show();
-
+                        sendEmailVerification();
                         assert user != null;
                         User createUser = new User(user.getUid(), user.getEmail());
                         DatabaseHandler.updateUserWithFeedback(createUser, l -> Log.d(TAG, "Userdata successfull written"), f -> Log.d(TAG, "User data couldnt written"));
-
                         updateUI(user);
+                        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+                        sp.edit().putBoolean(CONFIRM_PROCESS, true).apply();
+
+                        new ConfirmTask().execute();
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w(TAG, "createUserWithEmail:failure", task.getException());
@@ -121,7 +140,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void signIn(String email, String password) {
         Log.d(TAG, "signIn:" + email);
-        
+
         if (isInvalidForm()) {
             return;
         }
@@ -133,12 +152,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         // Sign in success, update UI with the signed-in user's information
                         Log.d(TAG, "signInWithEmail:success");
                         FirebaseUser user = auth.getCurrentUser();
-                        if(user != null && user.isEmailVerified()){
+                        if (user != null && user.isEmailVerified()) {
                             Snackbar.make(tvStatus, getString(R.string.auth_successful), Snackbar.LENGTH_LONG).show();
 
                             FirebaseStorage storage = FirebaseStorage.getInstance();
                             Uri uri = user.getPhotoUrl();
-                            if(uri != null){
+                            if (uri != null) {
                                 StorageReference profilePic = storage.getReferenceFromUrl(String.valueOf(uri));
                                 File filePic = new File(getExternalFilesDir(null), "profilePic.jpg");
 
@@ -150,8 +169,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             }
                             startActivity(new Intent(this, EventActivity.class));
                             finish();
-                        }
-                        else {
+                        } else {
                             updateUI(user);
                         }
                     } else {
@@ -176,7 +194,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void sendEmailVerification() {
         // Disable button
-        findViewById(R.id.completeCreation).setEnabled(false);
+        findViewById(R.id.sendVerificationAgain).setEnabled(false);
 
         // Send verification email
         // [START send_email_verification]
@@ -186,7 +204,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     .addOnCompleteListener(this, task -> {
                         // [START_EXCLUDE]
                         // Re-enable button
-                        findViewById(R.id.completeCreation).setEnabled(true);
+                        findViewById(R.id.sendVerificationAgain).setEnabled(true);
 
                         if (task.isSuccessful()) {
                             Snackbar.make(tvStatus, getString(R.string.info_verification_fmt, user.getEmail()), Snackbar.LENGTH_LONG).show();
@@ -226,18 +244,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             findViewById(R.id.info).setVisibility(View.VISIBLE);
             tvStatus.setText(getString(R.string.emailpassword_status_fmt,
-                    user.getEmail(), user.isEmailVerified()));
+                    user.getEmail()));
             tvDetail.setText(getString(R.string.detail_verification));
 
             layoutEmailPassword.setVisibility(View.GONE);
             findViewById(R.id.emailPasswordFields).setVisibility(View.GONE);
             layoutSignedIn.setVisibility(View.VISIBLE);
             tvForgot.setVisibility(View.GONE);
-            findViewById(R.id.completeCreation).setEnabled(!user.isEmailVerified());
+            findViewById(R.id.sendVerificationAgain).setEnabled(!user.isEmailVerified());
 
 
         } else {
-            tvStatus.setText(R.string.signed_out);
+            tvStatus.setText(R.string.back_creation);
             tvDetail.setText(null);
             tvForgot.setVisibility(View.VISIBLE);
             findViewById(R.id.info).setVisibility(View.GONE);
@@ -265,7 +283,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.emailCreateAccountButton:
                 createAccount(edEmail.getText().toString(), edPassword.getText().toString());
                 break;
@@ -275,7 +293,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             case R.id.signOutButton:
                 signOut();
                 break;
-            case R.id.completeCreation:
+            case R.id.sendVerificationAgain:
                 sendEmailVerification();
                 break;
             case R.id.passwordForgot:
@@ -287,26 +305,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 break;
         }
     }
-
-//    private void completeCreation() {
-//        EditText edNick = findViewById(R.id.setNickname);
-//        if(TextUtils.isEmpty(edNick.getText())) {
-//            edNick.setError(getString(R.string.error_invalid_input));
-//        }
-//        else {
-//            DatabaseHandler.isNicknameExist(edNick.getText().toString(), exists ->{
-//                if(exists){
-//                    edNick.setError(getString(R.string.error_already_in_use));
-//                }
-//                else{
-//                    DatabaseHandler.queryUser(auth.getUid(), user ->{
-//                        user.setNickname(edNick.getText().toString());
-//                        DatabaseHandler.updateUser(user);
-//                    });
-//                }
-//            });
-//        }
-//    }
 
     private void sendPasswordResetEmail() {
         showProgressDialog();
@@ -324,8 +322,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                     //change Layout back to Login
                     showPasswordForgot(false);
-                }
-                else {
+                } else {
                     Snackbar.make(tvStatus, getString(R.string.resetPassword_error), Snackbar.LENGTH_LONG).show();
                 }
             });
@@ -333,21 +330,54 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void showPasswordForgot(boolean visible) {
-        if(visible){
+        if (visible) {
             edPassword.setVisibility(View.GONE);
             tvForgot.setVisibility(View.GONE);
             btnSendPassword.setVisibility(View.VISIBLE);
             layoutEmailPassword.setVisibility(View.GONE);
             layoutSignedIn.setVisibility(View.GONE);
-        }
-        else{
+        } else {
             edPassword.setVisibility(View.VISIBLE);
             tvForgot.setVisibility(View.VISIBLE);
             btnSendPassword.setVisibility(View.GONE);
             layoutEmailPassword.setVisibility(View.VISIBLE);
             layoutSignedIn.setVisibility(View.VISIBLE);
         }
-
-
     }
+
+    @SuppressLint("StaticFieldLeak")
+    class ConfirmTask extends AsyncTask<Void, Integer, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser != null) {
+                while (!firebaseUser.isEmailVerified()) {
+                    try {
+                        firebaseUser.reload();
+                        Log.i(TAG, "wait 3 sec");
+                        Thread.sleep(3 * 1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        return Boolean.FALSE;
+                    }
+                }
+                return Boolean.TRUE;
+
+            } else {
+                return Boolean.FALSE;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            if(result){
+                startActivity(new Intent(getBaseContext(), EventActivity.class));
+                Log.i(TAG, "Start MainPage");
+                finish();
+            }
+        }
+    }
+
 }

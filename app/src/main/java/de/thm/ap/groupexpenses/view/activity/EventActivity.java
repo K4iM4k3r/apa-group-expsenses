@@ -1,7 +1,9 @@
 package de.thm.ap.groupexpenses.view.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -24,6 +26,7 @@ import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.view.fragment.CashFragment;
 import de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment;
 
+import static de.thm.ap.groupexpenses.view.activity.LoginActivity.CONFIRM_PROCESS;
 import static de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment.USERID;
 
 public class EventActivity extends BaseActivity implements PositionEventListFragment.ItemClickListener {
@@ -39,6 +42,10 @@ public class EventActivity extends BaseActivity implements PositionEventListFrag
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         TextView eventsLoadingTextView = findViewById(R.id.events_loading_textView);
+
+        // Reset the confirm process after successful login
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        sp.edit().putBoolean(CONFIRM_PROCESS, false).apply();
 
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = auth.getCurrentUser();
