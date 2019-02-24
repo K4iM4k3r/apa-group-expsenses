@@ -4,8 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <!--/    android:background="@drawable/login_background"-->
-
 
     <TextView
         android:id="@+id/titleText"
@@ -26,26 +24,33 @@
         android:layout_marginBottom="@dimen/login_big_space"
         android:layout_margin="@dimen/login_normal"
         >
+
+
         <LinearLayout
-            android:id="@+id/emailPasswordFields"
+            android:id="@+id/signedInLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
             android:orientation="vertical"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:layout_gravity="end"
-            android:visibility="gone"
-            >
+            android:layout_margin="@dimen/login_normal"
+            android:visibility="visible"
+            android:weightSum="4.0">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/login_label"
+                android:theme="@style/ThemeOverlay.MyTitleText"
+                />
 
             <EditText
-                android:id="@+id/fieldEmail"
+                android:id="@+id/loginEmailField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint="@string/hint_email"
                 android:inputType="textEmailAddress"
-                 />
+                tools:ignore="Autofill" />
 
             <EditText
                 android:id="@+id/fieldPassword"
@@ -53,98 +58,123 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint="@string/hint_password"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"
+                tools:ignore="Autofill" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="4">
+                <Button
+                    android:id="@+id/emailSignInButton"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:text="@string/sign_in"
+                    android:theme="@style/ThemeOverlay.MyDarkButton" />
+
+                <Button
+                    android:id="@+id/emailCreateAccountButton"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/create_account"
+                    android:theme="@style/ThemeOverlay.MyDarkButton" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/passwordForgot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="@color/colorPassword"
+                android:textStyle="bold"
+                android:text="@string/password_forgot"/>
+
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/emailPasswordButtons"
+            android:id="@+id/passwordForgotLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/emailPasswordFields"
-            android:orientation="horizontal"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:weightSum="4">
+            android:layout_centerInParent="true"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:layout_margin="@dimen/login_normal">
+
+            <EditText
+                android:id="@+id/EmailFieldPassForgot"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:hint="@string/hint_email"
+                android:inputType="textEmailAddress"
+                tools:ignore="Autofill" />
 
             <Button
-                android:id="@+id/emailSignInButton"
                 style="@style/Widget.AppCompat.Button.Colored"
+                android:id="@+id/sendNewPassword"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:text="@string/sign_in"
-                android:theme="@style/ThemeOverlay.MyDarkButton" />
+                android:text="@string/resetPassword"
+                android:theme="@style/ThemeOverlay.MyDarkButton"
+                android:layout_gravity="center"
+                />
 
-            <Button
-                android:id="@+id/emailCreateAccountButton"
-                style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_width="wrap_content"
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:layout_margin="@dimen/login_normal">
+
+            <EditText
+                android:id="@+id/createEmailField"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/create_account"
-                android:theme="@style/ThemeOverlay.MyDarkButton" />
-        </LinearLayout>
+                android:hint="@string/hint_email"
+                android:inputType="textEmailAddress"
+                tools:ignore="Autofill" />
 
-        <Button
-            android:id="@+id/sendNewPassword"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/resetPassword"
-            android:theme="@style/ThemeOverlay.MyDarkButton"
-            android:layout_below="@id/passwordForgot"
-            android:layout_centerInParent="true"
-            android:visibility="gone"/>
-        <TextView
-            android:id="@+id/passwordForgot"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/emailPasswordButtons"
-            android:layout_centerHorizontal="true"
-            android:textColor="@color/colorPassword"
-            android:textStyle="bold"
-            android:text="@string/password_forgot"/>
+            <EditText
+                android:id="@+id/createfieldPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/hint_password"
+                android:inputType="textPassword"
+                tools:ignore="Autofill" />
 
-        <LinearLayout
-            android:id="@+id/signedInButtons"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:orientation="horizontal"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:visibility="gone"
-            android:weightSum="4.0">
-
-
+            <EditText
+                android:id="@+id/createfieldNickname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/hint_nickname"
+                android:inputType="textPassword"
+                tools:ignore="Autofill" />
             <Button
-                android:id="@+id/signOutButton"
+                android:id="@+id/createButton"
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="3.0"
-                android:text="@string/back_creation"
+                android:text="@string/create"
+                android:layout_gravity="end"
                 android:theme="@style/ThemeOverlay.MyDarkButton" />
-
-            <Button
-                android:id="@+id/sendVerificationAgain"
-                style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1.0"
-                android:text="@string/verify_email"
-                android:theme="@style/ThemeOverlay.MyDarkButton" />
-
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@id/signedInButtons"
             android:layout_alignParentTop="true"
             android:layout_marginTop="0dp"
-
             android:orientation="vertical"
             android:padding="16dp"
             android:visibility="gone"
@@ -161,6 +191,31 @@
                 style="@style/ThemeOverlay.MyTextDetail"
                 android:singleLine="false"
                 tools:text="Firebase User ID: 123456789abc" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <Button
+                    android:id="@+id/backButton"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3.0"
+                    android:text="@string/back_creation"
+                    android:theme="@style/ThemeOverlay.MyDarkButton" />
+
+                <Button
+                    android:id="@+id/sendVerificationAgain"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.0"
+                    android:text="@string/verify_email"
+                    android:theme="@style/ThemeOverlay.MyDarkButton" />
+            </LinearLayout>
+
+
 
         </LinearLayout>
     </RelativeLayout>
