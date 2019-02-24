@@ -128,10 +128,16 @@
     <string name="dialog_friend_delete_ok">Delete</string>
     <string name="success_remove_friend">Friend successfully removed!</string>
     <string name="error_remove_friend">Friend could not  be removed!</string>
-    <string name="notification_nickname_not_set">Your nickname has not been set yet!</string>
+    <string name="notification_friends_empty">You have no friends in your List!</string>
     <string name="tab_event">Event</string>
     <string name="tab_cash">Cash</string>
     <string name="tab_events">Events</string>
-    <string name="login_label">Login</string>
+    <string name="error_field_no_valid_email">no valid email</string>
+    <string name="login_typ_create">Create</string>
+    <string name="login_typ_password_forgot">Password forgot</string>
+    <string name="login_typ_login">Login</string>
+    <string name="login_typ_info">Info</string>
+    <string name="error_passwords_dont_match">Passwörter stimmen nicht überein</string>
+    <string name="hint_password_again">Passwort wiederholen</string>
 </resources>
 

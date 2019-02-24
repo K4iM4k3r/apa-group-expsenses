@@ -25,23 +25,27 @@
         android:layout_margin="@dimen/login_normal"
         >
 
+        <TextView
+            android:id="@+id/loginTyp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:gravity="center"
+            android:layout_margin="@dimen/login_normal"
+            android:text="@string/login_typ_login"
+            android:theme="@style/ThemeOverlay.LoginScreenStateText"
+            />
 
         <LinearLayout
-            android:id="@+id/signedInLayout"
+            android:id="@+id/loginLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/loginTyp"
             android:layout_centerInParent="true"
             android:orientation="vertical"
             android:layout_margin="@dimen/login_normal"
             android:visibility="visible"
             android:weightSum="4.0">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/login_label"
-                android:theme="@style/ThemeOverlay.MyTitleText"
-                />
 
             <EditText
                 android:id="@+id/loginEmailField"
@@ -75,7 +79,7 @@
                     android:theme="@style/ThemeOverlay.MyDarkButton" />
 
                 <Button
-                    android:id="@+id/emailCreateAccountButton"
+                    android:id="@+id/showCreationLayoutButton"
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -100,6 +104,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:layout_below="@id/loginTyp"
             android:orientation="vertical"
             android:visibility="gone"
             android:layout_margin="@dimen/login_normal">
@@ -112,23 +117,38 @@
                 android:hint="@string/hint_email"
                 android:inputType="textEmailAddress"
                 tools:ignore="Autofill" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-            <Button
-                style="@style/Widget.AppCompat.Button.Colored"
-                android:id="@+id/sendNewPassword"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/resetPassword"
-                android:theme="@style/ThemeOverlay.MyDarkButton"
-                android:layout_gravity="center"
-                />
+                <Button
+                    android:id="@id/backButton"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.0"
+                    android:text="@string/back_creation"
+                    android:theme="@style/ThemeOverlay.MyDarkButton" />
+                <Button
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:id="@+id/sendNewPassword"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3.0"
+                    android:text="@string/resetPassword"
+                    android:theme="@style/ThemeOverlay.MyDarkButton"
+                    android:layout_gravity="center"
+                    />
+            </LinearLayout>
 
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/creationLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:layout_below="@id/loginTyp"
             android:orientation="vertical"
             android:visibility="gone"
             android:layout_margin="@dimen/login_normal">
@@ -152,28 +172,52 @@
                 tools:ignore="Autofill" />
 
             <EditText
+                android:id="@+id/createfieldPasswordAgain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/hint_password_again"
+                android:inputType="textPassword"
+                tools:ignore="Autofill" />
+
+            <EditText
                 android:id="@+id/createfieldNickname"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint="@string/hint_nickname"
-                android:inputType="textPassword"
+                android:inputType="text"
                 tools:ignore="Autofill" />
-            <Button
-                android:id="@+id/createButton"
-                style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/create"
-                android:layout_gravity="end"
-                android:theme="@style/ThemeOverlay.MyDarkButton" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <Button
+                    android:id="@+id/backToLoginButton"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.0"
+                    android:text="@string/back_creation"
+                    android:theme="@style/ThemeOverlay.MyDarkButton" />
+
+                <Button
+                    android:id="@+id/CreateAccountButton"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3.0"
+                    android:text="@string/create"
+                    android:theme="@style/ThemeOverlay.MyDarkButton" />
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
+            android:layout_below="@id/loginTyp"
             android:layout_marginTop="0dp"
             android:orientation="vertical"
             android:padding="16dp"

@@ -11,16 +11,16 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         <TextView
-            android:id="@+id/notification_nickname"
+            android:id="@+id/notification_friends"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorAccent"
-            android:text="@string/notification_nickname_not_set"
+            android:background="@color/colorNotification"
+            android:text="@string/notification_friends_empty"
             android:textSize="18sp"
             android:textStyle="bold"
             android:padding="@dimen/app_margin"
             android:visibility="gone"
-            android:onClick="goToProfile"/>
+            android:onClick="goToFriendsList"/>
 
         <FrameLayout
             android:id="@+id/view_stub"
