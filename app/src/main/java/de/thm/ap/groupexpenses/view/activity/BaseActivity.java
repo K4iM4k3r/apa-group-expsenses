@@ -82,7 +82,7 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
                 if(user != null){
                     App.CurrentUser = user;
                     name.setText(user.getNickname());
-                    checkNickname();
+                    checkFriendsList();
                 }
             });
         }
@@ -167,7 +167,7 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
             if(user != null){
                 App.CurrentUser = user;
                 name.setText(user.getNickname());
-                checkNickname();
+                checkFriendsList();
             }
         });
     }
@@ -237,14 +237,14 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
         }
     }
 
-    public void goToProfile(View view) {
-        startActivity(new Intent(this, ProfileActivity.class));
+    public void goToFriendsList(View view) {
+        startActivity(new Intent(this, FriendsActivity.class));
         finish();
     }
 
-    private void checkNickname(){
-        if(App.CurrentUser.getNickname().isEmpty()){
-           findViewById(R.id.notification_nickname).setVisibility(View.VISIBLE);
+    private void checkFriendsList(){
+        if(App.CurrentUser.getFriendsIds() == null || App.CurrentUser.getFriendsIds().isEmpty()){
+           findViewById(R.id.notification_friends).setVisibility(View.VISIBLE);
         }
     }
 }
