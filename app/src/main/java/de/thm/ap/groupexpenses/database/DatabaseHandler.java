@@ -87,7 +87,7 @@ public class DatabaseHandler {
      * @param nickname User nickname
      * @param callback boolean if nickname exists
      */
-    public static void isNicknameExist(String nickname, Callback<Boolean> callback){
+    public static void isNicknameExisting(String nickname, Callback<Boolean> callback){
         CollectionReference usersRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_USERS);
         Query query = usersRef.whereEqualTo(Constants.DOC_USERS_NICKNAME, nickname);
         query.get().addOnSuccessListener(queryDocumentSnapshots -> callback.onResult(!queryDocumentSnapshots.isEmpty()));

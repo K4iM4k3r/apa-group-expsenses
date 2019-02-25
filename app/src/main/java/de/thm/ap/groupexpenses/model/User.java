@@ -4,7 +4,11 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import java.io.Serializable;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class User implements Comparable<User> {
@@ -16,14 +20,17 @@ public class User implements Comparable<User> {
     private String lastName;
     private String nickname;
     private String email;
+    private String info;
+    private Long joinDate;
     private List<String> events;
 
     private List<String> friendsIds;
     private String profilePic;
 
-    public User(){}
+    public User() {
+    }
 
-    public User(String uid, String email){
+    public User(String uid, String email) {
         this.uid = uid;
         this.firstName = "";
         this.lastName = "";
@@ -31,6 +38,7 @@ public class User implements Comparable<User> {
         this.email = email;
         this.events = new ArrayList<>();
         this.profilePic = null;
+        this.joinDate = Calendar.getInstance().getTimeInMillis();
     }
 
     public User(String uid, String firstName, String lastName, String nickname, String email, List<String> events, String profilePic) {
@@ -41,6 +49,7 @@ public class User implements Comparable<User> {
         this.email = email;
         this.events = events;
         this.profilePic = profilePic;
+        this.joinDate = Calendar.getInstance().getTimeInMillis();
     }
 
     public String getUid() {
@@ -63,6 +72,25 @@ public class User implements Comparable<User> {
         return email;
     }
 
+    public String getDateString() {
+        //TODO: remove this if check for null after next db reset
+        if (joinDate == null) {
+            return "Keine Beitrittsinfo, alter Account!!";
+        } else {
+            Date date = new Date(this.joinDate);
+            Format format = new SimpleDateFormat("dd.MM.yyyy");
+            return format.format(date);
+        }
+    }
+
+    public String getInfo() {
+        //TODO: remove this if check for null after next db reset
+        if (info == null) {
+            return "User hat noch keine Info gesetzt, alter Account!";
+        } else
+            return info;
+    }
+
     public List<String> getEvents() {
         return events;
     }
@@ -74,15 +102,17 @@ public class User implements Comparable<User> {
     public List<String> getFriendsIds() {
         return friendsIds;
     }
+
     public void setFriendsIds(List<String> friendsIds) {
         this.friendsIds = friendsIds;
     }
-    public void addFriend(String friendId){
+
+    public void addFriend(String friendId) {
         if (friendsIds == null) friendsIds = new ArrayList<>();
         if (!friendsIds.contains(friendId)) friendsIds.add(friendId);
     }
 
-    public void removeFriend(String friendId){
+    public void removeFriend(String friendId) {
         if (friendsIds == null) friendsIds = new ArrayList<>();
         friendsIds.remove(friendId);
     }
@@ -103,6 +133,10 @@ public class User implements Comparable<User> {
         this.email = email;
     }
 
+    public void setInfo(String info) {
+        this.info = info;
+    }
+
     public void setEvents(List<String> events) {
         this.events = events;
     }
@@ -111,9 +145,9 @@ public class User implements Comparable<User> {
         this.profilePic = profilePic;
     }
 
-    public void addEvent(String event){
+    public void addEvent(String event) {
 
-        if(this.events == null){
+        if (this.events == null) {
             this.events = new ArrayList<>();
         }
         this.events.add(event);
@@ -121,7 +155,7 @@ public class User implements Comparable<User> {
 
     @NonNull
     @Override
-    public String toString(){
+    public String toString() {
         return nickname;
 //        return firstName + " " + lastName;
     }

@@ -26,7 +26,7 @@ public class ProfileInfoDialog {
     private AlertDialog dialog;
     private User user;
     private View view;
-    private TextView user_full_name, user_nickname;
+    private TextView user_full_name, user_nickname, user_info, user_join_date;
     private CircleImageView user_image;
     private ImageView closeBtn;
     private Context context;
@@ -44,6 +44,8 @@ public class ProfileInfoDialog {
     private void createDialog() {
         user_full_name = view.findViewById(R.id.profile_dialog_full_name);
         user_nickname = view.findViewById(R.id.profile_dialog_nickname);
+        user_info = view.findViewById(R.id.profile_dialog_userInfo);
+        user_join_date = view.findViewById(R.id.profile_dialog_user_join_date);
         user_image = view.findViewById(R.id.profile_dialog_userPic);
         closeBtn = view.findViewById(R.id.profile_dialog_close_imageView);
 
@@ -54,6 +56,8 @@ public class ProfileInfoDialog {
             DatabaseHandler.getUserProfilePic(context, user.getUid(), opPictureUri ->
                     opPictureUri.ifPresent(user_image::setImageURI));
         }
+        user_info.setText(user.getInfo());
+        user_join_date.setText(user.getDateString());
 
         // close btn clicked
         closeBtn.setOnTouchListener((v, event) -> {

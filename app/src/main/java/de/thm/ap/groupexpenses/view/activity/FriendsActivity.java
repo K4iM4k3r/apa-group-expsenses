@@ -19,7 +19,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -71,7 +70,7 @@ public class FriendsActivity extends BaseActivity {
                     Snackbar.make(view, getString(R.string.error_user_not_found), Snackbar.LENGTH_LONG)
                             .setAction(getString(R.string.dialog_friend_retry), l -> fab.callOnClick()).show();
                 } else {
-                    DatabaseHandler.isNicknameExist(userInput, exists -> {
+                    DatabaseHandler.isNicknameExisting(userInput, exists -> {
                         if (!exists) {
                             Snackbar.make(view, getString(R.string.error_user_not_found), Snackbar.LENGTH_LONG)
                                     .setAction(getString(R.string.dialog_friend_retry), l -> fab.callOnClick()).show();

@@ -14,12 +14,13 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -44,10 +45,7 @@ import de.thm.ap.groupexpenses.model.User;
 import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 
 public class ProfileActivity extends BaseActivity {
-    private TextView tvEmail;
-    private EditText edNickname;
-    private EditText edFirst;
-    private EditText edLast;
+    private EditText edEmail, edNickname, edFirst, edLast, edInfo;
     private CircleImageView profile_pic;
     private Button btnSave;
     private final int REQUEST_IMAGE_PICK = 1;
@@ -56,38 +54,44 @@ public class ProfileActivity extends BaseActivity {
     private FirebaseUser currentUser;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
-        tvEmail = findViewById(R.id.tvProfileEmail);
-        edNickname = findViewById(R.id.edName);
-        edFirst = findViewById(R.id.edFirstname);
-        edLast = findViewById(R.id.edLastname);
-        Button btnEdit = findViewById(R.id.edit_button);
-        btnSave = findViewById(R.id.btn_save_profile);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(R.string.my_profile);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+        edEmail = findViewById(R.id.edEmail);
+        edNickname = findViewById(R.id.edNickname);
+        edFirst = findViewById(R.id.edFirstName);
+        edLast = findViewById(R.id.edLastName);
+        edInfo = findViewById(R.id.edInfo);
+        Button btnEdit = findViewById(R.id.edit_profile_btn);
+        btnSave = findViewById(R.id.btn_save_profile_btn);
         profile_pic = findViewById(R.id.profile_pic);
+        LinearLayout profilePicLayout = findViewById(R.id.profile_pic_layout);
 
-        if(getSupportActionBar() != null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
         edFirst.setSelectAllOnFocus(true);
         edLast.setSelectAllOnFocus(true);
         edNickname.setSelectAllOnFocus(true);
+        edInfo.setSelectAllOnFocus(true);
 
         currentUser = super.auth.getCurrentUser();
-        if(currentUser != null){
+        if (currentUser != null) {
 
             DatabaseHandler.queryUser(currentUser.getUid(), us -> {
                 user = us;
                 edFirst.setText(us.getFirstName());
                 edLast.setText(us.getLastName());
                 edNickname.setText(us.getNickname());
-
-                tvEmail.setText(currentUser.getEmail());
+                edEmail.setText(currentUser.getEmail());
+                edInfo.setText(us.getInfo());
             });
         }
 
@@ -95,45 +99,45 @@ public class ProfileActivity extends BaseActivity {
             edNickname.setEnabled(true);
             edLast.setEnabled(true);
             edFirst.setEnabled(true);
+            edInfo.setEnabled(true);
             btnSave.setVisibility(View.VISIBLE);
             btnEdit.setVisibility(View.GONE);
 
         });
-        btnSave.setOnClickListener(l ->{
+        btnSave.setOnClickListener(l -> {
             showProgressDialog();
-            if(isValidUserInput()){
+            if (isValidUserInput()) {
                 //TOdo
-                if(edNickname.getText().toString().equals(user.getNickname())){
+                if (edNickname.getText().toString().equals(user.getNickname())) {
                     updateRoutine();
                 }
-                DatabaseHandler.isNicknameExist(edNickname.getText().toString(), exists ->{
-                    if(exists){
+                DatabaseHandler.isNicknameExisting(edNickname.getText().toString(), exists -> {
+                    if (exists) {
                         edNickname.setError(getString(R.string.error_already_in_use));
                         hideProgressDialog();
-                    }
-                    else{
+                    } else {
                         updateRoutine();
                     }
                 });
-            }
-            else{
+            } else {
                 hideProgressDialog();
             }
         });
 
         File pic = new File(getExternalFilesDir(null), "profilePic.jpg");
-        if(pic.exists()){
+        if (pic.exists()) {
             profile_pic.setImageURI(Uri.fromFile(pic));
         }
 
-        profile_pic.setOnClickListener(l -> pickPhoto());
+        profilePicLayout.setOnClickListener(l -> pickPhoto());
 
     }
 
-    private void updateRoutine(){
+    private void updateRoutine() {
         user.setFirstName(edFirst.getText().toString());
         user.setLastName(edLast.getText().toString());
         user.setNickname(edNickname.getText().toString());
+        user.setInfo(edInfo.getText().toString());
         DatabaseHandler.updateUser(user);
 
         UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
@@ -146,17 +150,17 @@ public class ProfileActivity extends BaseActivity {
         finish();
     }
 
-    private boolean isValidUserInput(){
+    private boolean isValidUserInput() {
         boolean valid = true;
-        if(TextUtils.isEmpty(edNickname.getText())){
+        if (TextUtils.isEmpty(edNickname.getText())) {
             edNickname.setError(getString(R.string.error_invalid_input));
             valid = false;
         }
-        if(TextUtils.isEmpty(edFirst.getText())){
+        if (TextUtils.isEmpty(edFirst.getText())) {
             edFirst.setError(getString(R.string.error_invalid_input));
             valid = false;
         }
-        if(TextUtils.isEmpty(edLast.getText())){
+        if (TextUtils.isEmpty(edLast.getText())) {
             edLast.setError(getString(R.string.error_invalid_input));
             valid = false;
         }
@@ -164,10 +168,10 @@ public class ProfileActivity extends BaseActivity {
     }
 
     private void pickPhoto() {
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_IMAGE_PICK);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_IMAGE_PICK);
         }
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         Intent pickPhoto = new Intent();
@@ -183,14 +187,13 @@ public class ProfileActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK) {
-            if(requestCode == REQUEST_IMAGE_PICK) {
-                if(data == null || data.getData() == null) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_IMAGE_PICK) {
+                if (data == null || data.getData() == null) {
                     Log.i(TAG, "onResult Data is empty");
-                    Snackbar.make(tvEmail, getString(R.string.error_file_couldnt_upload), Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(edEmail, getString(R.string.error_file_couldnt_upload), Snackbar.LENGTH_LONG).show();
                     return;
-                }
-                else{
+                } else {
 
                     Uri selectedImage = data.getData();
                     profile_pic.setImageURI(selectedImage);
@@ -199,7 +202,7 @@ public class ProfileActivity extends BaseActivity {
 
                     FirebaseStorage storage = FirebaseStorage.getInstance();
                     assert currentUser != null;
-                    StorageReference storageRef = storage.getReference().child("ProfilePictures").child(currentUser.getUid()+".jpg");
+                    StorageReference storageRef = storage.getReference().child("ProfilePictures").child(currentUser.getUid() + ".jpg");
                     File file = new File(getExternalFilesDir(null), "profilePic.jpg");
                     Uri uriFile = Uri.fromFile(file);
 
@@ -207,7 +210,7 @@ public class ProfileActivity extends BaseActivity {
 
                     uploadTask.continueWithTask(task -> {
                         if (!task.isSuccessful()) {
-                            Snackbar.make(tvEmail, getString(R.string.error_file_couldnt_upload), Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(edEmail, getString(R.string.error_file_couldnt_upload), Snackbar.LENGTH_LONG).show();
                         }
 
                         // Continue with the task to get the download URL
@@ -215,7 +218,7 @@ public class ProfileActivity extends BaseActivity {
                     }).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             Uri downloadUri = task.getResult();
-                            Snackbar.make(tvEmail, getString(R.string.success_profile_pic_uploaded), Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(edEmail, getString(R.string.success_profile_pic_uploaded), Snackbar.LENGTH_LONG).show();
                             UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
                                     .setPhotoUri(downloadUri)
                                     .build();
@@ -241,7 +244,7 @@ public class ProfileActivity extends BaseActivity {
     private void compressPicture() {
         File pic = new File(getExternalFilesDir(null), "profilePic.jpg");
 
-        if(pic.exists()) {
+        if (pic.exists()) {
             try {
                 Bitmap bmp = BitmapFactory.decodeFile(pic.getPath());
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -251,8 +254,7 @@ public class ProfileActivity extends BaseActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-        else {
+        } else {
             Log.e("ProfilePic", "Picture doesn't exist, or can't find picture");
         }
     }
@@ -262,29 +264,29 @@ public class ProfileActivity extends BaseActivity {
 
         try {
             File src = new File(getFromURIFilePath(uri));
-            if(!src.exists()) {
-                Snackbar.make(tvEmail, getString(R.string.error_file_not_found), Snackbar.LENGTH_LONG).show();
+            if (!src.exists()) {
+                Snackbar.make(edEmail, getString(R.string.error_file_not_found), Snackbar.LENGTH_LONG).show();
             }
 
             FileChannel source = new FileInputStream(src).getChannel();
             FileChannel destination = new FileOutputStream(dst).getChannel();
 
-            if(source != null) {
+            if (source != null) {
                 destination.transferFrom(source, 0, source.size());
                 source.close();
 
             }
             destination.close();
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
-            Snackbar.make(tvEmail, getString(R.string.error_file_not_found), Snackbar.LENGTH_LONG).show();
+            Snackbar.make(edEmail, getString(R.string.error_file_not_found), Snackbar.LENGTH_LONG).show();
         }
     }
 
     private String getFromURIFilePath(Uri uri) throws IOException {
-        String[] projection = { MediaStore.Images.Media.DATA };
+        String[] projection = {MediaStore.Images.Media.DATA};
         Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
-        if(cursor == null) throw new IOException("Could not resolve the URI");
+        if (cursor == null) throw new IOException("Could not resolve the URI");
         int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
         cursor.moveToFirst();
         String s = cursor.getString(columnIndex);
