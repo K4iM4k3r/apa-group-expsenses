@@ -2,9 +2,12 @@ package de.thm.ap.groupexpenses.view.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -115,12 +118,21 @@ public class CashFragment extends Fragment {
 
             UserValue currentUserValue = usersValueList.get(position);
 
-            ImageView forward_arrow = listItem.findViewById(R.id.dialog_cash_check_arrow_forward);
-            ImageView back_arrow = listItem.findViewById(R.id.dialog_cash_check_arrow_back);
+            ImageView arrow_imageView = listItem.findViewById(R.id.dialog_cash_check_arrow);
+            TextView userValueName = listItem.findViewById(R.id.dialog_cash_check_name);
+            TextView userValueName2 = listItem.findViewById(R.id.dialog_cash_check_name2);
+
             if (currentUserValue.value < 0) { // App.CurrentUser owes money
-                back_arrow.setVisibility(View.VISIBLE);
-                forward_arrow.setVisibility(View.GONE);
-                back_arrow.setOnClickListener(v -> {
+                Drawable arrow = getResources().getDrawable(R.drawable.ic_arrow_forward_red_24dp);
+                arrow_imageView.setImageDrawable(arrow);
+                userValueName.setText(R.string.yourself);
+                if(currentUserValue.name.length() > MAX_NAME_LENGTH){
+                    userValueName2.setText(currentUserValue.name.substring(0, MAX_NAME_LENGTH)
+                            + "...");
+                } else {
+                    userValueName2.setText(currentUserValue.name);
+                }
+                arrow_imageView.setOnClickListener(v -> {
                     // pay ALL depts to user here (multiple positions)
                     // TODO: David pay system
                     float val = currentUserValue.value * (-1);
@@ -128,9 +140,17 @@ public class CashFragment extends Fragment {
                     // TODO: After successful payment -> delete user from ALL positions he just payed for
                 });
             } else {    // App.CurrentUser gets money
-                forward_arrow.setVisibility(View.VISIBLE);
-                back_arrow.setVisibility(View.GONE);
-                forward_arrow.setOnClickListener(v -> {
+                Drawable arrow = getResources().getDrawable(R.drawable.ic_arrow_forward_green_24dp);
+                arrow = setTint(arrow, Color.parseColor("#2BA050"));    // green
+                arrow_imageView.setImageDrawable(arrow);
+                userValueName2.setText(R.string.you);
+                if(currentUserValue.name.length() > MAX_NAME_LENGTH){
+                    userValueName.setText(currentUserValue.name.substring(0, MAX_NAME_LENGTH)
+                            + "...");
+                } else {
+                    userValueName.setText(currentUserValue.name);
+                }
+                arrow_imageView.setOnClickListener(v -> {
                     String[] email_address = {currentUserValue.email};
                     String email_subject = getString(R.string.reminder);
                     String eventListString = "";
@@ -168,16 +188,8 @@ public class CashFragment extends Fragment {
                 });
             }
 
-
-            TextView userValueName = listItem.findViewById(R.id.dialog_cash_check_name);
             TextView userValueBalance = listItem.findViewById(R.id.dialog_cash_check_balance);
 
-            if(currentUserValue.name.length() > MAX_NAME_LENGTH){
-                userValueName.setText(currentUserValue.name.substring(0, MAX_NAME_LENGTH)
-                + "...");
-            } else {
-                userValueName.setText(currentUserValue.name);
-            }
             userValueBalance.setText(new DecimalFormat("0.00€").format(currentUserValue.value));
             userValueName.setOnClickListener(v -> {
                 DatabaseHandler.queryUser(currentUserValue.uid, user -> {
@@ -187,6 +199,12 @@ public class CashFragment extends Fragment {
 
             return listItem;
         }
+    }
+
+    private static Drawable setTint(Drawable d, int color) {
+        Drawable wrappedDrawable = DrawableCompat.wrap(d);
+        DrawableCompat.setTint(wrappedDrawable, color);
+        return wrappedDrawable;
     }
 
     private void buildCashView() {
