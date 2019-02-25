@@ -2,12 +2,10 @@ package de.thm.ap.groupexpenses.view.fragment;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +17,8 @@ import android.widget.Toast;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -133,7 +133,7 @@ public class CashFragment extends Fragment {
                     userValueName2.setText(currentUserValue.name);
                 }
                 arrow_imageView.setOnClickListener(v -> {
-                    // pay ALL depts to user here (multiple positions)
+                    // pay ALL debts to user here (multiple positions)
                     // TODO: David pay system
                     float val = currentUserValue.value * (-1);
 
@@ -141,7 +141,6 @@ public class CashFragment extends Fragment {
                 });
             } else {    // App.CurrentUser gets money
                 Drawable arrow = getResources().getDrawable(R.drawable.ic_arrow_forward_green_24dp);
-                arrow = setTint(arrow, Color.parseColor("#2BA050"));    // green
                 arrow_imageView.setImageDrawable(arrow);
                 userValueName2.setText(R.string.you);
                 if(currentUserValue.name.length() > MAX_NAME_LENGTH){
@@ -201,11 +200,13 @@ public class CashFragment extends Fragment {
         }
     }
 
-    private static Drawable setTint(Drawable d, int color) {
-        Drawable wrappedDrawable = DrawableCompat.wrap(d);
-        DrawableCompat.setTint(wrappedDrawable, color);
-        return wrappedDrawable;
-    }
+    Comparator<UserValue> DEBT_SORT = (userValue1, userValue2) -> {
+        if(userValue1.value < userValue2.value){
+            return -1;
+        } else {
+            return 1;
+        }
+    };
 
     private void buildCashView() {
         List<String> keyList = new ArrayList<>(cash_check_map.keySet());
@@ -237,6 +238,7 @@ public class CashFragment extends Fragment {
                 }
                 if (!userValueList.contains(null)) {
                     // create and set adapter
+                    Collections.sort(userValueList, DEBT_SORT);
                     userValueArrayAdapter = new UserValueArrayAdapter(Objects.requireNonNull(getContext()), userValueList);
                     cash_check_list.setAdapter(userValueArrayAdapter);
                 }
