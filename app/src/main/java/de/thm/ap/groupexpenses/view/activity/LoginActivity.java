@@ -8,13 +8,11 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -37,13 +35,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private FirebaseAuth auth;
     private TextView tvStatus;
     private TextView tvDetail;
-    private EditText edEmail;
-    private EditText edPassword;
-    private TextView tvForgot;
-    private Button btnSendPassword;
-    private LinearLayout layoutEmailPassword;
-    private LinearLayout layoutSignedIn;
-    @VisibleForTesting
+    private TextView loginTyp;
+    private LinearLayout creationLayout;
+    private LinearLayout loginLayout;
+    private LinearLayout passwordForgotLayout;
+    private LinearLayout infoLayout;
+    private EditText edLoginEmail;
+    private EditText edLoginPassword;
+    private EditText edPassForgotEmail;
+    private EditText edCreateNickname;
+    private EditText edCreateEmail;
+    private EditText edCreatePassword;
+    private EditText edCreatePasswordAgain;
     public ProgressDialog mProgressDialog;
 
 
@@ -52,37 +55,40 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        // find Layouts
+        infoLayout = findViewById(R.id.info);
+        creationLayout = findViewById(R.id.creationLayout);
+        loginLayout = findViewById(R.id.loginLayout);
+        passwordForgotLayout = findViewById(R.id.passwordForgotLayout);
+
+        // output fields
         tvStatus = findViewById(R.id.status);
         tvDetail = findViewById(R.id.detail);
-        edPassword = findViewById(R.id.fieldPassword);
-        edEmail = findViewById(R.id.fieldEmail);
-        tvForgot = findViewById(R.id.passwordForgot);
+        loginTyp = findViewById(R.id.loginTyp);
 
+        //input fields
+        edLoginPassword = findViewById(R.id.fieldPassword);
+        edLoginEmail = findViewById(R.id.loginEmailField);
+        edCreateNickname = findViewById(R.id.createfieldNickname);
+        edCreateEmail = findViewById(R.id.createEmailField);
+        edCreatePassword = findViewById(R.id.createfieldPassword);
+        edCreatePasswordAgain = findViewById(R.id.createfieldPasswordAgain);
+        edPassForgotEmail = findViewById(R.id.EmailFieldPassForgot);
 
-        btnSendPassword = findViewById(R.id.sendNewPassword);
-        layoutEmailPassword = findViewById(R.id.emailPasswordButtons);
-        layoutSignedIn = findViewById(R.id.signedInButtons);
-
-
+        //buttons
         findViewById(R.id.emailSignInButton).setOnClickListener(this);
-        findViewById(R.id.emailCreateAccountButton).setOnClickListener(this);
-        findViewById(R.id.signOutButton).setOnClickListener(this);
+        findViewById(R.id.showCreationLayoutButton).setOnClickListener(this);
+        findViewById(R.id.CreateAccountButton).setOnClickListener(this);
+        findViewById(R.id.backButton).setOnClickListener(this);
         findViewById(R.id.sendVerificationAgain).setOnClickListener(this);
         findViewById(R.id.sendNewPassword).setOnClickListener(this);
-
-        tvForgot.setOnClickListener(this);
+        findViewById(R.id.passwordForgot).setOnClickListener(this);
+        findViewById(R.id.backToLoginButton).setOnClickListener(this);
 
         auth = FirebaseAuth.getInstance();
     }
 
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = auth.getCurrentUser();
-        updateUI(currentUser);
-    }
 
     @Override
     public void onStop() {
@@ -105,54 +111,77 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    private void createAccount(String email, String password) {
+    private void createAccount(String email, String password, String nickname) {
         Log.d(TAG, "createAccount:" + email);
-        if (isInvalidForm()) {
+        if (isInvalidCreateForm()) {
             return;
         }
 
         showProgressDialog();
-        auth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d(TAG, "createUserWithEmail:success");
-                        FirebaseUser user = auth.getCurrentUser();
-                        Snackbar.make(tvStatus, getString(R.string.create_account_successful), Snackbar.LENGTH_LONG).show();
-                        sendEmailVerification();
-                        assert user != null;
-                        User createUser = new User(user.getUid(), user.getEmail());
-                        DatabaseHandler.updateUserWithFeedback(createUser, l -> Log.d(TAG, "Userdata successfull written"), f -> Log.d(TAG, "User data couldnt written"));
-                        updateUI(user);
-                        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-                        sp.edit().putBoolean(CONFIRM_PROCESS, true).apply();
 
-                        new ConfirmTask().execute();
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                        Snackbar.make(tvStatus, getString(R.string.create_account_failed), Snackbar.LENGTH_LONG).show();
-                        updateUI(null);
+        DatabaseHandler.isNicknameExist(nickname, exists ->{
+            if(exists){
+                edCreateNickname.setError(getString(R.string.error_already_in_use));
+                hideProgressDialog();
+            }
+            else{
+                auth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, task -> {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "createUserWithEmail:success");
+                            FirebaseUser user = auth.getCurrentUser();
+                            Snackbar.make(tvStatus, getString(R.string.create_account_successful), Snackbar.LENGTH_LONG).show();
+                            sendEmailVerification();
+
+                            assert user != null;
+                            User createUser = new User(user.getUid(), user.getEmail());
+                            createUser.setNickname(nickname);
+
+                            DatabaseHandler.updateUserWithFeedback(createUser,
+                                    l -> Log.d(TAG, "Userdata successful written"),
+                                    f -> Log.d(TAG, "User data could`nt written"));
+
+                            //show info screen
+                            tvStatus.setText(getString(R.string.emailpassword_status_fmt,
+                                    user.getEmail()));
+                            tvDetail.setText(getString(R.string.detail_verification));
+                            showInfoLayout();
+
+                            // Add flag to check the state of the email confirm
+                            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+                            sp.edit().putBoolean(CONFIRM_PROCESS, true).apply();
+
+
+                        } else {
+                            // If creation fails, display a message to the user.
+                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                            Snackbar.make(tvStatus, getString(R.string.create_account_failed), Snackbar.LENGTH_LONG).show();
+                        }
+                        hideProgressDialog();
                     }
-                    hideProgressDialog();
-                });
+                );
+            }
+        });
+
     }
 
     private void signIn(String email, String password) {
         Log.d(TAG, "signIn:" + email);
 
-        if (isInvalidForm()) {
+        if (isInvalidLoginForm()) {
             return;
         }
         showProgressDialog();
 
         auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
+                    FirebaseUser user = auth.getCurrentUser();
+                    if (task.isSuccessful() && user != null) {
                         // Sign in success, update UI with the signed-in user's information
-                        Log.d(TAG, "signInWithEmail:success");
-                        FirebaseUser user = auth.getCurrentUser();
-                        if (user != null && user.isEmailVerified()) {
+
+                        if (user.isEmailVerified()) {
+                            Log.d(TAG, "signInWithEmail:success");
                             Snackbar.make(tvStatus, getString(R.string.auth_successful), Snackbar.LENGTH_LONG).show();
 
                             FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -170,13 +199,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             startActivity(new Intent(this, EventActivity.class));
                             finish();
                         } else {
-                            updateUI(user);
+                            Log.w(TAG, "signInWithEmail:failure:notConfirmed", task.getException());
+                            tvStatus.setText(getString(R.string.emailpassword_status_fmt,
+                                    user.getEmail()));
+                            tvDetail.setText(getString(R.string.detail_verification));
+                            showInfoLayout();
                         }
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w(TAG, "signInWithEmail:failure", task.getException());
                         Snackbar.make(tvStatus, getString(R.string.auth_failed), Snackbar.LENGTH_LONG).show();
-                        updateUI(null);
                     }
 
                     // task error handling
@@ -189,7 +221,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void signOut() {
         auth.signOut();
-        updateUI(null);
+        showLoginLayout();
     }
 
     private void sendEmailVerification() {
@@ -216,53 +248,80 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    private boolean isInvalidForm() {
+    private boolean isInvalidLoginForm() {
         boolean valid = true;
 
-        String email = edEmail.getText().toString();
+        String email = edLoginEmail.getText().toString();
         if (TextUtils.isEmpty(email)) {
-            edEmail.setError("Required.");
+            edLoginEmail.setError(getString(R.string.error_field_required));
             valid = false;
-        } else {
-            edEmail.setError(null);
+        }
+        else if(!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+            edLoginEmail.setError(getString(R.string.error_field_no_valid_email));
+            valid = false;
+        }
+        else {
+            edLoginEmail.setError(null);
         }
 
-        String password = edPassword.getText().toString();
+        String password = edLoginPassword.getText().toString();
         if (TextUtils.isEmpty(password)) {
-            edPassword.setError("Required.");
+            edLoginPassword.setError(getString(R.string.error_field_required));
             valid = false;
         } else {
-            edPassword.setError(null);
+            edLoginPassword.setError(null);
         }
 
         return !valid;
     }
 
-    private void updateUI(FirebaseUser user) {
-        hideProgressDialog();
-        if (user != null) {
-
-            findViewById(R.id.info).setVisibility(View.VISIBLE);
-            tvStatus.setText(getString(R.string.emailpassword_status_fmt,
-                    user.getEmail()));
-            tvDetail.setText(getString(R.string.detail_verification));
-
-            layoutEmailPassword.setVisibility(View.GONE);
-            findViewById(R.id.emailPasswordFields).setVisibility(View.GONE);
-            layoutSignedIn.setVisibility(View.VISIBLE);
-            tvForgot.setVisibility(View.GONE);
-            findViewById(R.id.sendVerificationAgain).setEnabled(!user.isEmailVerified());
-
-
-        } else {
-            tvStatus.setText(R.string.back_creation);
-            tvDetail.setText(null);
-            tvForgot.setVisibility(View.VISIBLE);
-            findViewById(R.id.info).setVisibility(View.GONE);
-            layoutEmailPassword.setVisibility(View.VISIBLE);
-            findViewById(R.id.emailPasswordFields).setVisibility(View.VISIBLE);
-            layoutSignedIn.setVisibility(View.GONE);
+    private boolean isInvalidCreateForm() {
+        boolean valid = true;
+        String email = edCreateEmail.getText().toString();
+        if (TextUtils.isEmpty(email)) {
+            edCreateEmail.setError(getString(R.string.error_field_required));
+            valid = false;
         }
+        else if(!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+            edCreateEmail.setError(getString(R.string.error_field_no_valid_email));
+            valid = false;
+        }
+        else {
+            edCreateEmail.setError(null);
+        }
+
+        String password = edCreatePassword.getText().toString();
+        if (TextUtils.isEmpty(password)) {
+            edCreatePassword.setError(getString(R.string.error_field_required));
+            valid = false;
+        }
+        else {
+            edCreatePassword.setError(null);
+        }
+
+        String passwordAgain = edCreatePasswordAgain.getText().toString();
+        if (TextUtils.isEmpty(password)) {
+            edCreatePasswordAgain.setError(getString(R.string.error_field_required));
+            valid = false;
+        }
+        else if(!password.equals(passwordAgain)){
+            valid = false;
+            edCreatePasswordAgain.setError(getString(R.string.error_passwords_dont_match));
+        }
+        else {
+            edCreatePasswordAgain.setError(null);
+        }
+
+        String nickname = edCreateNickname.getText().toString();
+        if (TextUtils.isEmpty(nickname)) {
+            edCreateNickname.setError(getString(R.string.error_field_required));
+            valid = false;
+        }
+        else {
+            edCreateNickname.setError(null);
+        }
+
+        return !valid;
     }
 
     public void showProgressDialog() {
@@ -284,20 +343,24 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.emailCreateAccountButton:
-                createAccount(edEmail.getText().toString(), edPassword.getText().toString());
+            case R.id.showCreationLayoutButton:
+                showCreationLayout();
+                break;
+            case R.id.CreateAccountButton:
+                createAccount(edCreateEmail.getText().toString(), edCreatePassword.getText().toString(), edCreateNickname.getText().toString());
                 break;
             case R.id.emailSignInButton:
-                signIn(edEmail.getText().toString(), edPassword.getText().toString());
+                signIn(edLoginEmail.getText().toString(), edLoginPassword.getText().toString());
                 break;
-            case R.id.signOutButton:
+            case R.id.backToLoginButton:
+            case R.id.backButton:
                 signOut();
                 break;
             case R.id.sendVerificationAgain:
                 sendEmailVerification();
                 break;
             case R.id.passwordForgot:
-                showPasswordForgot(true);
+                showPasswordForgotLayout();
                 break;
             case R.id.sendNewPassword:
                 sendPasswordResetEmail();
@@ -309,11 +372,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void sendPasswordResetEmail() {
         showProgressDialog();
 
-        final String email = edEmail.getText().toString();
+        final String email = edPassForgotEmail.getText().toString();
         if (TextUtils.isEmpty(email)) {
-            edEmail.setError("Required.");
+            edPassForgotEmail.setError("Required.");
         } else {
-            edEmail.setError(null);
+            edPassForgotEmail.setError(null);
             auth.sendPasswordResetEmail(email).addOnCompleteListener(this, task -> {
                 hideProgressDialog();
 
@@ -321,7 +384,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     Snackbar.make(tvStatus, getString(R.string.resetPassword_success, email), Snackbar.LENGTH_LONG).show();
 
                     //change Layout back to Login
-                    showPasswordForgot(false);
+                    showPasswordForgotLayout();
                 } else {
                     Snackbar.make(tvStatus, getString(R.string.resetPassword_error), Snackbar.LENGTH_LONG).show();
                 }
@@ -329,20 +392,37 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    private void showPasswordForgot(boolean visible) {
-        if (visible) {
-            edPassword.setVisibility(View.GONE);
-            tvForgot.setVisibility(View.GONE);
-            btnSendPassword.setVisibility(View.VISIBLE);
-            layoutEmailPassword.setVisibility(View.GONE);
-            layoutSignedIn.setVisibility(View.GONE);
-        } else {
-            edPassword.setVisibility(View.VISIBLE);
-            tvForgot.setVisibility(View.VISIBLE);
-            btnSendPassword.setVisibility(View.GONE);
-            layoutEmailPassword.setVisibility(View.VISIBLE);
-            layoutSignedIn.setVisibility(View.VISIBLE);
-        }
+    private void showInfoLayout(){
+        loginTyp.setText(getString(R.string.login_typ_info));
+        infoLayout.setVisibility(View.VISIBLE);
+        creationLayout.setVisibility(View.GONE);
+        loginLayout.setVisibility(View.GONE);
+        passwordForgotLayout.setVisibility(View.GONE);
+        new ConfirmTask().execute();
+    }
+
+    private void showLoginLayout(){
+        loginTyp.setText(getString(R.string.login_typ_login));
+        infoLayout.setVisibility(View.GONE);
+        creationLayout.setVisibility(View.GONE);
+        loginLayout.setVisibility(View.VISIBLE);
+        passwordForgotLayout.setVisibility(View.GONE);
+    }
+
+    private void showPasswordForgotLayout() {
+        loginTyp.setText(getString(R.string.login_typ_password_forgot));
+        infoLayout.setVisibility(View.GONE);
+        creationLayout.setVisibility(View.GONE);
+        loginLayout.setVisibility(View.GONE);
+        passwordForgotLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void showCreationLayout() {
+        loginTyp.setText(getString(R.string.login_typ_create));
+        infoLayout.setVisibility(View.GONE);
+        creationLayout.setVisibility(View.VISIBLE);
+        loginLayout.setVisibility(View.GONE);
+        passwordForgotLayout.setVisibility(View.GONE);
     }
 
     @SuppressLint("StaticFieldLeak")
