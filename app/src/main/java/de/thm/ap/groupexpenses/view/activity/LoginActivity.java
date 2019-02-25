@@ -119,7 +119,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         showProgressDialog();
 
-        DatabaseHandler.isNicknameExist(nickname, exists ->{
+        DatabaseHandler.isNicknameExisting(nickname, exists ->{
             if(exists){
                 edCreateNickname.setError(getString(R.string.error_already_in_use));
                 hideProgressDialog();
@@ -131,7 +131,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = auth.getCurrentUser();
-                            Snackbar.make(tvStatus, getString(R.string.create_account_successful), Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(tvStatus, getString(R.string.account_successfully_created), Snackbar.LENGTH_LONG).show();
                             sendEmailVerification();
 
                             assert user != null;

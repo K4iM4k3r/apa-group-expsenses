@@ -74,7 +74,7 @@
     <string name="auth_failed">Authentifizierung fehlgeschlagen</string>
     <string name="auth_successful">Login erfolgreich</string>
     <string name="create_account_failed">Anlegen eines neuen Account fehlgeschlagen</string>
-    <string name="create_account_successful">Account erfolgreich erstellt</string>
+    <string name="account_successfully_created">Account erfolgreich erstellt!</string>
     <string name="password_forgot">Passwort vergessen?</string>
     <string name="resetPassword">Passwort zurücksetzen</string>
     <string name="resetPassword_success">Sende Rücksetzungsmail an %s</string>
