@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -119,6 +120,7 @@ public class CashFragment extends Fragment {
             UserValue currentUserValue = usersValueList.get(position);
 
             ImageView arrow_imageView = listItem.findViewById(R.id.dialog_cash_check_arrow);
+            LinearLayout value_layout = listItem.findViewById(R.id.dialog_cash_check_value_layout);
             TextView userValueName = listItem.findViewById(R.id.dialog_cash_check_name);
             TextView userValueName2 = listItem.findViewById(R.id.dialog_cash_check_name2);
 
@@ -126,30 +128,40 @@ public class CashFragment extends Fragment {
                 Drawable arrow = getResources().getDrawable(R.drawable.ic_arrow_forward_red_24dp);
                 arrow_imageView.setImageDrawable(arrow);
                 userValueName.setText(R.string.yourself);
-                if(currentUserValue.name.length() > MAX_NAME_LENGTH){
+                if (currentUserValue.name.length() > MAX_NAME_LENGTH) {
                     userValueName2.setText(currentUserValue.name.substring(0, MAX_NAME_LENGTH)
                             + "...");
                 } else {
                     userValueName2.setText(currentUserValue.name);
                 }
-                arrow_imageView.setOnClickListener(v -> {
+                value_layout.setOnClickListener(v -> {
                     // pay ALL debts to user here (multiple positions)
                     // TODO: David pay system
                     float val = currentUserValue.value * (-1);
 
                     // TODO: After successful payment -> delete user from ALL positions he just payed for
                 });
+                userValueName.setOnClickListener(v -> {
+                    DatabaseHandler.queryUser(App.CurrentUser.getUid(), user -> {
+                        new ProfileInfoDialog(user, mContext);
+                    });
+                });
+                userValueName2.setOnClickListener(v -> {
+                    DatabaseHandler.queryUser(currentUserValue.uid, user -> {
+                        new ProfileInfoDialog(user, mContext);
+                    });
+                });
             } else {    // App.CurrentUser gets money
                 Drawable arrow = getResources().getDrawable(R.drawable.ic_arrow_forward_green_24dp);
                 arrow_imageView.setImageDrawable(arrow);
                 userValueName2.setText(R.string.you);
-                if(currentUserValue.name.length() > MAX_NAME_LENGTH){
+                if (currentUserValue.name.length() > MAX_NAME_LENGTH) {
                     userValueName.setText(currentUserValue.name.substring(0, MAX_NAME_LENGTH)
                             + "...");
                 } else {
                     userValueName.setText(currentUserValue.name);
                 }
-                arrow_imageView.setOnClickListener(v -> {
+                value_layout.setOnClickListener(v -> {
                     String[] email_address = {currentUserValue.email};
                     String email_subject = getString(R.string.reminder);
                     String eventListString = "";
@@ -185,23 +197,28 @@ public class CashFragment extends Fragment {
                                 Toast.LENGTH_SHORT).show();
                     }
                 });
+                userValueName.setOnClickListener(v -> {
+                    DatabaseHandler.queryUser(currentUserValue.uid, user -> {
+                        new ProfileInfoDialog(user, mContext);
+                    });
+                });
+                userValueName2.setOnClickListener(v -> {
+                    DatabaseHandler.queryUser(App.CurrentUser.getUid(), user -> {
+                        new ProfileInfoDialog(user, mContext);
+                    });
+                });
             }
 
             TextView userValueBalance = listItem.findViewById(R.id.dialog_cash_check_balance);
 
             userValueBalance.setText(new DecimalFormat("0.00€").format(currentUserValue.value));
-            userValueName.setOnClickListener(v -> {
-                DatabaseHandler.queryUser(currentUserValue.uid, user -> {
-                    new ProfileInfoDialog( user, mContext);
-                });
-            });
 
             return listItem;
         }
     }
 
     Comparator<UserValue> DEBT_SORT = (userValue1, userValue2) -> {
-        if(userValue1.value < userValue2.value){
+        if (userValue1.value < userValue2.value) {
             return -1;
         } else {
             return 1;
