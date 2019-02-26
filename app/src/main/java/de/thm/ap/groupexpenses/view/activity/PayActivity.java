@@ -44,7 +44,7 @@ public class PayActivity extends AppCompatActivity {
         amount = extras.getInt("plan_price");
         name = extras.getString("plan_name");
         try {
-            stripe = new Stripe("[YOUR_PUBLISHABLE_KEY_TEST_HERE]");
+            stripe = new Stripe("pk_test_o7cI8z6a1Xtniq0iL4wWvXTb");
         } catch (AuthenticationException e) {
             e.printStackTrace();
         }
@@ -52,7 +52,7 @@ public class PayActivity extends AppCompatActivity {
     }
 
     public void submitCard(View view) {
-        // TODO: replace with your own test key
+        // TODO: test key
         TextView cardNumberField = (TextView) findViewById(R.id.cardNumber);
         TextView monthField = (TextView) findViewById(R.id.month);
         TextView yearField = (TextView) findViewById(R.id.year);
@@ -65,9 +65,9 @@ public class PayActivity extends AppCompatActivity {
                 cvcField.getText().toString()
         );
 
-        card.setCurrency("usd");
-        card.setName("Theodhor Pandeli");
-        card.setAddressZip("1000");
+        card.setCurrency("eur");
+        card.setName("King Dav3");
+        card.setAddressZip("35463");
         /*
         card.setNumber(4242424242424242);
         card.setExpMonth(12);
@@ -76,9 +76,9 @@ public class PayActivity extends AppCompatActivity {
         */
 
 
-        stripe.createToken(card, "[YOUR_PUBLISHABLE_KEY_TEST_HERE]", new TokenCallback() {
+        stripe.createToken(card, "pk_test_o7cI8z6a1Xtniq0iL4wWvXTb", new TokenCallback() {
             public void onSuccess(Token token) {
-                // TODO: Send Token information to your backend to initiate a charge
+                // TODO: Send Token information to backend to initiate a charge
                 Toast.makeText(getApplicationContext(), "Token created: " + token.getId(), Toast.LENGTH_LONG).show();
                 tok = token;
                 new StripeCharge(token.getId()).execute();
@@ -119,7 +119,7 @@ public class PayActivity extends AppCompatActivity {
     public void postData(String description, String token,String amount) {
         // Create a new HttpClient and Post Header
         try {
-            URL url = new URL("[YOUR_SERVER_CHARGE_SCRIPT_URL]");
+            URL url = new URL("[CHARGE_SCRIPT_URL]");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(10000);
             conn.setConnectTimeout(15000);
