@@ -1,13 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/position_menu_inspect_users"
-        android:title="@string/inspect_users"
-        android:icon="@drawable/ic_face_white_24dp"
-        app:showAsAction="always"
-        />
-    <item
-        android:id="@+id/position_menu_add"
+        android:id="@+id/position_menu_add_invite_users"
         android:title="Add link"
         android:icon="@drawable/ic_person_add_white_24dp"
         app:showAsAction="always"

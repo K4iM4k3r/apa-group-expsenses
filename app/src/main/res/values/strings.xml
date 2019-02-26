@@ -75,6 +75,7 @@
     <string name="success_download_ProfilePic">Successful download profile pic</string>
     <string name="error_download_ProfilePic">Error while downloading profile pic</string>
     <string name="menu_item_main">Main</string>
+    <string name="invite">Send Invite</string>
     <string name="lastname">last name</string>
     <string name="firstname">first name</string>
     <string name="displayname">display name</string>

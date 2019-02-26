@@ -109,6 +109,7 @@
     <string name="no_bounty">Sie haben keine offenen Positionen</string>
     <string name="error_already_in_use">Nickname ist bereits vergeben!</string>
     <string name="hint_nickname">Nickname</string>
+    <string name="invite">Einladen</string>
     <string name="deleted_user">Gelöschter Nutzer</string>
     <string name="menu_item_friends">Freunde</string>
     <string name="reminder">Zahlungserinnerung</string>
