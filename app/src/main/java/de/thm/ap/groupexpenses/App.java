@@ -3,17 +3,17 @@ package de.thm.ap.groupexpenses;
 import android.app.Application;
 import android.content.Context;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import de.thm.ap.groupexpenses.model.Event;
-import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.User;
 
 public class App extends Application {
 
     public static User CurrentUser; //to be set on Login/AppStart
+
+    public static String HOST = "www.group-expenses-omran.firebaseapp.com";
+    public static String BASE_URL = "https://" + HOST + "/";
+
 
     private static App instance;
 
@@ -41,7 +41,6 @@ public class App extends Application {
                 new User("4", "Mia", "Müller", "", "mMueller@mail.de", null, null)
         };
     }
-
 
     public static String listToHTMLString(List<?> list) {
         String result = "";

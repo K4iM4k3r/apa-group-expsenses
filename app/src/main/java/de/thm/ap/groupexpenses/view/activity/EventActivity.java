@@ -2,8 +2,10 @@ package de.thm.ap.groupexpenses.view.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -12,6 +14,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -26,6 +29,7 @@ import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.view.fragment.CashFragment;
 import de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment;
 
+import static android.support.v4.app.Fragment.instantiate;
 import static de.thm.ap.groupexpenses.view.activity.LoginActivity.CONFIRM_PROCESS;
 import static de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment.USERID;
 
@@ -89,6 +93,23 @@ public class EventActivity extends BaseActivity implements PositionEventListFrag
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
+
+        // react to invite links
+        Intent intent = getIntent();
+        Uri data = intent.getData();
+
+        if (data == null) return;
+
+        if (data.getHost().equals(App.HOST)){
+            String eventId = data.getLastPathSegment();
+            DatabaseHandler.queryEvent(eventId, event -> {
+                boolean success = event.addMember(App.CurrentUser.getUid());
+                if (success) DatabaseHandler.updateEvent(event);
+            });
+        }
+
+        Toast.makeText(this, data.toString(), Toast.LENGTH_LONG).show();
+
     }
 
     @Override

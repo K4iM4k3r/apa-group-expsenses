@@ -19,14 +19,9 @@
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity android:name=".view.activity.EventFormActivity" />
-        <activity android:name=".view.activity.PositionActivity" >
             <!-- React to URL: www.group-expenses-omran.firebaseapp.com  -->
-
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
 
@@ -40,6 +35,8 @@
                     android:scheme="https"/>
             </intent-filter>
         </activity>
+        <activity android:name=".view.activity.EventFormActivity" />
+        <activity android:name=".view.activity.PositionActivity" />
 
         <activity android:name=".view.activity.PositionFormActivity" />
         <activity

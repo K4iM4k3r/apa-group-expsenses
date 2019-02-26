@@ -97,9 +97,12 @@ public class Event {
         return members;
     }
 
-    public void addMember(String user) {
-        if (!this.members.contains(user))
+    public boolean addMember(String user) {
+        if (!this.members.contains(user)) {
             this.members.add(user);
+            return true;
+        }
+        return false;
     }
 
     public void addMembers(String... users) {
