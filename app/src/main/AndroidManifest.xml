@@ -24,7 +24,23 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.activity.EventFormActivity" />
-        <activity android:name=".view.activity.PositionActivity" />
+        <activity android:name=".view.activity.PositionActivity" >
+            <!-- React to URL: www.group-expenses-omran.firebaseapp.com  -->
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    android:host="www.group-expenses-omran.firebaseapp.com"
+                    android:scheme="https" />
+                <data
+                    android:host="group-expenses-omran.firebaseapp.com"
+                    android:scheme="https"/>
+            </intent-filter>
+        </activity>
+
         <activity android:name=".view.activity.PositionFormActivity" />
         <activity
             android:name=".view.activity.FriendsActivity"
@@ -41,7 +57,7 @@
 
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="@string/file_provider_authority"
+            android:authorities="de.thm.ap.groupexpenses.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
