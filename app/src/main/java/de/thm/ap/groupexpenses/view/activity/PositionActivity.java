@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -78,6 +79,28 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
                 selectedEvent = event;
                 if (actionBar != null && event != null) {
                     actionBar.setTitle(event.getName());
+                    View actionBarView = findTextViewWithText(
+                            getWindow().getDecorView(), actionBar.getTitle().toString());
+                    if (actionBarView != null) {
+                        actionBarView.setOnClickListener(v -> {
+                            // show event info
+                            if (App.CurrentUser.getUid().equals(selectedEvent.getCreatorId())) {
+                                new EventInfoDialog(selectedEvent, null, App.CurrentUser.getUid(),
+                                        this);
+                            } else {
+                                DatabaseHandler.queryUser(selectedEvent.getCreatorId(), eventCreator -> {
+                                    if (eventCreator == null) {
+                                        new EventInfoDialog(selectedEvent, getString(R.string.deleted_user), null,
+                                                this);
+                                    } else {
+                                        new EventInfoDialog(selectedEvent, eventCreator.getNickname(),
+                                                eventCreator.getUid(), this);
+                                    }
+                                });
+                            }
+                        });
+                    }
+
                 }
             });
 
@@ -126,6 +149,28 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
         });
     }
 
+    /*
+    Search for the event title in all views of PositionActivity in order to find the action bar view!
+    This might cause a bug when a position in this event is called exactly like the event title!
+     */
+    @Nullable
+    public static TextView findTextViewWithText(@Nullable View toCheck, String toFind) {
+        if (toCheck instanceof TextView) {
+            String foundText = ((TextView) toCheck).getText().toString();
+            if (foundText.equals(toFind)) {
+                return (TextView) toCheck;
+            }
+        } else if (toCheck instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) toCheck).getChildCount(); i++) {
+                TextView found = findTextViewWithText(((ViewGroup) toCheck).getChildAt(i), toFind);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -151,24 +196,6 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
                     dialog.show(getFragmentManager(), "edit_event");
                 });
                 break;
-
-            case R.id.position_menu_info:
-                // display event info
-                if (App.CurrentUser.getUid().equals(selectedEvent.getCreatorId())) {
-                    new EventInfoDialog(selectedEvent, null, App.CurrentUser.getUid(),
-                            this);
-                } else {
-                    DatabaseHandler.queryUser(selectedEvent.getCreatorId(), eventCreator -> {
-                        if (eventCreator == null) {
-                            new EventInfoDialog(selectedEvent, getString(R.string.deleted_user), null,
-                                    this);
-                        } else {
-                            new EventInfoDialog(selectedEvent, eventCreator.getNickname(),
-                                    eventCreator.getUid(), this);
-                        }
-                    });
-                }
-                break;
             case R.id.position_menu_add:
                 onMenuItemAddFriendClick();
                 break;
@@ -177,7 +204,7 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
         return super.onOptionsItemSelected(item);
     }
 
-    public void onMenuItemAddFriendClick(){
+    public void onMenuItemAddFriendClick() {
 
         MessageHelper messageHelper = new MessageHelper(this);
 

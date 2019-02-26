@@ -7,12 +7,6 @@
         app:showAsAction="always"
         />
     <item
-        android:id="@+id/position_menu_info"
-        android:title="@string/info"
-        android:icon="@drawable/ic_info_outline_white_24dp"
-        app:showAsAction="always"
-        />
-    <item
         android:id="@+id/position_menu_add"
         android:title="Add link"
         android:icon="@drawable/ic_person_add_white_24dp"
