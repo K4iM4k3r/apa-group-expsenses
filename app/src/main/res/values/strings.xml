@@ -144,5 +144,7 @@
     <string name="deleted_user">"deleted user "</string>
     <string name="error_passwords_dont_match">Passwords dont match</string>
     <string name="hint_password_again">Password again</string>
+    <string name="app_name">StripeAndroid</string>
+    <string name="com.stripe.publishable_key">pk_live_trW9snyQp72gtgkbeHhAgeN1 </string>
 </resources>
 
