@@ -80,7 +80,7 @@ public class PositionEventListFragment<T> extends Fragment {
             if (creatorMap == null) creatorMap = new HashMap<>();
 
             //if you want to show the list of positions of one Event
-            if(eid != null){
+            if (eid != null) {
                 EventLiveData eventLiveData = DatabaseHandler.getEventLiveData(eid);
                 eventLiveData.observe(this, event -> {
                     if (event != null) {
@@ -96,9 +96,9 @@ public class PositionEventListFragment<T> extends Fragment {
                 });
             }
             // if you want to show the list of events
-            else if(uid != null) {
+            else if (uid != null) {
                 EventListLiveData listLiveData = DatabaseHandler.getEventListLiveData(uid);
-                listLiveData.observe(this, eventList ->{
+                listLiveData.observe(this, eventList -> {
                     if (eventList != null) {
                         noObjects_textView.setVisibility(View.GONE);
                         updateTotalBalanceOfEvents(eventList);
@@ -114,7 +114,7 @@ public class PositionEventListFragment<T> extends Fragment {
         return view;
     }
 
-    private void generateAdapter(List<T> objectList, boolean isPosition){
+    private void generateAdapter(List<T> objectList, boolean isPosition) {
         if (creatorMap.containsValue("")) {
             Set<String> keysWithoutVal = getKeysByValue(creatorMap, "");
             for (String uid : keysWithoutVal) {
@@ -231,6 +231,10 @@ public class PositionEventListFragment<T> extends Fragment {
                     creatorPart = getString(R.string.you);
                 } else {
                     creatorPart = creatorMap.get(position.getCreatorId());
+                    final int CREATOR_NAME_MAX_LENGTH = 20;
+                    if (creatorPart.length() > CREATOR_NAME_MAX_LENGTH) {
+                        creatorPart = creatorPart.substring(0, CREATOR_NAME_MAX_LENGTH) + "...";
+                    }
                 }
                 wholePart = fromPart + " " + creatorPart;
                 spannable = new SpannableString(wholePart);
@@ -247,6 +251,10 @@ public class PositionEventListFragment<T> extends Fragment {
                     creatorPart = getString(R.string.you);
                 } else {
                     creatorPart = creatorMap.get(event.getCreatorId());
+                    final int CREATOR_NAME_MAX_LENGTH = 20;
+                    if (creatorPart.length() > CREATOR_NAME_MAX_LENGTH) {
+                        creatorPart = creatorPart.substring(0, CREATOR_NAME_MAX_LENGTH) + "...";
+                    }
                 }
                 wholePart = fromPart + " " + creatorPart;
                 spannable = new SpannableString(wholePart);
