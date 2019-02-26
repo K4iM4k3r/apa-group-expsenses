@@ -37,15 +37,6 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.8.1'
     implementation 'commons-io:commons-io:2.6'
     implementation 'de.hdodenhof:circleimageview:2.2.0'
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha4'
-    testCompile 'junit:junit:4.12'
-    compile 'org.jsoup:jsoup:1.9.2'
-    compile ('com.stripe:stripe-android:1.0.4@aar'){
-        transitive=true
-    }
+    implementation 'com.stripe:stripe-android:8.4.0'
 }
 apply plugin: 'com.google.gms.google-services'

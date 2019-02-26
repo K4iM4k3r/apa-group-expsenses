@@ -12,7 +12,6 @@ import com.stripe.android.Stripe;
 import com.stripe.android.TokenCallback;
 import com.stripe.android.model.Card;
 import com.stripe.android.model.Token;
-import com.stripe.exception.AuthenticationException;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -43,11 +42,11 @@ public class PayActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         amount = extras.getInt("plan_price");
         name = extras.getString("plan_name");
-        try {
-            stripe = new Stripe("pk_test_o7cI8z6a1Xtniq0iL4wWvXTb");
-        } catch (AuthenticationException e) {
-            e.printStackTrace();
-        }
+        //try {
+        //    stripe = new Stripe("pk_test_o7cI8z6a1Xtniq0iL4wWvXTb");
+        //} catch (AuthenticationException e) {
+        //    e.printStackTrace();
+        //}
 
     }
 
