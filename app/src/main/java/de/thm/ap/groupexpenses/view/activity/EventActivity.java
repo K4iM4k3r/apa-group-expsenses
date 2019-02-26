@@ -98,7 +98,7 @@ public class EventActivity extends BaseActivity implements PositionEventListFrag
         Intent intent = getIntent();
         Uri data = intent.getData();
 
-        if (data == null) return;
+        if (data == null || data.getHost() == null) return;
 
         if (data.getHost().equals(App.HOST)){
             String eventId = data.getLastPathSegment();
