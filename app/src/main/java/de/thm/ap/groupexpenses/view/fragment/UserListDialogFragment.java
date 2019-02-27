@@ -35,6 +35,7 @@ import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.User;
 import de.thm.ap.groupexpenses.view.activity.EventFormActivity;
 import de.thm.ap.groupexpenses.view.activity.PositionActivity;
+import de.thm.ap.groupexpenses.view.dialog.InviteDialog;
 import de.thm.ap.groupexpenses.view.dialog.ProfileInfoDialog;
 
 public class UserListDialogFragment extends DialogFragment {
@@ -278,6 +279,9 @@ public class UserListDialogFragment extends DialogFragment {
 
                 case EDIT_STATE_INSPECT_USERS:
                     // send invite btn clicked
+
+                    new InviteDialog(getContext(), selectedEvent);
+                    /*
                     MessageHelper messageHelper = new MessageHelper(getContext());
                     // generate link to invite people
                     String inviteURL = App.BASE_URL + selectedEvent.getEid();
@@ -314,6 +318,7 @@ public class UserListDialogFragment extends DialogFragment {
                     // create and show the alert dialog
                     android.support.v7.app.AlertDialog dialog = builder.create();
                     dialog.show();
+                    */
                     break;
 
                 default:
