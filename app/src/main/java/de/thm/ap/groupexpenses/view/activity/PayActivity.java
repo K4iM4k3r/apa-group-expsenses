@@ -1,194 +1,193 @@
 package de.thm.ap.groupexpenses.view.activity;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.stripe.android.Stripe;
-import com.stripe.android.TokenCallback;
-import com.stripe.android.model.Card;
-import com.stripe.android.model.Token;
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.braintreepayments.api.dropin.DropInActivity;
+import com.braintreepayments.api.dropin.DropInRequest;
+import com.braintreepayments.api.dropin.DropInResult;
+import com.braintreepayments.api.interfaces.HttpResponseCallback;
+import com.braintreepayments.api.internal.HttpClient;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.thm.ap.groupexpenses.R;
 
 public class PayActivity extends AppCompatActivity {
 
-    Stripe stripe;
-    Integer amount;
-    String name;
-    Card card;
-    Token tok;
+    final int REQUEST_CODE = 1;
+    final String get_token = "http://192.168.11.138/BraintreePayments/main.php";
+    final String send_payment_details = "http://192.168.11.138/BraintreePayments/checkout.php";
+    String token, amount;
+    HashMap<String, String> paramHash;
+
+    Button btnPay;
+    EditText etAmount;
+    LinearLayout llHolder;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pay);
-
-        Bundle extras = getIntent().getExtras();
-        amount = extras.getInt("plan_price");
-        name = extras.getString("plan_name");
-        //try {
-        //    stripe = new Stripe("pk_test_o7cI8z6a1Xtniq0iL4wWvXTb");
-        //} catch (AuthenticationException e) {
-        //    e.printStackTrace();
-        //}
-
-    }
-
-    public void submitCard(View view) {
-        // TODO: test key
-        TextView cardNumberField = (TextView) findViewById(R.id.cardNumber);
-        TextView monthField = (TextView) findViewById(R.id.month);
-        TextView yearField = (TextView) findViewById(R.id.year);
-        TextView cvcField = (TextView) findViewById(R.id.cvc);
-
-        card = new Card(
-                cardNumberField.getText().toString(),
-                Integer.valueOf(monthField.getText().toString()),
-                Integer.valueOf(yearField.getText().toString()),
-                cvcField.getText().toString()
-        );
-
-        card.setCurrency("eur");
-        card.setName("King Dav3");
-        card.setAddressZip("35463");
-        /*
-        card.setNumber(4242424242424242);
-        card.setExpMonth(12);
-        card.setExpYear(19);
-        card.setCVC("123");
-        */
-
-
-        stripe.createToken(card, "pk_test_o7cI8z6a1Xtniq0iL4wWvXTb", new TokenCallback() {
-            public void onSuccess(Token token) {
-                // TODO: Send Token information to backend to initiate a charge
-                Toast.makeText(getApplicationContext(), "Token created: " + token.getId(), Toast.LENGTH_LONG).show();
-                tok = token;
-                new StripeCharge(token.getId()).execute();
-
-            }
-
-            public void onError(Exception error) {
-                Log.d("Stripe", error.getLocalizedMessage());
+        llHolder = (LinearLayout) findViewById(R.id.llHolder);
+        etAmount = (EditText) findViewById(R.id.etPrice);
+        btnPay = (Button) findViewById(R.id.btnPay);
+        btnPay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBraintreeSubmit();
             }
         });
+        new HttpRequest().execute();
     }
 
-    public class StripeCharge extends AsyncTask<String, Void, String> {
-        String token;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
+                PaymentMethodNonce nonce = result.getPaymentMethodNonce();
+                String stringNonce = nonce.getNonce();
+                Log.d("mylog", "Result: " + stringNonce);
+                // Send payment price with the nonce
+                // use the result to update your UI and send the payment method nonce to your server
+                if (!etAmount.getText().toString().isEmpty()) {
+                    amount = etAmount.getText().toString();
+                    paramHash = new HashMap<>();
+                    paramHash.put("amount", amount);
+                    paramHash.put("nonce", stringNonce);
+                    sendPaymentDetails();
+                } else
+                    Toast.makeText(PayActivity.this, "Please enter a valid amount.", Toast.LENGTH_SHORT).show();
 
-        public StripeCharge(String token) {
-            this.token = token;
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                // the user canceled
+                Log.d("mylog", "user canceled");
+            } else {
+                // handle errors here, an exception may be available in
+                Exception error = (Exception) data.getSerializableExtra(DropInActivity.EXTRA_ERROR);
+                Log.d("mylog", "Error : " + error.toString());
+            }
         }
+    }
 
-        @Override
-        protected String doInBackground(String... params) {
-            new Thread() {
-                @Override
-                public void run() {
-                    postData(name,token,""+amount);
+    public void onBraintreeSubmit() {
+        DropInRequest dropInRequest = new DropInRequest()
+                .clientToken(token);
+        startActivityForResult(dropInRequest.getIntent(this), REQUEST_CODE);
+    }
+
+    private void sendPaymentDetails() {
+        RequestQueue queue = Volley.newRequestQueue(PayActivity.this);
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, send_payment_details,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        if(response.contains("Successful"))
+                        {
+                            Toast.makeText(PayActivity.this, "Transaction successful", Toast.LENGTH_LONG).show();
+                        }
+                        else Toast.makeText(PayActivity.this, "Transaction failed", Toast.LENGTH_LONG).show();
+                        Log.d("mylog", "Final Response: " + response.toString());
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("mylog", "Volley error : " + error.toString());
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                if (paramHash == null)
+                    return null;
+                Map<String, String> params = new HashMap<>();
+                for (String key : paramHash.keySet()) {
+                    params.put(key, paramHash.get(key));
+                    Log.d("mylog", "Key : " + key + " Value : " + paramHash.get(key));
                 }
-            }.start();
-            return "Done";
+
+                return params;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/x-www-form-urlencoded");
+                return params;
+            }
+        };
+        queue.add(stringRequest);
+    }
+
+    private class HttpRequest extends AsyncTask {
+        ProgressDialog progress;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progress = new ProgressDialog(PayActivity.this, android.R.style.Theme_DeviceDefault_Dialog);
+            progress.setCancelable(false);
+            progress.setMessage("We are contacting our servers for token, Please wait");
+            progress.setTitle("Getting token");
+            progress.show();
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            Log.e("Result",s);
-        }
-    }
+        protected Object doInBackground(Object[] objects) {
+            HttpClient client = new HttpClient();
+            client.get(get_token, new HttpResponseCallback() {
+                @Override
+                public void success(String responseBody) {
+                    Log.d("mylog", responseBody);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(PayActivity.this, "Successfully got token", Toast.LENGTH_SHORT).show();
+                            llHolder.setVisibility(View.VISIBLE);
+                        }
+                    });
+                    token = responseBody;
+                }
 
-    public void postData(String description, String token,String amount) {
-        // Create a new HttpClient and Post Header
-        try {
-            URL url = new URL("[CHARGE_SCRIPT_URL]");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(10000);
-            conn.setConnectTimeout(15000);
-            conn.setRequestMethod("POST");
-            conn.setDoInput(true);
-            conn.setDoOutput(true);
-
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-            params.add(new NameValuePair("method", "charge"));
-            params.add(new NameValuePair("description", description));
-            params.add(new NameValuePair("source", token));
-            params.add(new NameValuePair("amount", amount));
-
-            OutputStream os = null;
-
-            os = conn.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-            writer.write(getQuery(params));
-            writer.flush();
-            writer.close();
-            os.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    private String getQuery(List<NameValuePair> params) throws UnsupportedEncodingException
-    {
-        StringBuilder result = new StringBuilder();
-        boolean first = true;
-
-        for (NameValuePair pair : params)
-        {
-            if (first)
-                first = false;
-            else
-                result.append("&");
-
-            result.append(URLEncoder.encode(pair.getName(), "UTF-8"));
-            result.append("=");
-            result.append(URLEncoder.encode(pair.getValue(), "UTF-8"));
-        }
-        Log.e("Query",result.toString());
-        return result.toString();
-    }
-
-    public class NameValuePair{
-        String name,value;
-
-        public NameValuePair(String name, String value) {
-            this.name = name;
-            this.value = value;
+                @Override
+                public void failure(Exception exception) {
+                    final Exception ex = exception;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(PayActivity.this, "Failed to get token: " + ex.toString(), Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            });
+            return null;
         }
 
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+            progress.dismiss();
         }
     }
 }
-

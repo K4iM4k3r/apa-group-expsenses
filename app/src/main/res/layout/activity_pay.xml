@@ -1,82 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="de.thm.ap.groupexpenses.view.activity.PayActivity">
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <RelativeLayout
+
+    <LinearLayout
+        android:id="@+id/llHolder"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp">
-
-
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/cardNumber"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:text="4242 4242 4242 4242" />
-
-        <EditText
-            android:layout_width="30dp"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:ems="10"
-            android:id="@+id/month"
-            android:layout_below="@+id/cardNumber"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:text="12" />
-
-        <EditText
-            android:layout_width="30dp"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:ems="10"
-            android:id="@+id/year"
-            android:text="19"
-            android:layout_below="@+id/cardNumber"
-            android:layout_toRightOf="@+id/textView"
-            android:layout_toEndOf="@+id/textView" />
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="/"
-            android:id="@+id/textView"
-            android:layout_alignBottom="@+id/month"
-            android:layout_toRightOf="@+id/month"
-            android:layout_toEndOf="@+id/month" />
-
-        <EditText
-            android:layout_width="wrap_content"
+            android:id="@+id/tvMessage"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/cvc"
-            android:text="123"
-            android:layout_below="@+id/cardNumber"
-            android:layout_toRightOf="@+id/year"
-            android:layout_toEndOf="@+id/year"
-            android:layout_marginLeft="49dp"
-            android:layout_marginStart="49dp" />
+            android:gravity="center"
+            android:text="Ready for transaction"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp">
+
+            <EditText
+                android:id="@+id/etPrice"
+                android:layout_width="match_parent"
+                android:inputType="text"
+                android:imeOptions="actionDone"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:hint="Choose the amount to pay" />
+
+        </android.support.design.widget.TextInputLayout>
 
         <Button
-            android:layout_width="wrap_content"
+            android:id="@+id/btnPay"
+            android:layout_width="148dp"
             android:layout_height="wrap_content"
-            android:text="Submit"
-            android:id="@+id/submitButton"
-            android:layout_below="@+id/cvc"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:onClick="submitCard" />
+            android:layout_marginTop="16dp"
+            android:background="@color/colorPrimaryDark"
+            android:text="Pay"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
 
-    </RelativeLayout>
-
-</RelativeLayout>
+</LinearLayout>

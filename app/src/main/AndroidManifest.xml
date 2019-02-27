@@ -52,6 +52,8 @@
             android:theme="@style/ThemeOverlay.MyNoTitleActivity" />
         <activity android:name=".view.activity.ProfileActivity" />
 
+        <activity android:name="view.activity.PayActivity"/>
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="de.thm.ap.groupexpenses.fileprovider"
