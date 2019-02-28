@@ -2,6 +2,8 @@ package de.thm.ap.groupexpenses.view.fragment;
 
 import android.app.AlertDialog;
 import android.app.DialogFragment;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -19,6 +21,7 @@ import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +30,12 @@ import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.model.Event;
+import de.thm.ap.groupexpenses.model.MessageHelper;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.User;
 import de.thm.ap.groupexpenses.view.activity.EventFormActivity;
 import de.thm.ap.groupexpenses.view.activity.PositionActivity;
+import de.thm.ap.groupexpenses.view.dialog.InviteDialog;
 import de.thm.ap.groupexpenses.view.dialog.ProfileInfoDialog;
 
 public class UserListDialogFragment extends DialogFragment {
@@ -107,9 +112,10 @@ public class UserListDialogFragment extends DialogFragment {
 
                 if (isCreator) {
                     addBtn.setText(R.string.add_remove);
-                    doneBtn.setVisibility(View.GONE);
+                    doneBtn.setText(R.string.invite);
                 } else {
                     addBtn.setVisibility(View.GONE);
+                    doneBtn.setVisibility(View.GONE);
                 }
 
                 if (hasPositions) addBtn.setText(R.string.event_form_add_members);
@@ -271,9 +277,52 @@ public class UserListDialogFragment extends DialogFragment {
                     userArrayAdapter.notifyDataSetChanged();
                     break;
 
+                case EDIT_STATE_INSPECT_USERS:
+                    // send invite btn clicked
+
+                    new InviteDialog(getContext(), selectedEvent);
+                    /*
+                    MessageHelper messageHelper = new MessageHelper(getContext());
+                    // generate link to invite people
+                    String inviteURL = App.BASE_URL + selectedEvent.getEid();
+                    String infoText = "Hey, click the following link to join me on \"" + selectedEvent.getName() + "\".\n\n" +
+                            inviteURL + "\n\n" +
+                            "Make sure to have Group-Expenses-Omran installed!\n\n" +
+                            "Cya!\n" +
+                            App.CurrentUser.getNickname();
+
+                    // setup the alert builder
+                    android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getContext());
+                    builder.setTitle("Invitelink created");
+
+                    // add a list
+                    String[] items = {"Copy link to clipboard", "Send via Email", "Send via WhatsApp"};
+                    builder.setItems(items, (dialog, which) -> {
+                        switch (which) {
+                            case 0: // Copy link to clipboard
+                                ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                                ClipData clip = ClipData.newPlainText("Invite URL", inviteURL);
+                                clipboard.setPrimaryClip(clip);
+                                Toast.makeText(getContext(), "copied invite link to clipboard", Toast.LENGTH_SHORT).show();
+                                break;
+                            case 1: // send via Email
+                                String subject = "Invite to join " + selectedEvent.getName() + " in GEO!";
+                                messageHelper.sendViaMail("", subject, infoText);
+                                break;
+                            case 2: // send via WhatsApp
+                                MessageHelper.Providers provider = MessageHelper.Providers.WHATSAPP;
+                                messageHelper.sendVia(provider, infoText);
+                                break;
+                        }
+                    });
+                    // create and show the alert dialog
+                    android.support.v7.app.AlertDialog dialog = builder.create();
+                    dialog.show();
+                    */
+                    break;
+
                 default:
                     getDialog().dismiss();
-
             }
         });
 
@@ -372,7 +421,12 @@ public class UserListDialogFragment extends DialogFragment {
 
             User currentUser = usersList.get(position);
             TextView name = listItem.findViewById(R.id.fragment_user_list_row_name);
-            name.setText(currentUser.toString());
+            String currentUserString = currentUser.toString();
+            final int MAX_USER_NAME_LENGTH = 30;
+            if (currentUserString.length() > MAX_USER_NAME_LENGTH) {
+                currentUserString = currentUserString.substring(0, MAX_USER_NAME_LENGTH) + "...";
+            }
+            name.setText(currentUserString);
             name.setTextColor(Color.parseColor("#3a90e0"));
             ImageView image;
             String userId = currentUser.getUid();

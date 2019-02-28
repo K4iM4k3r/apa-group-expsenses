@@ -31,6 +31,7 @@ import de.thm.ap.groupexpenses.livedata.EventLiveData;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.Stats;
+import de.thm.ap.groupexpenses.view.dialog.ProfileInfoDialog;
 
 import static de.thm.ap.groupexpenses.view.fragment.CashFragment.SELECTED_EID;
 
@@ -80,7 +81,7 @@ public class PositionEventListFragment<T> extends Fragment {
             if (creatorMap == null) creatorMap = new HashMap<>();
 
             //if you want to show the list of positions of one Event
-            if(eid != null){
+            if (eid != null) {
                 EventLiveData eventLiveData = DatabaseHandler.getEventLiveData(eid);
                 eventLiveData.observe(this, event -> {
                     if (event != null) {
@@ -96,9 +97,9 @@ public class PositionEventListFragment<T> extends Fragment {
                 });
             }
             // if you want to show the list of events
-            else if(uid != null) {
+            else if (uid != null) {
                 EventListLiveData listLiveData = DatabaseHandler.getEventListLiveData(uid);
-                listLiveData.observe(this, eventList ->{
+                listLiveData.observe(this, eventList -> {
                     if (eventList != null) {
                         noObjects_textView.setVisibility(View.GONE);
                         updateTotalBalanceOfEvents(eventList);
@@ -114,7 +115,7 @@ public class PositionEventListFragment<T> extends Fragment {
         return view;
     }
 
-    private void generateAdapter(List<T> objectList, boolean isPosition){
+    private void generateAdapter(List<T> objectList, boolean isPosition) {
         if (creatorMap.containsValue("")) {
             Set<String> keysWithoutVal = getKeysByValue(creatorMap, "");
             for (String uid : keysWithoutVal) {
@@ -220,6 +221,7 @@ public class PositionEventListFragment<T> extends Fragment {
             float balance;
             String fromPart = getString(R.string.from);
             String creatorPart;
+            String creatorUid;
             String wholePart;
             Spannable spannable;
 
@@ -229,8 +231,14 @@ public class PositionEventListFragment<T> extends Fragment {
                 holder.object_name.setText(position.getTopic());
                 if (position.getCreatorId().equals(App.CurrentUser.getUid())) {
                     creatorPart = getString(R.string.you);
+                    creatorUid = App.CurrentUser.getUid();
                 } else {
-                    creatorPart = creatorMap.get(position.getCreatorId());
+                    creatorUid = position.getCreatorId();
+                    creatorPart = creatorMap.get(creatorUid);
+                    final int CREATOR_NAME_MAX_LENGTH = 20;
+                    if (creatorPart.length() > CREATOR_NAME_MAX_LENGTH) {
+                        creatorPart = creatorPart.substring(0, CREATOR_NAME_MAX_LENGTH) + "...";
+                    }
                 }
                 wholePart = fromPart + " " + creatorPart;
                 spannable = new SpannableString(wholePart);
@@ -245,8 +253,14 @@ public class PositionEventListFragment<T> extends Fragment {
                 holder.object_name.setText(event.getName());
                 if (event.getCreatorId().equals(App.CurrentUser.getUid())) {
                     creatorPart = getString(R.string.you);
+                    creatorUid = App.CurrentUser.getUid();
                 } else {
-                    creatorPart = creatorMap.get(event.getCreatorId());
+                    creatorUid = event.getCreatorId();
+                    creatorPart = creatorMap.get(creatorUid);
+                    final int CREATOR_NAME_MAX_LENGTH = 20;
+                    if (creatorPart.length() > CREATOR_NAME_MAX_LENGTH) {
+                        creatorPart = creatorPart.substring(0, CREATOR_NAME_MAX_LENGTH) + "...";
+                    }
                 }
                 wholePart = fromPart + " " + creatorPart;
                 spannable = new SpannableString(wholePart);
@@ -262,6 +276,15 @@ public class PositionEventListFragment<T> extends Fragment {
             else
                 holder.object_balance.setTextColor(Color
                         .parseColor("#2ba050"));    // green
+
+            holder.object_creator.setOnClickListener(v -> {
+                if (creatorUid != null) {
+                    DatabaseHandler.queryUser(creatorUid, user -> {
+                        // view creators profile
+                        new ProfileInfoDialog(user, context);
+                    });
+                }
+            });
             return view;
         }
 

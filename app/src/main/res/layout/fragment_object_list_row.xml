@@ -14,26 +14,26 @@ xmlns:android="http://schemas.android.com/apk/res/android">
 
     <TextView
         android:id="@+id/name"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/app_margin"
         android:textAppearance="?android:textAppearanceListItem" />
 
     <TextView
         android:id="@+id/creator"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/app_margin"
         android:textAppearance="?android:textAppearanceListItemSmall"
         android:textColor="?android:textColorHint" />
 </LinearLayout>
 
-<TextView
-    android:id="@+id/balance"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignParentEnd="true"
-    android:layout_centerVertical="true"
-    android:layout_marginEnd="@dimen/app_margin"
-    android:textAppearance="?android:textAppearanceListItem" />
+    <TextView
+        android:id="@+id/balance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/app_margin"
+        android:textAppearance="?android:textAppearanceListItem" />
 </RelativeLayout>

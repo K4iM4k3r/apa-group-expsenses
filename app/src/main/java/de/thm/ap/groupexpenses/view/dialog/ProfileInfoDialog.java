@@ -26,9 +26,7 @@ public class ProfileInfoDialog {
     private AlertDialog dialog;
     private User user;
     private View view;
-    private TextView user_full_name, user_nickname, user_info, user_join_date;
     private CircleImageView user_image;
-    private ImageView closeBtn;
     private Context context;
 
     public ProfileInfoDialog(User user, Context context) {
@@ -42,22 +40,44 @@ public class ProfileInfoDialog {
 
     @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
     private void createDialog() {
-        user_full_name = view.findViewById(R.id.profile_dialog_full_name);
-        user_nickname = view.findViewById(R.id.profile_dialog_nickname);
-        user_info = view.findViewById(R.id.profile_dialog_userInfo);
-        user_join_date = view.findViewById(R.id.profile_dialog_user_join_date);
+        TextView user_full_name = view.findViewById(R.id.profile_dialog_full_name);
+        TextView user_nickname = view.findViewById(R.id.profile_dialog_nickname);
+        TextView user_info = view.findViewById(R.id.profile_dialog_userInfo);
+        TextView user_join_date = view.findViewById(R.id.profile_dialog_user_join_date);
         user_image = view.findViewById(R.id.profile_dialog_userPic);
-        closeBtn = view.findViewById(R.id.profile_dialog_close_imageView);
+        ImageView closeBtn = view.findViewById(R.id.profile_dialog_close_imageView);
 
-        String user_full_name_string = user.getFirstName() + " " + user.getLastName();
+        String userFirstName = user.getFirstName();
+        String userLastName = user.getLastName();
+        String userNickname = user.getNickname();
+        String userInfo = user.getInfo();
+
+        final int USER_FIRST_NAME_MAX_LENGTH = 20;
+        if (userFirstName.length() > USER_FIRST_NAME_MAX_LENGTH) {
+            userFirstName = userFirstName.substring(0, USER_FIRST_NAME_MAX_LENGTH) + "...";
+        }
+        final int USER_LAST_NAME_MAX_LENGTH = 20;
+        if (userLastName.length() > USER_LAST_NAME_MAX_LENGTH) {
+            userLastName = userLastName.substring(0, USER_LAST_NAME_MAX_LENGTH) + "...";
+        }
+        final int USER_NICKNAME_MAX_LENGTH = 20;
+        if (userNickname.length() > USER_NICKNAME_MAX_LENGTH) {
+            userNickname = userNickname.substring(0, USER_NICKNAME_MAX_LENGTH) + "...";
+        }
+        final int USER_INFO_MAX_LENGTH = 200;
+        if (userInfo.length() > USER_INFO_MAX_LENGTH) {
+            userInfo = userInfo.substring(0, USER_INFO_MAX_LENGTH) + "...";
+        }
+
+        String user_full_name_string = userFirstName + " " + userLastName;
         user_full_name.setText(user_full_name_string);
-        user_nickname.setText(user.getNickname());
+        user_nickname.setText(userNickname);
+        user_info.setText(userInfo);
+        user_join_date.setText(user.getDateString());
         if (user.getProfilePic() != null) {
             DatabaseHandler.getUserProfilePic(context, user.getUid(), opPictureUri ->
                     opPictureUri.ifPresent(user_image::setImageURI));
         }
-        user_info.setText(user.getInfo());
-        user_join_date.setText(user.getDateString());
 
         // close btn clicked
         closeBtn.setOnTouchListener((v, event) -> {

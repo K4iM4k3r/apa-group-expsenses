@@ -1,13 +1,9 @@
 package de.thm.ap.groupexpenses.view.activity;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -15,7 +11,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,7 +19,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,9 +28,7 @@ import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.livedata.EventLiveData;
 import de.thm.ap.groupexpenses.livedata.UserListLiveData;
 import de.thm.ap.groupexpenses.model.Event;
-import de.thm.ap.groupexpenses.model.MessageHelper;
 import de.thm.ap.groupexpenses.model.Position;
-import de.thm.ap.groupexpenses.model.Stats;
 import de.thm.ap.groupexpenses.model.User;
 import de.thm.ap.groupexpenses.view.dialog.EventInfoDialog;
 import de.thm.ap.groupexpenses.view.dialog.PositionInfoDialog;
@@ -78,6 +70,28 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
                 selectedEvent = event;
                 if (actionBar != null && event != null) {
                     actionBar.setTitle(event.getName());
+                    View actionBarView = findTextViewWithText(
+                            getWindow().getDecorView(), actionBar.getTitle().toString());
+                    if (actionBarView != null) {
+                        actionBarView.setOnClickListener(v -> {
+                            // show event info
+                            if (App.CurrentUser.getUid().equals(selectedEvent.getCreatorId())) {
+                                new EventInfoDialog(selectedEvent, null, App.CurrentUser.getUid(),
+                                        this);
+                            } else {
+                                DatabaseHandler.queryUser(selectedEvent.getCreatorId(), eventCreator -> {
+                                    if (eventCreator == null) {
+                                        new EventInfoDialog(selectedEvent, getString(R.string.deleted_user), null,
+                                                this);
+                                    } else {
+                                        new EventInfoDialog(selectedEvent, eventCreator.getNickname(),
+                                                eventCreator.getUid(), this);
+                                    }
+                                });
+                            }
+                        });
+                    }
+
                 }
             });
 
@@ -126,6 +140,28 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
         });
     }
 
+    /*
+    Search for the event title in all views of PositionActivity in order to find the action bar view!
+    This might cause a bug when a position in this event is called exactly like the event title!
+     */
+    @Nullable
+    public static TextView findTextViewWithText(@Nullable View toCheck, String toFind) {
+        if (toCheck instanceof TextView) {
+            String foundText = ((TextView) toCheck).getText().toString();
+            if (foundText.equals(toFind)) {
+                return (TextView) toCheck;
+            }
+        } else if (toCheck instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) toCheck).getChildCount(); i++) {
+                TextView found = findTextViewWithText(((ViewGroup) toCheck).getChildAt(i), toFind);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -143,7 +179,7 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.position_menu_inspect_users:
+            case R.id.position_menu_add_invite_users:
                 // display event user list
                 DatabaseHandler.getAllFriendsOfUser(Objects.requireNonNull(auth.getCurrentUser()).getUid(), friendsList -> {
                     UserListDialogFragment dialog = new UserListDialogFragment();
@@ -151,74 +187,9 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
                     dialog.show(getFragmentManager(), "edit_event");
                 });
                 break;
-
-            case R.id.position_menu_info:
-                // display event info
-                if (App.CurrentUser.getUid().equals(selectedEvent.getCreatorId())) {
-                    new EventInfoDialog(selectedEvent, null, App.CurrentUser.getUid(),
-                            this);
-                } else {
-                    DatabaseHandler.queryUser(selectedEvent.getCreatorId(), eventCreator -> {
-                        if (eventCreator == null) {
-                            new EventInfoDialog(selectedEvent, getString(R.string.deleted_user), null,
-                                    this);
-                        } else {
-                            new EventInfoDialog(selectedEvent, eventCreator.getNickname(),
-                                    eventCreator.getUid(), this);
-                        }
-                    });
-                }
-                break;
-            case R.id.position_menu_add:
-                onMenuItemAddFriendClick();
-                break;
-
         }
         return super.onOptionsItemSelected(item);
     }
-
-    public void onMenuItemAddFriendClick(){
-
-        MessageHelper messageHelper = new MessageHelper(this);
-
-        // Generate Link to invite People
-        String inviteURL = App.BASE_URL + selectedEvent.getEid();
-        String infoText = "Hey, click the following link to join me on \"" + selectedEvent.getName() + "\".\n\n" +
-                inviteURL + "\n\n" +
-                "Make sure to have Group-Expenses-Omran installed!\n\n" +
-                "Cya!\n" +
-                App.CurrentUser.getNickname();
-
-        // setup the alert builder
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Invitelink created");
-
-        // add a list
-        String[] items = {"Copy link to clipboard", "Send via Email", "Send via WhatsApp"};
-        builder.setItems(items, (dialog, which) -> {
-            switch (which) {
-                case 0: // Copy link to clipboard
-                    ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("Invite URL", inviteURL);
-                    clipboard.setPrimaryClip(clip);
-                    Toast.makeText(this, "copied invite link to clipboard", Toast.LENGTH_SHORT).show();
-                    break;
-                case 1: // Send via Email
-                    String subject = "Invite to join " + selectedEvent.getName() + " in GEO!";
-                    messageHelper.sendViaMail("", subject, infoText);
-                    break;
-                case 2: // Send via WhatsApp
-                    MessageHelper.Providers provider = MessageHelper.Providers.WHATSAPP;
-                    messageHelper.sendVia(provider, infoText);
-                    break;
-            }
-        });
-
-        // create and show the alert dialog
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
 
     @Override
     public void onFragmentObjectClick(Object object) {
