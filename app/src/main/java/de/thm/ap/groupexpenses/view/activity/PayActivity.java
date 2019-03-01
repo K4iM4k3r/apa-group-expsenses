@@ -104,7 +104,7 @@ public class PayActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        if(response.contains("Successful"))
+                        if(response.contains("eyJ2ZX"))
                         {
                             Toast.makeText(PayActivity.this, "Transaction successful", Toast.LENGTH_LONG).show();
                         }
