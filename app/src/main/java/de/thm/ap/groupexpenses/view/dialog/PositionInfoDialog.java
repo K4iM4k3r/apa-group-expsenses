@@ -22,22 +22,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
-import de.thm.ap.groupexpenses.livedata.EventLiveData;
-import de.thm.ap.groupexpenses.livedata.UserListLiveData;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.Stats;
 import de.thm.ap.groupexpenses.model.User;
 import de.thm.ap.groupexpenses.view.fragment.UserListDialogFragment;
-
-import static de.thm.ap.groupexpenses.App.getContext;
 
 public class PositionInfoDialog {
     private AlertDialog.Builder positionDialog;
