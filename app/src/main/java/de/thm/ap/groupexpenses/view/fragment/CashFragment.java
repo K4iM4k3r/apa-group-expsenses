@@ -140,6 +140,7 @@ public class CashFragment extends Fragment {
                     // TODO: David pay system
                     Intent payIntent = new Intent(getContext(), PayActivity.class);
                     startActivity(payIntent);
+                    //startActivityForResult(payIntent);
                     float val = currentUserValue.value * (-1);
 
                     // TODO: After successful payment -> delete user from ALL positions he just payed for

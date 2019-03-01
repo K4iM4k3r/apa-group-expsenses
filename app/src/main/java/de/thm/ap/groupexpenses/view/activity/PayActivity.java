@@ -36,8 +36,7 @@ import de.thm.ap.groupexpenses.R;
 public class PayActivity extends AppCompatActivity {
 
     final int REQUEST_CODE = 1;
-    final String get_token = "http://10.0.2.2/BraintreePayments/main.php";
-    final String send_payment_details = "http://10.0.2.2/BraintreePayments/checkout.php";
+    final String serverURL = "http://10.0.2.2/BraintreePayments/main.php";
     String token, amount;
     HashMap<String, String> paramHash;
 
@@ -101,7 +100,7 @@ public class PayActivity extends AppCompatActivity {
     private void sendPaymentDetails() {
         RequestQueue queue = Volley.newRequestQueue(PayActivity.this);
         // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, send_payment_details,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, serverURL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -157,7 +156,7 @@ public class PayActivity extends AppCompatActivity {
         @Override
         protected Object doInBackground(Object[] objects) {
             HttpClient client = new HttpClient();
-            client.get(get_token, new HttpResponseCallback() {
+            client.get(serverURL, new HttpResponseCallback() {
                 @Override
                 public void success(String responseBody) {
                     Log.d("mylog", responseBody);
