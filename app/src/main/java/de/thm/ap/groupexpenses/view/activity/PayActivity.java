@@ -54,7 +54,7 @@ public class PayActivity extends AppCompatActivity {
         btnPay = (Button) findViewById(R.id.btnPay);
         Bundle extras = getIntent().getExtras();
         String payThis = extras.getString("amount");
-        etAmount.setText(payThis);
+        etAmount.setText(payThis+"€");
         btnPay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

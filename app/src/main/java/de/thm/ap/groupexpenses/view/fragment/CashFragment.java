@@ -138,9 +138,9 @@ public class CashFragment extends Fragment {
                 value_layout.setOnClickListener(v -> {
                     // pay ALL debts to user here (multiple positions)
                     // TODO: David pay system
-                    float val = currentUserValue.value * (-1);
+                    String amountAsString = String.valueOf(currentUserValue.value * (-1));
                     Intent payIntent = new Intent(getContext(), PayActivity.class);
-                    payIntent.putExtra("amount", val);
+                    payIntent.putExtra("amount", amountAsString);
                     startActivity(payIntent);
                     //startActivityForResult(payIntent);
 
