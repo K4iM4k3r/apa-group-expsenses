@@ -3,6 +3,7 @@ package de.thm.ap.groupexpenses.view.dialog;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
@@ -30,6 +31,7 @@ import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.Stats;
 import de.thm.ap.groupexpenses.model.User;
+import de.thm.ap.groupexpenses.view.activity.PayActivity;
 import de.thm.ap.groupexpenses.view.fragment.UserListDialogFragment;
 
 public class PositionInfoDialog {
@@ -130,7 +132,10 @@ public class PositionInfoDialog {
             payBtn.setOnClickListener(v -> {
                 // pay position dept to user here (just one position)
                 // TODO: David pay system
-                float val = pay_value * (-1);
+                float val = pay_value* (-1);
+                Intent payIntent = new Intent(context, PayActivity.class);
+                payIntent.putExtra("amount", val);
+                startActivity(payIntent);
             });
         }
         displayCreator(creator);

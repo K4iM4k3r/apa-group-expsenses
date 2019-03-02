@@ -47,10 +47,12 @@ public class PayActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        amount = getIntent().getStringExtra("amount");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pay);
         llHolder = (LinearLayout) findViewById(R.id.llHolder);
         etAmount = (EditText) findViewById(R.id.etPrice);
+        etAmount.setText(amount);
         btnPay = (Button) findViewById(R.id.btnPay);
         btnPay.setOnClickListener(new View.OnClickListener() {
             @Override
