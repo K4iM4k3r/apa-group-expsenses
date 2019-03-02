@@ -75,7 +75,7 @@ public class PayActivity extends AppCompatActivity {
                 // Send payment price with the nonce
                 // use the result to update your UI and send the payment method nonce to your server
                 if (!etAmount.getText().toString().isEmpty()) {
-                    amount = etAmount.getText().toString();
+                    amount = etAmount.getText().toString().replace("€", "");
                     paramHash = new HashMap<>();
                     paramHash.put("amount", amount);
                     paramHash.put("nonce", stringNonce);
@@ -107,7 +107,7 @@ public class PayActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        if (response.contains("successful")) {
+                        if (response.contains("Successful")) {
                             Toast.makeText(PayActivity.this, "Transaction successful", Toast.LENGTH_LONG).show();
                         } else
                             Toast.makeText(PayActivity.this, "Transaction failed", Toast.LENGTH_LONG).show();
