@@ -36,7 +36,8 @@ import de.thm.ap.groupexpenses.R;
 public class PayActivity extends AppCompatActivity {
 
     final int REQUEST_CODE = 1;
-    final String serverURL = "http://10.0.2.2/BraintreePayments/main.php";
+    final String getToken = "http://10.0.2.2/BraintreePayments/main.php";
+    final String payDetails = "http://10.0.2.2/BraintreePayments/checkout.php";
     String token, amount;
     HashMap<String, String> paramHash;
 
@@ -54,7 +55,6 @@ public class PayActivity extends AppCompatActivity {
         btnPay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(PayActivity.this, "On Click", Toast.LENGTH_SHORT).show();
                 onBraintreeSubmit();
             }
         });
@@ -100,11 +100,11 @@ public class PayActivity extends AppCompatActivity {
     private void sendPaymentDetails() {
         RequestQueue queue = Volley.newRequestQueue(PayActivity.this);
         // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, serverURL,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, payDetails,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        if(response.contains("eyJ2ZX"))
+                        if(response.contains("successful"))
                         {
                             Toast.makeText(PayActivity.this, "Transaction successful", Toast.LENGTH_LONG).show();
                         }
@@ -156,7 +156,7 @@ public class PayActivity extends AppCompatActivity {
         @Override
         protected Object doInBackground(Object[] objects) {
             HttpClient client = new HttpClient();
-            client.get(serverURL, new HttpResponseCallback() {
+            client.get(getToken, new HttpResponseCallback() {
                 @Override
                 public void success(String responseBody) {
                     Log.d("mylog", responseBody);
