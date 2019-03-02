@@ -10,8 +10,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -42,18 +42,19 @@ public class PayActivity extends AppCompatActivity {
     HashMap<String, String> paramHash;
 
     Button btnPay;
-    EditText etAmount;
+    TextView etAmount;
     LinearLayout llHolder;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        amount = getIntent().getStringExtra("amount");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pay);
         llHolder = (LinearLayout) findViewById(R.id.llHolder);
-        etAmount = (EditText) findViewById(R.id.etPrice);
-        etAmount.setText(amount);
+        etAmount = (TextView) findViewById(R.id.etPrice);
         btnPay = (Button) findViewById(R.id.btnPay);
+        Bundle extras = getIntent().getExtras();
+        String payThis = extras.getString("amount");
+        etAmount.setText(payThis);
         btnPay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,11 +107,10 @@ public class PayActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        if(response.contains("successful"))
-                        {
+                        if (response.contains("successful")) {
                             Toast.makeText(PayActivity.this, "Transaction successful", Toast.LENGTH_LONG).show();
-                        }
-                        else Toast.makeText(PayActivity.this, "Transaction failed", Toast.LENGTH_LONG).show();
+                        } else
+                            Toast.makeText(PayActivity.this, "Transaction failed", Toast.LENGTH_LONG).show();
                         Log.d("mylog", "Final Response: " + response.toString());
                     }
                 }, new Response.ErrorListener() {

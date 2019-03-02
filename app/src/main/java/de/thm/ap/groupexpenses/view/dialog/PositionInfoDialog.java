@@ -135,7 +135,7 @@ public class PositionInfoDialog {
                 float val = pay_value* (-1);
                 Intent payIntent = new Intent(context, PayActivity.class);
                 payIntent.putExtra("amount", val);
-                startActivity(payIntent);
+                //startActivity(payIntent);
             });
         }
         displayCreator(creator);

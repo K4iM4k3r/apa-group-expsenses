@@ -35,8 +35,7 @@
                 android:inputType="text"
                 android:imeOptions="actionDone"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:hint="Choose the amount to pay" />
+                android:gravity="center" />
 
         </android.support.design.widget.TextInputLayout>
 
