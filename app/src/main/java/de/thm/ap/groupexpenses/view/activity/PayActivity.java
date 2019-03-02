@@ -36,8 +36,8 @@ import de.thm.ap.groupexpenses.R;
 public class PayActivity extends AppCompatActivity {
 
     final int REQUEST_CODE = 1;
-    final String getToken = "http://10.0.2.2/BraintreePayments/main.php";
-    final String payDetails = "http://10.0.2.2/BraintreePayments/checkout.php";
+    final String getToken = "http://expenses.deneb.uberspace.de/main.php";
+    final String payDetails = "http://expenses.deneb.uberspace.de/checkout.php";
     String token, amount;
     HashMap<String, String> paramHash;
 
