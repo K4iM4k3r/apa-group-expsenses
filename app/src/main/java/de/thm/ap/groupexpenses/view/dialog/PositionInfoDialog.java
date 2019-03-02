@@ -3,6 +3,7 @@ package de.thm.ap.groupexpenses.view.dialog;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
@@ -22,24 +23,19 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
-import de.thm.ap.groupexpenses.livedata.EventLiveData;
-import de.thm.ap.groupexpenses.livedata.UserListLiveData;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.Stats;
 import de.thm.ap.groupexpenses.model.User;
+import de.thm.ap.groupexpenses.view.activity.PayActivity;
 import de.thm.ap.groupexpenses.view.fragment.UserListDialogFragment;
 
-import static de.thm.ap.groupexpenses.App.getContext;
-
 public class PositionInfoDialog {
+    Activity payActivity;
     private AlertDialog.Builder positionDialog;
     private AlertDialog dialog;
     private Position position;
@@ -137,7 +133,10 @@ public class PositionInfoDialog {
             payBtn.setOnClickListener(v -> {
                 // pay position dept to user here (just one position)
                 // TODO: David pay system
-                float val = pay_value * (-1);
+                String amountAsString = String.valueOf(pay_value* (-1));
+                Intent payIntent = new Intent(context, PayActivity.class);
+                payIntent.putExtra("amount", amountAsString);
+                context.startActivity(payIntent);
             });
         }
         displayCreator(creator);

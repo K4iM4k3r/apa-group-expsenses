@@ -31,6 +31,7 @@ import de.thm.ap.groupexpenses.livedata.EventListLiveData;
 import de.thm.ap.groupexpenses.livedata.EventLiveData;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Stats;
+import de.thm.ap.groupexpenses.view.activity.PayActivity;
 import de.thm.ap.groupexpenses.view.dialog.ProfileInfoDialog;
 
 import static de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment.USERID;
@@ -137,7 +138,11 @@ public class CashFragment extends Fragment {
                 value_layout.setOnClickListener(v -> {
                     // pay ALL debts to user here (multiple positions)
                     // TODO: David pay system
-                    float val = currentUserValue.value * (-1);
+                    String amountAsString = String.valueOf(currentUserValue.value * (-1));
+                    Intent payIntent = new Intent(getContext(), PayActivity.class);
+                    payIntent.putExtra("amount", amountAsString);
+                    startActivity(payIntent);
+                    //startActivityForResult(payIntent);
 
                     // TODO: After successful payment -> delete user from ALL positions he just payed for
                 });
