@@ -34,9 +34,8 @@ import de.thm.ap.groupexpenses.model.User;
 import de.thm.ap.groupexpenses.view.activity.PayActivity;
 import de.thm.ap.groupexpenses.view.fragment.UserListDialogFragment;
 
-import static de.thm.ap.groupexpenses.App.getContext;
-
 public class PositionInfoDialog {
+    Activity payActivity;
     private AlertDialog.Builder positionDialog;
     private AlertDialog dialog;
     private Position position;
@@ -135,10 +134,9 @@ public class PositionInfoDialog {
                 // pay position dept to user here (just one position)
                 // TODO: David pay system
                 String amountAsString = String.valueOf(pay_value* (-1));
-                Intent payIntent = new Intent(getContext(), PayActivity.class);
+                Intent payIntent = new Intent(context, PayActivity.class);
                 payIntent.putExtra("amount", amountAsString);
-                startActivity(payIntent);
-                //startActivity(payIntent);
+                context.startActivity(payIntent);
             });
         }
         displayCreator(creator);
