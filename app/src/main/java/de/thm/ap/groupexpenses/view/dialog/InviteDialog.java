@@ -4,11 +4,14 @@ import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.media.Image;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,10 +40,10 @@ public class InviteDialog {
 
     @SuppressLint("ClickableViewAccessibility")
     private void createDialog() {
-        LinearLayout sendMailLayout = view.findViewById(R.id.dialog_invite_mail_layout);
+        RelativeLayout sendMailLayout = view.findViewById(R.id.dialog_invite_mail_layout);
         LinearLayout sendWhatsappLayout = view.findViewById(R.id.dialog_invite_whatsapp_layout);
         LinearLayout copyLinkLayout = view.findViewById(R.id.dialog_invite_copyLink_layout);
-        TextView dialog_created_tv = view.findViewById(R.id.dialog_invite_created_link_textView);
+        ImageView closeBtn = view.findViewById(R.id.dialog_invite_close_imageView);
 
         // send invite btn clicked
         MessageHelper messageHelper = new MessageHelper(context);
@@ -70,13 +73,7 @@ public class InviteDialog {
         });
 
         // close btn clicked
-        dialog_created_tv.setOnTouchListener(new RightDrawableOnTouchListener(dialog_created_tv) {
-            @Override
-            public boolean onDrawableTouch(final MotionEvent event) {
-                dialog.dismiss();
-                return true;
-            }
-        });
+        closeBtn.setOnClickListener(v -> dialog.dismiss());
 
         inviteDialog.setView(view);
         dialog = inviteDialog.create();
