@@ -243,8 +243,13 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
     }
 
     private void checkFriendsList(){
-        if(App.CurrentUser.getFriendsIds() == null || App.CurrentUser.getFriendsIds().isEmpty()){
-           findViewById(R.id.notification_friends).setVisibility(View.VISIBLE);
+        if(App.CurrentUser.getFriendsIds() != null){
+            if(App.CurrentUser.getFriendsIds().isEmpty()){
+                findViewById(R.id.notification_friends).setVisibility(View.VISIBLE);
+            }
+            else {
+                findViewById(R.id.notification_friends).setVisibility(View.GONE);
+            }
         }
     }
 }
