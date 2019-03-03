@@ -133,7 +133,7 @@ public class PositionInfoDialog {
             payBtn.setOnClickListener(v -> {
                 // pay position dept to user here (just one position)
                 // TODO: David pay system
-                String amountAsString = String.valueOf(pay_value* (-1));
+                String amountAsString = new DecimalFormat("0.00").format(pay_value * (-1));
                 Intent payIntent = new Intent(context, PayActivity.class);
                 payIntent.putExtra("amount", amountAsString);
                 context.startActivity(payIntent);
