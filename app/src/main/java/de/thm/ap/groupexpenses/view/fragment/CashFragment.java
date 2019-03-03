@@ -137,14 +137,13 @@ public class CashFragment extends Fragment {
                 }
                 value_layout.setOnClickListener(v -> {
                     // pay ALL debts to user here (multiple positions)
-                    // TODO: David pay system
-                    String amountAsString = String.valueOf(currentUserValue.value * (-1));
+                    float totalDebt = currentUserValue.value * (-1);
+                    String amountAsString = new DecimalFormat("0.00").format(totalDebt);
                     Intent payIntent = new Intent(getContext(), PayActivity.class);
                     payIntent.putExtra("amount", amountAsString);
                     startActivity(payIntent);
-                    //startActivityForResult(payIntent);
 
-                    // TODO: After successful payment -> delete user from ALL positions he just payed for
+                    // TODO: After successful payment -> add user to has paid list in ALL positions he just payed for
                 });
                 userValueName.setOnClickListener(v -> {
                     DatabaseHandler.queryUser(App.CurrentUser.getUid(), user -> {

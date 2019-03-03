@@ -49,18 +49,13 @@ public class PayActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pay);
-        llHolder = (LinearLayout) findViewById(R.id.llHolder);
-        etAmount = (TextView) findViewById(R.id.etPrice);
-        btnPay = (Button) findViewById(R.id.btnPay);
+        llHolder = findViewById(R.id.llHolder);
+        etAmount = findViewById(R.id.etPrice);
+        btnPay = findViewById(R.id.btnPay);
         Bundle extras = getIntent().getExtras();
         String payThis = extras.getString("amount");
         etAmount.setText(payThis+"€");
-        btnPay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBraintreeSubmit();
-            }
-        });
+        btnPay.setOnClickListener(v -> onBraintreeSubmit());
         new HttpRequest().execute();
     }
 
@@ -104,21 +99,13 @@ public class PayActivity extends AppCompatActivity {
         RequestQueue queue = Volley.newRequestQueue(PayActivity.this);
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.POST, payDetails,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        if (response.contains("Successful")) {
-                            Toast.makeText(PayActivity.this, "Transaction successful", Toast.LENGTH_LONG).show();
-                        } else
-                            Toast.makeText(PayActivity.this, "Transaction failed", Toast.LENGTH_LONG).show();
-                        Log.d("mylog", "Final Response: " + response.toString());
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("mylog", "Volley error : " + error.toString());
-            }
-        }) {
+                response -> {
+                    if (response.contains("Successful")) {
+                        Toast.makeText(PayActivity.this, "Transaction successful", Toast.LENGTH_LONG).show();
+                    } else
+                        Toast.makeText(PayActivity.this, "Transaction failed", Toast.LENGTH_LONG).show();
+                    Log.d("mylog", "Final Response: " + response);
+                }, error -> Log.d("mylog", "Volley error : " + error.toString())) {
             @Override
             protected Map<String, String> getParams() {
                 if (paramHash == null)
@@ -133,7 +120,7 @@ public class PayActivity extends AppCompatActivity {
             }
 
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() {
                 Map<String, String> params = new HashMap<>();
                 params.put("Content-Type", "application/x-www-form-urlencoded");
                 return params;
@@ -162,12 +149,9 @@ public class PayActivity extends AppCompatActivity {
                 @Override
                 public void success(String responseBody) {
                     Log.d("mylog", responseBody);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(PayActivity.this, "Successfully got token", Toast.LENGTH_SHORT).show();
-                            llHolder.setVisibility(View.VISIBLE);
-                        }
+                    runOnUiThread(() -> {
+                        Toast.makeText(PayActivity.this, "Successfully got token", Toast.LENGTH_SHORT).show();
+                        llHolder.setVisibility(View.VISIBLE);
                     });
                     token = responseBody;
                 }
@@ -175,12 +159,7 @@ public class PayActivity extends AppCompatActivity {
                 @Override
                 public void failure(Exception exception) {
                     final Exception ex = exception;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(PayActivity.this, "Failed to get token: " + ex.toString(), Toast.LENGTH_LONG).show();
-                        }
-                    });
+                    runOnUiThread(() -> Toast.makeText(PayActivity.this, "Failed to get token: " + ex.toString(), Toast.LENGTH_LONG).show());
                 }
             });
             return null;

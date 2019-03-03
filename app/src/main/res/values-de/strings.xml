@@ -110,7 +110,7 @@
     <string name="error_already_in_use">Nickname ist bereits vergeben!</string>
     <string name="hint_nickname">Nickname</string>
     <string name="invite">Einladen</string>
-    <string name="invite_link_created">Einlade-Link wurde erstellt!</string>
+    <string name="invite_link_share">Invite Link teilen</string>
     <string name="send_per_mail">per E-Mail versenden</string>
     <string name="send_per_whatsapp">per WhatsApp versenden</string>
     <string name="send_per_copy">Link in Zwischenspeicher kopieren</string>

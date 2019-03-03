@@ -206,7 +206,7 @@ public class UserListDialogFragment extends DialogFragment {
                             setEditState(EDIT_STATE_ADD_USERS);
                             headerTextView.setText(R.string.event_form_add_members);
                             addBtn.setText(R.string.ok);
-                            doneBtn.setText(R.string.cancel);
+                            doneBtn.setVisibility(View.GONE);
                             addableUsers = new ArrayList<>();
                             if (addableUsersSelected == null)
                                 addableUsersSelected = new ArrayList<>();
@@ -242,7 +242,8 @@ public class UserListDialogFragment extends DialogFragment {
 
                             userArrayAdapter = new UserArrayAdapter(getActivity(), selectedUsers);
                             userListView.setAdapter(userArrayAdapter);
-                            doneBtn.setText(R.string.ok);
+                            doneBtn.setVisibility(View.VISIBLE);
+                            doneBtn.setText(R.string.invite);
                             addBtn.setText(R.string.event_form_add_members);
                             headerTextView.setText(R.string.event_form_users);
                             break;
@@ -265,6 +266,7 @@ public class UserListDialogFragment extends DialogFragment {
                     }
                     // don't break
                 case EDIT_STATE_DELETE_USERS:
+                    // cant be accessed anymore?!
                     setEditState(EDIT_STATE_INSPECT_USERS);
                     headerTextView.setText(R.string.event_form_users);
                     doneBtn.setText(R.string.done);
@@ -279,46 +281,7 @@ public class UserListDialogFragment extends DialogFragment {
 
                 case EDIT_STATE_INSPECT_USERS:
                     // send invite btn clicked
-
                     new InviteDialog(getContext(), selectedEvent);
-                    /*
-                    MessageHelper messageHelper = new MessageHelper(getContext());
-                    // generate link to invite people
-                    String inviteURL = App.BASE_URL + selectedEvent.getEid();
-                    String infoText = "Hey, click the following link to join me on \"" + selectedEvent.getName() + "\".\n\n" +
-                            inviteURL + "\n\n" +
-                            "Make sure to have Group-Expenses-Omran installed!\n\n" +
-                            "Cya!\n" +
-                            App.CurrentUser.getNickname();
-
-                    // setup the alert builder
-                    android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getContext());
-                    builder.setTitle("Invitelink created");
-
-                    // add a list
-                    String[] items = {"Copy link to clipboard", "Send via Email", "Send via WhatsApp"};
-                    builder.setItems(items, (dialog, which) -> {
-                        switch (which) {
-                            case 0: // Copy link to clipboard
-                                ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                                ClipData clip = ClipData.newPlainText("Invite URL", inviteURL);
-                                clipboard.setPrimaryClip(clip);
-                                Toast.makeText(getContext(), "copied invite link to clipboard", Toast.LENGTH_SHORT).show();
-                                break;
-                            case 1: // send via Email
-                                String subject = "Invite to join " + selectedEvent.getName() + " in GEO!";
-                                messageHelper.sendViaMail("", subject, infoText);
-                                break;
-                            case 2: // send via WhatsApp
-                                MessageHelper.Providers provider = MessageHelper.Providers.WHATSAPP;
-                                messageHelper.sendVia(provider, infoText);
-                                break;
-                        }
-                    });
-                    // create and show the alert dialog
-                    android.support.v7.app.AlertDialog dialog = builder.create();
-                    dialog.show();
-                    */
                     break;
 
                 default:
