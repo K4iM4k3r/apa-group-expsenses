@@ -11,7 +11,7 @@ public class App extends Application {
 
     public static User CurrentUser; //to be set on Login/AppStart
 
-    public static String HOST = "www.group-expenses-omran.firebaseapp.com";
+    public static String HOST = "group-expenses-omran.firebaseapp.com";
     public static String BASE_URL = "https://" + HOST + "/";
 
 
