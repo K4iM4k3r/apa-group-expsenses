@@ -12,6 +12,7 @@
     <string name="event_form_add_members">add member</string>
     <string name="search_name_hint">search a name</string>
     <string name="info">Info</string>
+    <string name="show_info">show info</string>
     <string name="info_small">info</string>
     <string name="inspect_users">Teilnehmer inspizieren</string>
     <string name="no_position_info">Keine Positionsinfo vorhanden!</string>
@@ -33,7 +34,9 @@
     <string name="confirm">confirm</string>
     <string name="events_loading">loading events...</string>
     <string name="no_positions">no positions found!</string>
-    <string name="total_balance">total balance</string>
+    <string name="total_balance">Total Balance</string>
+    <string name="your_event_balance">Your event balance:</string>
+    <string name="total_expenses">Global Expenses</string>
     <string name="euro">€</string>
     <string name="title_activity_friends">FriendsActivity</string>
     <string name="load_friends">loading list of friends …</string>
@@ -107,8 +110,8 @@
     <string name="success_remove_friend">Friend successfully removed!</string>
     <string name="error_remove_friend">Friend could not  be removed!</string>
     <string name="notification_friends_empty">You have no friends in your List!</string>
-    <string name="tab_event">Event</string>
-    <string name="tab_cash">Expenses</string>
+    <string name="tab_expenses">Expenses</string>
+    <string name="tab_balance">Balance</string>
     <string name="tab_events">Events</string>
     <string name="error_field_no_valid_email">no valid email</string>
     <string name="login_typ_create">Create</string>
@@ -125,7 +128,8 @@
     <string name="creator_and_date_event">Created from %1$s for the %2$s</string>
     <string name="cash_check">cash check</string>
     <string name="cash_check_caps">CASH CHECK</string>
-    <string name="cash_check_info">press the arrow to remind or pay</string>
+    <string name="cash_check_red_arrow_info">= pay</string>
+    <string name="cash_check_green_arrow_info">= remind debt/ complete cash payment</string>
     <string name="position_form_name">name of position</string>
     <string name="position_inspect_clear_dept">settle debts</string>
     <string name="end_position">close position</string>

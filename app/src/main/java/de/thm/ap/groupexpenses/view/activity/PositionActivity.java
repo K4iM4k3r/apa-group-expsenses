@@ -119,8 +119,8 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
         mViewPager.setAdapter(mCollectionPagerAdapter);
 
         TabLayout tabLayout = findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.tab_event)));
-        tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.tab_cash)));
+        tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.tab_expenses)));
+        tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.tab_balance)));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));

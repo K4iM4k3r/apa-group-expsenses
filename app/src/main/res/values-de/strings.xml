@@ -13,6 +13,7 @@
     <string name="event_form_add_members">Teilnehmer hinzufügen</string>
     <string name="search_name_hint">Name suchen</string>
     <string name="info">Info</string>
+    <string name="show_info">Info anzeigen</string>
     <string name="inspect_users">Teilnehmer inspizieren</string>
     <string name="you">Dir</string>
     <string name="yourself">Du</string>
@@ -43,7 +44,8 @@
     <string name="cash_check">Kassensturz</string>
     <string name="cash_check_caps">KASSENSTURZ</string>
     <string name="event_form_create_event">Neues Event erstellen</string>
-    <string name="cash_check_info">Pfeil drücken, um an Zahlung zu erinnern oder zu bezahlen</string>
+    <string name="cash_check_red_arrow_info">= Bezahlen</string>
+    <string name="cash_check_green_arrow_info">= an Zahlung erinnern/ Barzahlung abschließen</string>
     <string name="position_form_name">Name der Position</string>
     <string name="position_form_create_position">Neue Position erstellen</string>
     <string name="position_inspect_position_info">Positionsinfo</string>
@@ -60,6 +62,8 @@
     <string name="events_loading">"Events werden geladen … "</string>
     <string name="no_positions">Keine Positionen vorhanden!</string>
     <string name="total_balance">Gesamtbilanz</string>
+    <string name="your_event_balance">Deine Eventbilanz:</string>
+    <string name="total_expenses">Globale Ausgaben</string>
     <string name="load_friends">Freundesliste wird geladen …</string>
     <string name="FriendsActivityTitle">Freunde</string>
     <string name="login_title">Group Expenses</string>
@@ -132,8 +136,8 @@
     <string name="dialog_friend_delete_ok">Entfernen</string>
     <string name="success_remove_friend">Freund erfolgreich entfernt!</string>
     <string name="error_remove_friend">Freund konnte nicht entfernt werden!</string>
-    <string name="tab_event">Event</string>
-    <string name="tab_cash">Expenses</string>
+    <string name="tab_expenses">Ausgaben</string>
+    <string name="tab_balance">Bilanz</string>
     <string name="tab_events">Events</string>
     <string name="error_field_no_valid_email">keine gültige Email</string>
     <string name="login_typ_create">Anlegen</string>

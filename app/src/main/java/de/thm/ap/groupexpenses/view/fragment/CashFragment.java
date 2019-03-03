@@ -2,6 +2,7 @@ package de.thm.ap.groupexpenses.view.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,7 +56,19 @@ public class CashFragment extends Fragment {
         View rootView = inflater.inflate(
                 R.layout.fragment_cash_check, container, false);
         cash_check_list = rootView.findViewById(R.id.dialog_cash_check_list);
+        TextView header_val = rootView.findViewById(R.id.dialog_cash_check_header_val);
+        ImageView help_btn = rootView.findViewById(R.id.dialog_cash_check_help_btn);
+        LinearLayout help_layout = rootView.findViewById(R.id.dialog_cash_check_help_layout);
         Bundle args = getArguments();
+
+        help_btn.setOnClickListener(v -> {
+            if (help_layout.getVisibility() == View.GONE) {
+                help_layout.setVisibility(View.VISIBLE);
+            } else {
+                help_layout.setVisibility(View.GONE);
+            }
+
+        });
 
         if (args != null) {
             String eid = args.getString(SELECTED_EID);
@@ -65,6 +79,15 @@ public class CashFragment extends Fragment {
                 eventLiveData.observe(this, event -> {
                     if (event != null) {
                         this.event = event;
+                        float balance = Stats.getEventBalance(event);
+                        header_val.setText(new DecimalFormat("0.00").format(balance) + "€");
+                        if (balance < 0) {
+                            header_val.setTextColor(Color
+                                    .parseColor("#ef4545"));    // red
+                        } else {
+                            header_val.setTextColor(Color
+                                    .parseColor("#2ba050"));    // green
+                        }
                         userValueList = new ArrayList<>();
                         cash_check_map = event.getBalanceTable(App.CurrentUser.getUid());
                         buildCashView();
@@ -75,6 +98,14 @@ public class CashFragment extends Fragment {
                 listLiveData.observe(this, eventList -> {
                     if (eventList != null) {
                         this.eventList = eventList;
+                        TextView header_text = rootView.findViewById(R.id.dialog_cash_check_header_text);
+                        header_text.setText(getString(R.string.total_balance));
+                        float balance = Stats.getBalance(eventList);
+                        header_val.setText(new DecimalFormat("0.00").format(balance) + "€");
+                        if (balance < 0)
+                            header_val.setTextColor(Color.parseColor("#ef4545"));    // red
+                        else
+                            header_val.setTextColor(Color.parseColor("#2ba050"));    // green
                         userValueList = new ArrayList<>();
                         cash_check_map = Stats.getGlobalBalanceTable(App.CurrentUser, eventList);
                         buildCashView();
@@ -170,7 +201,7 @@ public class CashFragment extends Fragment {
                     String email_subject = getString(R.string.reminder);
                     String eventListString = "";
                     if (event != null) {
-                        email_subject += " " + getString(R.string.tab_event) + " " + event.getName();
+                        email_subject += " " + getString(R.string.tab_expenses) + " " + event.getName();
                         eventListString = event.getName() + "\n";
                         event = null;
                     } else if (eventList != null) {

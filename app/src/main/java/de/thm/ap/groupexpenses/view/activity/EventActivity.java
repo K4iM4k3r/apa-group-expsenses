@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -75,7 +74,7 @@ public class EventActivity extends BaseActivity implements PositionEventListFrag
 
         TabLayout tabLayout = findViewById(R.id.tab_layoutEventList);
         tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.tab_events)));
-        tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.tab_cash)));
+        tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.tab_balance)));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
