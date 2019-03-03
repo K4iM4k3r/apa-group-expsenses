@@ -222,8 +222,6 @@ public class PositionInfoDialog {
                 userListDialog.build(membersList, position);
                 userListDialog.show(((Activity) context).getFragmentManager(), "pay_position");
             });
-        } else {    // every member of position has paid, delete it and finish this dialog
-            showConfirmDialog();
         }
     }
 
@@ -352,27 +350,5 @@ public class PositionInfoDialog {
                 dept_val.setVisibility(View.VISIBLE);
                 break;
         }
-    }
-
-    private void showConfirmDialog() {
-        LayoutInflater layoutInflater = LayoutInflater.from(context);
-        View promptView = layoutInflater.inflate(R.layout.dialog_confirm_end_position, null);
-        final android.app.AlertDialog confirmDialogBuilder = new android.app.AlertDialog.Builder(context).create();
-        Button confirmBtn = promptView.findViewById(R.id.dialog_end_position_confirmBtn);
-        Button cancelBtn = promptView.findViewById(R.id.dialog_end_position_cancelBtn);
-
-        cancelBtn.setOnClickListener(v -> {
-            confirmDialogBuilder.dismiss();
-        });
-
-        confirmBtn.setOnClickListener(v -> {
-            selectedEvent.deletePosition(position);
-            DatabaseHandler.updateEvent(selectedEvent);
-            confirmDialogBuilder.dismiss();
-            dialog.dismiss();
-        });
-
-        confirmDialogBuilder.setView(promptView);
-        confirmDialogBuilder.show();
     }
 }

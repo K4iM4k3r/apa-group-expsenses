@@ -52,7 +52,8 @@
     <string name="position_inspect_clear_dept">Schulden begleichen</string>
     <string name="add_payment">Zahlung hinzufügen</string>
     <string name="end_position">Position abschliessen</string>
-    <string name="end_position_confirm">Position wirklich abschliessen?</string>
+    <string name="chose_cash">Barzahlung abschließen</string>
+    <string name="chose_remind">An Zahlung erinnern</string>
     <string name="position_inspect_release_dept_claim_ask">Schulden wirklich erlassen?</string>
     <string name="position_inspect_change_dept_claim_val">Schuldbetrag bearbeiten</string>
     <string name="error_field_required">Feld darf nicht leer sein!</string>

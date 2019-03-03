@@ -11,10 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -197,40 +197,8 @@ public class CashFragment extends Fragment {
                     userValueName.setText(currentUserValue.name);
                 }
                 value_layout.setOnClickListener(v -> {
-                    String[] email_address = {currentUserValue.email};
-                    String email_subject = getString(R.string.reminder);
-                    String eventListString = "";
-                    if (event != null) {
-                        email_subject += " " + getString(R.string.tab_expenses) + " " + event.getName();
-                        eventListString = event.getName() + "\n";
-                        event = null;
-                    } else if (eventList != null) {
-                        eventList = Stats.getOpenEvents(App.CurrentUser.getUid(), currentUserValue.uid, eventList);
-                        email_subject += " " + getString(R.string.tab_events);
-                        for (Event e : eventList) {
-                            eventListString += e.getName() + "\n";
-                        }
-                    }
-                    String email_body = getString(R.string.reminder_mail_body,
-                            currentUserValue.name,                // debtor name
-                            eventListString,                                  // event list
-                            new DecimalFormat("0.00")
-                                    .format(currentUserValue.value),          // dept value
-                            App.CurrentUser.getFirstName()
-                                    + " " + App.CurrentUser.getLastName());   // creditor name
-
-                    Intent intent = new Intent(Intent.ACTION_SEND);
-                    intent.setType("text/html");
-                    intent.putExtra(Intent.EXTRA_EMAIL, email_address);
-                    intent.putExtra(Intent.EXTRA_SUBJECT, email_subject);
-                    intent.putExtra(Intent.EXTRA_TEXT, email_body);
-                    try {
-                        startActivity(Intent.createChooser(intent, getString(R.string.send_reminder_mail,
-                                currentUserValue.name)));
-                    } catch (android.content.ActivityNotFoundException ex) {
-                        Toast.makeText(getContext(), "There are no email clients installed.",
-                                Toast.LENGTH_SHORT).show();
-                    }
+                    // reminder mail or do cash transaction
+                    showCashOrReminderDialog(currentUserValue);
                 });
                 userValueName.setOnClickListener(v -> {
                     DatabaseHandler.queryUser(currentUserValue.uid, user -> {
@@ -297,4 +265,57 @@ public class CashFragment extends Fragment {
             });
         }
     }
+
+    private void showCashOrReminderDialog(UserValue currentUserValue){
+            LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+            View promptView = layoutInflater.inflate(R.layout.dialog_choose_remind_or_cash, null);
+            final android.app.AlertDialog confirmDialogBuilder = new android.app.AlertDialog.Builder(getContext()).create();
+            Button cash_pay_btn = promptView.findViewById(R.id.dialog_end_position_cash_pay_btn);
+            Button remind_btn = promptView.findViewById(R.id.dialog_end_position_remind_btn);
+
+            remind_btn.setOnClickListener(v -> {
+                // remind user of payment per mail
+                String[] email_address = {currentUserValue.email};
+                String email_subject = getString(R.string.reminder);
+                String eventListString = "";
+                if (event != null) {
+                    email_subject += " " + getString(R.string.tab_expenses) + " " + event.getName();
+                    eventListString = event.getName() + "\n";
+                    event = null;
+                } else if (eventList != null) {
+                    eventList = Stats.getOpenEvents(App.CurrentUser.getUid(), currentUserValue.uid, eventList);
+                    email_subject += " " + getString(R.string.tab_events);
+                    for (Event e : eventList) {
+                        eventListString += e.getName() + "\n";
+                    }
+                }
+                String email_body = getString(R.string.reminder_mail_body,
+                        currentUserValue.name,                // debtor name
+                        eventListString,                                  // event list
+                        new DecimalFormat("0.00")
+                                .format(currentUserValue.value),          // dept value
+                        App.CurrentUser.getFirstName()
+                                + " " + App.CurrentUser.getLastName());   // creditor name
+
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/html");
+                intent.putExtra(Intent.EXTRA_EMAIL, email_address);
+                intent.putExtra(Intent.EXTRA_SUBJECT, email_subject);
+                intent.putExtra(Intent.EXTRA_TEXT, email_body);
+                try {
+                    startActivity(Intent.createChooser(intent, getString(R.string.send_reminder_mail,
+                            currentUserValue.name)));
+                } catch (android.content.ActivityNotFoundException ex) {
+                    Toast.makeText(getContext(), "There are no email clients installed.",
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            cash_pay_btn.setOnClickListener(v -> {
+                // user is paying per cash
+            });
+
+            confirmDialogBuilder.setView(promptView);
+            confirmDialogBuilder.show();
+        }
 }
