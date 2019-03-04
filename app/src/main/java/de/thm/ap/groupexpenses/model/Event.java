@@ -11,8 +11,8 @@ public class Event {
 
     private String eid;
     private String name;
-    private String date_begin;
-    private String date_end;
+    private Long date_begin;
+    private Long date_end;
     private int pay_stretch_weeks; // in weeks
     private String info;
     private String creatorId;
@@ -22,7 +22,7 @@ public class Event {
     //region Constructor
     public Event() { }
 
-    public Event(String creatorId, String name, String date_begin, String date_end, int pay_stretch_weeks, String info, List<String> members, List<Position> positions) {
+    public Event(String creatorId, String name, Long date_begin, Long date_end, int pay_stretch_weeks, String info, List<String> members, List<Position> positions) {
         this.name = name;
         this.date_begin = date_begin;
         this.date_end = date_end;
@@ -35,11 +35,11 @@ public class Event {
         this.positions = positions;
     }
 
-    public Event(String creatorId, String name, String date_begin, String date_end, int pay_stretch_weeks, String info, List<String> members) {
+    public Event(String creatorId, String name, Long date_begin, Long date_end, int pay_stretch_weeks, String info, List<String> members) {
         this(creatorId, name, date_begin, date_end, pay_stretch_weeks, info, members, new ArrayList<>());
     }
 
-    public Event(String creatorId, String name, String date_begin, String date_end, int pay_stretch_weeks, String info) {
+    public Event(String creatorId, String name, Long date_begin, Long date_end, int pay_stretch_weeks, String info) {
         this(creatorId, name, date_begin, date_end, pay_stretch_weeks, info, new ArrayList<>());
     }
     //endregion
@@ -59,17 +59,17 @@ public class Event {
         this.name = name;
     }
 
-    public String getDate_begin() {
+    public Long getDate_begin() {
         return date_begin;
     }
-    public void setDate_begin(String date_begin) {
+    public void setDate_begin(Long date_begin) {
         this.date_begin = date_begin;
     }
 
-    public String getDate_end() {
+    public Long getDate_end() {
         return date_end;
     }
-    public void setDate_end(String date_end) {
+    public void setDate_end(Long date_end) {
         this.date_end = date_end;
     }
 

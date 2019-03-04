@@ -226,8 +226,8 @@ public class EventFormActivity extends BaseActivity {
                 Event event = new Event(
                         creator.getUid(),                                    // creatorId
                         eventName,                                           // name
-                        eventBeginDateEditText.getText().toString(),         // date_begin
-                        eventEndDateEditText.getText().toString(),           // date_end
+                        start_date.getTime(),                                // date_begin
+                        end_date.getTime(),                                  // date_end
                         pay_stretch_item_selected_index + 1, // pay_stretch_weeks
                         eventInfoEditText.getText().toString(),              // info
                         eventUserListStrings                                 // members
