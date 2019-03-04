@@ -1,40 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:background="@drawable/border"
+    android:background="@drawable/blue_border"
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/dialog_end_position_textView"
+        android:id="@+id/dialog_chose_2_options_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/app_margin"
         android:layout_marginStart="@dimen/app_margin"
         android:layout_marginTop="@dimen/app_margin"
-        android:gravity="center"
-        android:text="@string/end_position_confirm"
+        android:textAlignment="center"
         android:textColor="@android:color/black"
-        android:textSize="22sp" />
+        android:textSize="24sp"
+        android:visibility="gone" />
 
     <Button
-        android:id="@+id/dialog_end_position_confirmBtn"
+        android:id="@+id/dialog_chose_2_options_option1_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/app_margin"
         android:layout_marginEnd="@dimen/app_margin"
         android:layout_marginStart="@dimen/app_margin"
         android:layout_marginTop="@dimen/app_margin"
-        android:text="@string/confirm" />
+        android:text="@string/chose_cash" />
 
     <Button
-        android:id="@+id/dialog_end_position_cancelBtn"
+        android:id="@+id/dialog_chose_2_options_option2_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/app_margin"
         android:layout_marginEnd="@dimen/app_margin"
         android:layout_marginStart="@dimen/app_margin"
-        android:text="@string/cancel" />
+        android:text="@string/chose_remind" />
 
 </LinearLayout>

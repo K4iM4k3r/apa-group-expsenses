@@ -2,6 +2,7 @@ package de.thm.ap.groupexpenses.view.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -30,6 +32,7 @@ import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.livedata.EventListLiveData;
 import de.thm.ap.groupexpenses.livedata.EventLiveData;
 import de.thm.ap.groupexpenses.model.Event;
+import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.Stats;
 import de.thm.ap.groupexpenses.view.activity.PayActivity;
 import de.thm.ap.groupexpenses.view.dialog.ProfileInfoDialog;
@@ -54,7 +57,19 @@ public class CashFragment extends Fragment {
         View rootView = inflater.inflate(
                 R.layout.fragment_cash_check, container, false);
         cash_check_list = rootView.findViewById(R.id.dialog_cash_check_list);
+        TextView header_val = rootView.findViewById(R.id.dialog_cash_check_header_val);
+        ImageView help_btn = rootView.findViewById(R.id.dialog_cash_check_help_btn);
+        LinearLayout help_layout = rootView.findViewById(R.id.dialog_cash_check_help_layout);
         Bundle args = getArguments();
+
+        help_btn.setOnClickListener(v -> {
+            if (help_layout.getVisibility() == View.GONE) {
+                help_layout.setVisibility(View.VISIBLE);
+            } else {
+                help_layout.setVisibility(View.GONE);
+            }
+
+        });
 
         if (args != null) {
             String eid = args.getString(SELECTED_EID);
@@ -65,6 +80,15 @@ public class CashFragment extends Fragment {
                 eventLiveData.observe(this, event -> {
                     if (event != null) {
                         this.event = event;
+                        float balance = Stats.getEventBalance(event);
+                        header_val.setText(new DecimalFormat("0.00").format(balance) + "€");
+                        if (balance < 0) {
+                            header_val.setTextColor(Color
+                                    .parseColor("#ef4545"));    // red
+                        } else {
+                            header_val.setTextColor(Color
+                                    .parseColor("#2ba050"));    // green
+                        }
                         userValueList = new ArrayList<>();
                         cash_check_map = event.getBalanceTable(App.CurrentUser.getUid());
                         buildCashView();
@@ -75,6 +99,14 @@ public class CashFragment extends Fragment {
                 listLiveData.observe(this, eventList -> {
                     if (eventList != null) {
                         this.eventList = eventList;
+                        TextView header_text = rootView.findViewById(R.id.dialog_cash_check_header_text);
+                        header_text.setText(getString(R.string.total_balance));
+                        float balance = Stats.getBalance(eventList);
+                        header_val.setText(new DecimalFormat("0.00").format(balance) + "€");
+                        if (balance < 0)
+                            header_val.setTextColor(Color.parseColor("#ef4545"));    // red
+                        else
+                            header_val.setTextColor(Color.parseColor("#2ba050"));    // green
                         userValueList = new ArrayList<>();
                         cash_check_map = Stats.getGlobalBalanceTable(App.CurrentUser, eventList);
                         buildCashView();
@@ -166,40 +198,8 @@ public class CashFragment extends Fragment {
                     userValueName.setText(currentUserValue.name);
                 }
                 value_layout.setOnClickListener(v -> {
-                    String[] email_address = {currentUserValue.email};
-                    String email_subject = getString(R.string.reminder);
-                    String eventListString = "";
-                    if (event != null) {
-                        email_subject += " " + getString(R.string.tab_event) + " " + event.getName();
-                        eventListString = event.getName() + "\n";
-                        event = null;
-                    } else if (eventList != null) {
-                        eventList = Stats.getOpenEvents(App.CurrentUser.getUid(), currentUserValue.uid, eventList);
-                        email_subject += " " + getString(R.string.tab_events);
-                        for (Event e : eventList) {
-                            eventListString += e.getName() + "\n";
-                        }
-                    }
-                    String email_body = getString(R.string.reminder_mail_body,
-                            currentUserValue.name,                // debtor name
-                            eventListString,                                  // event list
-                            new DecimalFormat("0.00")
-                                    .format(currentUserValue.value),          // dept value
-                            App.CurrentUser.getFirstName()
-                                    + " " + App.CurrentUser.getLastName());   // creditor name
-
-                    Intent intent = new Intent(Intent.ACTION_SEND);
-                    intent.setType("text/html");
-                    intent.putExtra(Intent.EXTRA_EMAIL, email_address);
-                    intent.putExtra(Intent.EXTRA_SUBJECT, email_subject);
-                    intent.putExtra(Intent.EXTRA_TEXT, email_body);
-                    try {
-                        startActivity(Intent.createChooser(intent, getString(R.string.send_reminder_mail,
-                                currentUserValue.name)));
-                    } catch (android.content.ActivityNotFoundException ex) {
-                        Toast.makeText(getContext(), "There are no email clients installed.",
-                                Toast.LENGTH_SHORT).show();
-                    }
+                    // reminder mail or do cash transaction
+                    showCashOrReminderDialog(currentUserValue);
                 });
                 userValueName.setOnClickListener(v -> {
                     DatabaseHandler.queryUser(currentUserValue.uid, user -> {
@@ -264,6 +264,104 @@ public class CashFragment extends Fragment {
                     cash_check_list.setAdapter(userValueArrayAdapter);
                 }
             });
+        }
+    }
+
+    private void showCashOrReminderDialog(UserValue currentUserValue) {
+        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+        View promptView = layoutInflater.inflate(R.layout.dialog_choose_2_options, null);
+        final android.app.AlertDialog confirmDialogBuilder = new android.app.AlertDialog.Builder(getContext()).create();
+        Button cash_pay_btn = promptView.findViewById(R.id.dialog_chose_2_options_option1_btn);
+        Button remind_btn = promptView.findViewById(R.id.dialog_chose_2_options_option2_btn);
+
+        remind_btn.setOnClickListener(v -> {
+            // remind user of payment per mail
+            String[] email_address = {currentUserValue.email};
+            String email_subject = getString(R.string.reminder);
+            String eventListString = "";
+            if (event != null) {
+                email_subject += " " + getString(R.string.tab_expenses) + " " + event.getName();
+                eventListString = event.getName() + "\n";
+                event = null;
+            } else if (eventList != null) {
+                eventList = Stats.getOpenEvents(App.CurrentUser.getUid(), currentUserValue.uid, eventList);
+                email_subject += " " + getString(R.string.tab_events);
+                for (Event e : eventList) {
+                    eventListString += e.getName() + "\n";
+                }
+            }
+            String email_body = getString(R.string.reminder_mail_body,
+                    currentUserValue.name,                // debtor name
+                    eventListString,                                  // event list
+                    new DecimalFormat("0.00")
+                            .format(currentUserValue.value),          // dept value
+                    App.CurrentUser.getFirstName()
+                            + " " + App.CurrentUser.getLastName());   // creditor name
+
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("text/html");
+            intent.putExtra(Intent.EXTRA_EMAIL, email_address);
+            intent.putExtra(Intent.EXTRA_SUBJECT, email_subject);
+            intent.putExtra(Intent.EXTRA_TEXT, email_body);
+            try {
+                startActivity(Intent.createChooser(intent, getString(R.string.send_reminder_mail,
+                        currentUserValue.name)));
+            } catch (android.content.ActivityNotFoundException ex) {
+                Toast.makeText(getContext(), "There are no email clients installed.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        cash_pay_btn.setOnClickListener(v -> {
+            // user is paying per cash
+            TextView confirm_text = promptView.findViewById(R.id.dialog_chose_2_options_text);
+            confirm_text.setText(getString(R.string.confirm_cash_payment, currentUserValue.name,
+                    new DecimalFormat("0.00").format(currentUserValue.value)));
+            confirm_text.setVisibility(View.VISIBLE);
+
+            cash_pay_btn.setText(getString(R.string.confirm));
+            remind_btn.setText(getString(R.string.cancel));
+
+            cash_pay_btn.setOnClickListener(v2 -> {
+                if (event != null) {   // user is paying for one event
+                    for (Position p : event.getPositions()) {
+                        releaseAllDebtsBetweenUsers(p, App.CurrentUser.getUid(), currentUserValue.uid);
+                    }
+                    DatabaseHandler.updateEvent(event);
+                    Toast.makeText(getContext(), getString(R.string.done_cash_payment), Toast.LENGTH_SHORT).show();
+                } else if (eventList != null) {    // user is paying for all events
+                    for (Event e : Stats.getOpenEvents(App.CurrentUser.getUid(), currentUserValue.uid, eventList)) {
+                        for (Position p : e.getPositions()) {
+                            releaseAllDebtsBetweenUsers(p, App.CurrentUser.getUid(), currentUserValue.uid);
+                        }
+                        DatabaseHandler.updateEvent(e);
+                    }
+                    Toast.makeText(getContext(), getString(R.string.done_cash_payment), Toast.LENGTH_SHORT).show();
+                }
+                confirmDialogBuilder.dismiss();
+            });
+
+            remind_btn.setOnClickListener(v2 -> {
+                confirmDialogBuilder.dismiss();
+            });
+        });
+
+        confirmDialogBuilder.setView(promptView);
+        confirmDialogBuilder.show();
+    }
+
+    /*
+    releases all debts for one position between two users
+     */
+    private void releaseAllDebtsBetweenUsers(Position p, String user_one, String user_two) {
+        if (p.getCreatorId().equals(user_one)) {
+            if (!p.isExcludedFromPayments(user_two)) {
+                p.removeDebtor(user_two);
+            }
+        } else if (p.getCreatorId().equals(user_two)) {
+            if (!p.isExcludedFromPayments(user_one)) {
+                p.removeDebtor(user_one);
+            }
         }
     }
 }

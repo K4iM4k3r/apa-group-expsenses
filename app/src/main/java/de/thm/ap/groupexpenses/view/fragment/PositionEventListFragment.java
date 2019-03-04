@@ -70,6 +70,8 @@ public class PositionEventListFragment<T> extends Fragment {
         }
         headerView = getLayoutInflater().inflate(R.layout.fragment_object_list_header, null);
 
+        TextView header_text = headerView.findViewById(R.id.object_balance_summary_text);
+
         TextView noObjects_textView = view.findViewById(R.id.fragment_no_object_text);
 
         Bundle args = getArguments();
@@ -86,6 +88,7 @@ public class PositionEventListFragment<T> extends Fragment {
                 eventLiveData.observe(this, event -> {
                     if (event != null) {
                         noObjects_textView.setVisibility(View.GONE);
+                        header_text.setText(getString(R.string.total_expenses) + ":");
                         relatedEventToPosition = event;
                         updateTotalBalanceOfPositions(event);
                         List<Position> positions = event.getPositions();
@@ -102,6 +105,7 @@ public class PositionEventListFragment<T> extends Fragment {
                 listLiveData.observe(this, eventList -> {
                     if (eventList != null) {
                         noObjects_textView.setVisibility(View.GONE);
+                        header_text.setText(getString(R.string.total_balance) + ":");
                         updateTotalBalanceOfEvents(eventList);
                         for (int idx = 0; idx < eventList.size(); ++idx) {
                             creatorMap.putIfAbsent(eventList.get(idx).getCreatorId(), "");
@@ -162,17 +166,11 @@ public class PositionEventListFragment<T> extends Fragment {
     private void updateTotalBalanceOfPositions(Event event) {
         TextView obj_val = headerView.findViewById(R.id.object_balance_summary_val);
         List<Position> positions = event.getPositions();
-        float balance = 0;
-
-        for (int idx = 0; idx < positions.size(); ++idx) {
-            balance += Stats.getPositionBalance(positions.get(idx), event);
+        float total_expenses = 0;
+        for (Position p : positions) {
+            total_expenses += p.getValue();
         }
-        obj_val.setText(new DecimalFormat("0.00 €").format(balance));
-
-        if (balance < 0)
-            obj_val.setTextColor(Color.parseColor("#ef4545"));    // red
-        else
-            obj_val.setTextColor(Color.parseColor("#2ba050"));    // green
+        obj_val.setText(new DecimalFormat("0.00 €").format(total_expenses));
     }
 
     private void updateTotalBalanceOfEvents(List<Event> eventList) {
@@ -218,7 +216,6 @@ public class PositionEventListFragment<T> extends Fragment {
             holder.object_creator = view.findViewById(R.id.creator);
             holder.object_balance = view.findViewById(R.id.balance);
             m_object = retrievedObjects.get(index);
-            float balance;
             String fromPart = getString(R.string.from);
             String creatorPart;
             String creatorUid;
@@ -227,7 +224,7 @@ public class PositionEventListFragment<T> extends Fragment {
 
             if (isPosition) {
                 Position position = (Position) m_object;
-                balance = Stats.getPositionBalance(position, relatedEventToPosition);
+                float position_expense = position.getValue();
                 holder.object_name.setText(position.getTopic());
                 if (position.getCreatorId().equals(App.CurrentUser.getUid())) {
                     creatorPart = getString(R.string.you);
@@ -246,10 +243,10 @@ public class PositionEventListFragment<T> extends Fragment {
                         fromPart.length(), wholePart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 holder.object_creator.setText(spannable, TextView.BufferType.SPANNABLE);
                 holder.object_balance.setText(new DecimalFormat("0.00 €")
-                        .format(balance));
+                        .format(position_expense));
             } else {    // its an Event
                 Event event = (Event) m_object;
-                balance = Stats.getEventBalance(event);
+                float balance = Stats.getEventBalance(event);
                 holder.object_name.setText(event.getName());
                 if (event.getCreatorId().equals(App.CurrentUser.getUid())) {
                     creatorPart = getString(R.string.you);
@@ -269,13 +266,13 @@ public class PositionEventListFragment<T> extends Fragment {
                 holder.object_creator.setText(spannable, TextView.BufferType.SPANNABLE);
                 holder.object_balance.setText(new DecimalFormat("0.00 €")
                         .format(balance));
+                if (balance < 0)
+                    holder.object_balance.setTextColor(Color
+                            .parseColor("#ef4545"));    // red
+                else
+                    holder.object_balance.setTextColor(Color
+                            .parseColor("#2ba050"));    // green
             }
-            if (balance < 0)
-                holder.object_balance.setTextColor(Color
-                        .parseColor("#ef4545"));    // red
-            else
-                holder.object_balance.setTextColor(Color
-                        .parseColor("#2ba050"));    // green
 
             holder.object_creator.setOnClickListener(v -> {
                 if (creatorUid != null) {

@@ -13,6 +13,7 @@
     <string name="event_form_add_members">Teilnehmer hinzufügen</string>
     <string name="search_name_hint">Name suchen</string>
     <string name="info">Info</string>
+    <string name="show_info">Info anzeigen</string>
     <string name="inspect_users">Teilnehmer inspizieren</string>
     <string name="you">Dir</string>
     <string name="yourself">Du</string>
@@ -35,7 +36,8 @@
     <string name="title_activity_friends">FriendsActivity</string>
     <string name="no_friends">Sie haben noch keine Freunde</string>
     <string name="loading">laden</string>
-    <string name="your_depts_event">Deine Gesamtschulden:</string>
+    <string name="event_expenses_you">Deine Ausgaben:</string>
+    <string name="event_expenses_ratio">(%2s%% Anteil)</string>
     <string name="your_dept_claim_event">Deine Gesamtforderungen:</string>
     <string name="creator_and_date_position">Erstellt von %1$s am %2$s</string>
     <string name="creator_and_date_event">Erstellt von %1$s für den %2$s</string>
@@ -43,14 +45,21 @@
     <string name="cash_check">Kassensturz</string>
     <string name="cash_check_caps">KASSENSTURZ</string>
     <string name="event_form_create_event">Neues Event erstellen</string>
-    <string name="cash_check_info">Pfeil drücken, um an Zahlung zu erinnern oder zu bezahlen</string>
+    <string name="cash_check_red_arrow_info">= Bezahlen</string>
+    <string name="cash_check_green_arrow_info">= an Zahlung erinnern/ Barzahlung abschließen</string>
     <string name="position_form_name">Name der Position</string>
     <string name="position_form_create_position">Neue Position erstellen</string>
     <string name="position_inspect_position_info">Positionsinfo</string>
     <string name="position_inspect_clear_dept">Schulden begleichen</string>
+    <string name="confirm_delete_position">Position wirklich löschen?\nWichtig: Alle deine Forderungen werden weg sein!</string>
     <string name="add_payment">Zahlung hinzufügen</string>
-    <string name="end_position">Position abschliessen</string>
-    <string name="end_position_confirm">Position wirklich abschliessen?</string>
+    <string name="end_position">Position abschließen</string>
+    <string name="chose_cash">Barzahlung abschließen</string>
+    <string name="confirm_cash_payment">%1$s hat Ihnen %2$s€ bar bezahlt?</string>
+    <string name="done_cash_payment">Barzahlung abgeschlossen!</string>
+    <string name="done_delete_position">Position gelöscht!</string>
+    <string name="error_cash_payment">Keine Barzahlung konnte abgeschlossen werden!</string>
+    <string name="chose_remind">An Zahlung erinnern</string>
     <string name="position_inspect_release_dept_claim_ask">Schulden wirklich erlassen?</string>
     <string name="position_inspect_change_dept_claim_val">Schuldbetrag bearbeiten</string>
     <string name="error_field_required">Feld darf nicht leer sein!</string>
@@ -60,6 +69,8 @@
     <string name="events_loading">"Events werden geladen … "</string>
     <string name="no_positions">Keine Positionen vorhanden!</string>
     <string name="total_balance">Gesamtbilanz</string>
+    <string name="your_event_balance">Deine Eventbilanz:</string>
+    <string name="total_expenses">Globale Ausgaben</string>
     <string name="load_friends">Freundesliste wird geladen …</string>
     <string name="FriendsActivityTitle">Freunde</string>
     <string name="login_title">Group Expenses</string>
@@ -79,7 +90,7 @@
     <string name="resetPassword">Passwort zurücksetzen</string>
     <string name="resetPassword_success">Sende Rücksetzungsmail an %s</string>
     <string name="resetPassword_error">Fehler aufgetreten</string>
-    <string name="info_verification_fmt">Sende Bestätigungsmail an  %s</string>
+    <string name="info_verification_fmt">Sende Bestätigungsmail an %s </string>
     <string name="info_verification_error">Bestätigungsmail konnte nicht versendet werden</string>
     <string name="detail_verification">Sie haben eine Email erhalten! Sie müssen auf den Link in der Nachricht klicken, um ihren Account zu verfizieren.</string>
     <string name="menu_item_logout">Logout</string>
@@ -132,8 +143,8 @@
     <string name="dialog_friend_delete_ok">Entfernen</string>
     <string name="success_remove_friend">Freund erfolgreich entfernt!</string>
     <string name="error_remove_friend">Freund konnte nicht entfernt werden!</string>
-    <string name="tab_event">Event</string>
-    <string name="tab_cash">Expenses</string>
+    <string name="tab_expenses">Ausgaben</string>
+    <string name="tab_balance">Bilanz</string>
     <string name="tab_events">Events</string>
     <string name="error_field_no_valid_email">keine gültige Email</string>
     <string name="login_typ_create">Anlegen</string>
