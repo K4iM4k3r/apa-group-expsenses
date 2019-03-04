@@ -327,6 +327,11 @@ public class DatabaseHandler {
         });
     }
 
+    /**
+     * Delete Event with eid
+     * @param eid Event Id
+     * @param failureListener listener if something fails
+     */
     public static void deleteEvent(String eid, OnFailureListener failureListener){
         FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS)
                 .document(eid)
@@ -348,12 +353,16 @@ public class DatabaseHandler {
         });
     }
 
+    /**
+     * Hide Event with eid by User uid
+     * @param eid Event id
+     * @param uid User Id
+     */
     public static void hideEvent(String eid, String uid){
         queryUser(uid, user -> {
             user.removeEvent(eid);
             updateUser(user);
         });
-
     }
 
 }
