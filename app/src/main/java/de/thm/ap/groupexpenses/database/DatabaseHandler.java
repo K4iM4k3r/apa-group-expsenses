@@ -348,6 +348,13 @@ public class DatabaseHandler {
         });
     }
 
+    public static void hideEvent(String eid, String uid){
+        queryUser(uid, user -> {
+            user.removeEvent(eid);
+            updateUser(user);
+        });
+
+    }
 
 }
 

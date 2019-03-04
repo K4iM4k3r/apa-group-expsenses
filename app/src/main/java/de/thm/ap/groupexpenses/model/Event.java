@@ -195,6 +195,14 @@ public class Event {
     //endregion
 
     /**
+     * Remove Member with uid
+     * @param uid User Id of Member
+     * @return true if successful, else false
+     */
+    public boolean removeMember(String uid){
+        return members.remove(uid);
+    }
+    /**
      * Checks if this event can be closed due to no open transactions.
      */
     public boolean isClosable() {
