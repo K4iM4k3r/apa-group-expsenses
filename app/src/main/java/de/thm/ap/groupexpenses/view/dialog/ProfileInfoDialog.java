@@ -73,7 +73,7 @@ public class ProfileInfoDialog {
         user_full_name.setText(user_full_name_string);
         user_nickname.setText(userNickname);
         user_info.setText(userInfo);
-        user_join_date.setText(user.getDateString());
+        user_join_date.setText(user.joinDateToString());
         if (user.getProfilePic() != null) {
             DatabaseHandler.getUserProfilePic(context, user.getUid(), opPictureUri ->
                     opPictureUri.ifPresent(user_image::setImageURI));

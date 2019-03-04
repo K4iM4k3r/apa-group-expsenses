@@ -35,6 +35,7 @@ public class User implements Comparable<User> {
         this.firstName = "";
         this.lastName = "";
         this.nickname = "";
+        this.info = "";
         this.email = email;
         this.events = new ArrayList<>();
         this.profilePic = null;
@@ -48,6 +49,7 @@ public class User implements Comparable<User> {
         this.nickname = nickname;
         this.email = email;
         this.events = events;
+        this.info = "";
         this.profilePic = profilePic;
         this.joinDate = Calendar.getInstance().getTimeInMillis();
     }
@@ -72,23 +74,12 @@ public class User implements Comparable<User> {
         return email;
     }
 
-    public String getDateString() {
-        //TODO: remove this if check for null after next db reset
-        if (joinDate == null) {
-            return "Keine Beitrittsinfo, alter Account!!";
-        } else {
-            Date date = new Date(this.joinDate);
-            Format format = new SimpleDateFormat("dd.MM.yyyy");
-            return format.format(date);
-        }
+    public Long getJoinDate() {
+        return joinDate;
     }
 
     public String getInfo() {
-        //TODO: remove this if check for null after next db reset
-        if (info == null) {
-            return "User hat noch keine Info gesetzt, alter Account!";
-        } else
-            return info;
+        return info;
     }
 
     public List<String> getEvents() {
@@ -151,6 +142,11 @@ public class User implements Comparable<User> {
             this.events = new ArrayList<>();
         }
         this.events.add(event);
+    }
+    public String joinDateToString(){
+        Date date = new Date(this.joinDate);
+        Format format = new SimpleDateFormat("dd.MM.yyyy");
+        return format.format(date);
     }
 
     /**
