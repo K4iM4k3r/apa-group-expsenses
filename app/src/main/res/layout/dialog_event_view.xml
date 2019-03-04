@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:background="@drawable/border"
+    android:background="@drawable/blue_border"
     android:orientation="vertical">
 
     <TextView
@@ -71,29 +71,41 @@
         android:background="@android:color/darker_gray" />
 
     <TextView
-        android:id="@+id/event_dialog_your_depts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/app_margin"
         android:layout_marginStart="@dimen/app_margin"
         android:layout_marginTop="@dimen/app_margin"
         android:gravity="center"
-        android:text="@string/your_depts_event"
+        android:text="@string/event_expenses_you"
         android:textAllCaps="false"
         android:textSize="19sp" />
 
     <TextView
-        android:id="@+id/event_dialog_dept_val"
+        android:id="@+id/event_dialog_expenses_you_val"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/app_small_margin"
+        android:layout_marginEnd="@dimen/app_margin"
+        android:layout_marginStart="@dimen/app_margin"
+        android:layout_marginTop="@dimen/app_small_margin"
+        android:gravity="center"
+        android:text="0,00€"
+        android:textColor="@color/bt_color_primary"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/event_dialog_expenses_participation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/app_margin"
         android:layout_marginEnd="@dimen/app_margin"
         android:layout_marginStart="@dimen/app_margin"
-        android:layout_marginTop="@dimen/app_margin"
         android:gravity="center"
-        android:text="0,00€"
-        android:textColor="#ef4545"
-        android:textSize="24sp"
+        android:text="(0% Anteil)"
+        android:textColor="@color/bt_color_primary"
+        android:textSize="18sp"
         android:textStyle="bold" />
 
 </LinearLayout>

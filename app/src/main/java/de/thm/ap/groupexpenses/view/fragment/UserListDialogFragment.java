@@ -121,17 +121,11 @@ public class UserListDialogFragment extends DialogFragment {
                 if (hasPositions) addBtn.setText(R.string.event_form_add_members);
                 userArrayAdapter = new UserArrayAdapter(getActivity(), selectedUsers);
                 break;
-            case "pay_position":
-                headerTextView.setText(R.string.add_payment);
-                doneBtn.setVisibility(View.GONE);
-                userArrayAdapter = new UserArrayAdapter(getActivity(), friendsList);
-                break;
         }
         userListView.setAdapter(userArrayAdapter);
         userListView.setOnItemClickListener((parent, view, position, id) -> {
             User selectedUser = (User) userListView.getItemAtPosition(position);
             switch (TAG) {
-                case "pay_position":
                 case "create_event":
                     if (!removeUserById(selectedUser.getUid(), selectedUsers)) {
                         selectedUsers.add(selectedUser);
@@ -174,10 +168,6 @@ public class UserListDialogFragment extends DialogFragment {
 
         addBtn.setOnClickListener(v -> {
             switch (TAG) {
-                case "pay_position":
-                    ((PositionActivity) getActivity()).setUsersPaid(selectedUsers, position);
-                    getDialog().dismiss();
-                    break;
                 case "create_event":
                     ((EventFormActivity) getActivity()).setEventMembers(selectedUsers);
                     getDialog().dismiss();
@@ -394,7 +384,6 @@ public class UserListDialogFragment extends DialogFragment {
             ImageView image;
             String userId = currentUser.getUid();
             switch (TAG) {
-                case "pay_position":
                 case "create_event":
                     image = listItem.findViewById(R.id.fragment_user_list_row_image_tick);
                     if (findUserById(userId, selectedUsers))
