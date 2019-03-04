@@ -23,7 +23,7 @@
     <string name="event_form_begin">Beginn</string>
     <string name="event_form_create_event">create new event</string>
     <string name="position_form_value">Value (€)</string>
-    <string name="position_form_create_position">create new postion</string>
+    <string name="position_form_create_position">create new position</string>
     <string name="position_inspect_position_info">Positionsinfo</string>
     <string name="add_payment">add payment</string>
     <string name="chose_cash">Cash Transaction</string>
@@ -39,7 +39,7 @@
     <string name="done">done</string>
     <string name="create">create</string>
     <string name="confirm">Confirm</string>
-    <string name="events_loading">loading events...</string>
+    <string name="events_loading">loading events…</string>
     <string name="no_positions">no positions found!</string>
     <string name="confirm_delete_position">Delete position?\nImportant: All of your claims will be gone!</string>
     <string name="total_balance">Total Balance</string>
@@ -162,5 +162,6 @@
     <string name="error_passwords_dont_match">Passwords dont match</string>
     <string name="hint_password_again">Password again</string>
     <string name="doublebacktoexit">Please click BACK again to exit</string>
+    <string name="labeljoinDate">JoinDate</string>
 </resources>
 

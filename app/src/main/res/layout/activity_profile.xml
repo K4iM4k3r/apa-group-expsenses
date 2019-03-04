@@ -144,6 +144,24 @@
                 android:hint="@string/info_small"
                 android:inputType="textPersonName" />
 
+            <TextView
+                android:id="@+id/labelJoinDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/app_margin"
+                android:layout_marginStart="@dimen/app_margin"
+                android:layout_gravity="center"
+                android:text="@string/labeljoinDate" />
+
+            <TextView
+                android:id="@+id/tvJoinDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/app_margin"
+                android:layout_marginStart="20dp"
+                android:layout_gravity="center"
+                android:text="" />
+
             <Button
                 android:id="@+id/edit_profile_btn"
                 android:layout_width="wrap_content"

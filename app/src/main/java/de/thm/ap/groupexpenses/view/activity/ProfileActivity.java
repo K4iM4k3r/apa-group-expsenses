@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -46,6 +47,7 @@ import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 
 public class ProfileActivity extends BaseActivity {
     private EditText edEmail, edNickname, edFirst, edLast, edInfo;
+    private TextView joinDate;
     private CircleImageView profile_pic;
     private Button btnSave;
     private final int REQUEST_IMAGE_PICK = 1;
@@ -71,6 +73,7 @@ public class ProfileActivity extends BaseActivity {
         Button btnEdit = findViewById(R.id.edit_profile_btn);
         btnSave = findViewById(R.id.btn_save_profile_btn);
         profile_pic = findViewById(R.id.profile_pic);
+        joinDate = findViewById(R.id.tvJoinDate);
         LinearLayout profilePicLayout = findViewById(R.id.profile_pic_layout);
 
         if (getSupportActionBar() != null) {
@@ -92,6 +95,7 @@ public class ProfileActivity extends BaseActivity {
                 edNickname.setText(us.getNickname());
                 edEmail.setText(currentUser.getEmail());
                 edInfo.setText(us.getInfo());
+                joinDate.setText(us.joinDateToString());
             });
         }
 
@@ -233,7 +237,6 @@ public class ProfileActivity extends BaseActivity {
 
                         }
                     });
-
                 }
             }
         }

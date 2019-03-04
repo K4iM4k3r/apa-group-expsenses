@@ -74,10 +74,8 @@ public class User implements Comparable<User> {
         return email;
     }
 
-    public String getDateString() {
-        Date date = new Date(this.joinDate);
-        Format format = new SimpleDateFormat("dd.MM.yyyy");
-        return format.format(date);
+    public Long getJoinDate() {
+        return joinDate;
     }
 
     public String getInfo() {
@@ -144,6 +142,11 @@ public class User implements Comparable<User> {
             this.events = new ArrayList<>();
         }
         this.events.add(event);
+    }
+    public String joinDateToString(){
+        Date date = new Date(this.joinDate);
+        Format format = new SimpleDateFormat("dd.MM.yyyy");
+        return format.format(date);
     }
 
     /**
