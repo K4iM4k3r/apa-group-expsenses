@@ -187,9 +187,9 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
     public boolean onMenuItemClick(MenuItem item) {
         mDrawerLayout.closeDrawer(GravityCompat.START, false);
         switch (item.getItemId()) {
-            case R.id.menu_item_profile:
-                startActivity(new Intent(this, ProfileActivity.class));
-                return true;
+//            case R.id.menu_item_profile:
+//                startActivity(new Intent(this, ProfileActivity.class));
+//                return true;
             case R.id.menu_item_logout:
                 auth.signOut();
                 File pic = new File(getExternalFilesDir(null), "profilePic.jpg");
@@ -197,7 +197,7 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
                 pic.delete();
                 startActivity(new Intent(this, LoginActivity.class));
                 return true;
-            case R.id.menu_item_main:
+            case R.id.menu_item_event:
                 startActivity(new Intent(this, EventActivity.class));
                 return true;
             case R.id.menu_item_friends:

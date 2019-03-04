@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/menu_item_profile"
+        android:id="@+id/menu_item_event"
         android:orderInCategory="1"
-        android:title="@string/menu_item_profile"/>
-    <item
-        android:id="@+id/menu_item_main"
-        android:orderInCategory="2"
-        android:title="@string/menu_item_main" />
+        android:icon="@drawable/menu_drawer_event"
+        android:title="@string/menu_item_event" />
     <item
         android:id="@+id/menu_item_friends"
-        android:orderInCategory="3"
+        android:orderInCategory="2"
+        android:icon="@drawable/menu_drawer_friends"
         android:title="@string/menu_item_friends" />
 
     <item
         android:id="@+id/menu_item_logout"
-        android:orderInCategory="4"
+        android:icon="@drawable/menu_drawer_logout"
+        android:orderInCategory="3"
         android:title="@string/menu_item_logout"/>
 </menu>

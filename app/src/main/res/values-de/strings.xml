@@ -110,7 +110,7 @@
     <string name="success_profile_pic_uploaded">Profilbild wurde hochgeladen!</string>
     <string name="success_download_ProfilePic">Profilbild wurde heruntergeladen!</string>
     <string name="error_download_ProfilePic">Profilbild konnte nicht geladen werden!</string>
-    <string name="menu_item_main">Hauptansicht</string>
+    <string name="menu_item_event">Meine Veranstaltungen</string>
     <string name="lastname">Nachnamen</string>
     <string name="firstname">Vornamen</string>
     <string name="displayname">nickname</string>
