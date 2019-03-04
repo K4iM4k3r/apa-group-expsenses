@@ -140,8 +140,8 @@ public class EventFormActivity extends BaseActivity {
             if (isChecked) {
                 eventEndDateEditText.setText(getString(R.string.event_form_one_day));
                 eventEndDateEditText.setEnabled(false);
-            } else {
                 end_date = null;
+            } else {
                 eventEndDateEditText.setText("");
             }
         });
