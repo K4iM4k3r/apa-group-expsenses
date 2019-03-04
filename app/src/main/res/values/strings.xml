@@ -3,7 +3,8 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_position">PositionActivity</string>
     <string name="event_form_name">name of event</string>
-    <string name="event_form_date">date</string>
+    <string name="event_form_date_begin">begin date</string>
+    <string name="event_form_date_end">end date</string>
     <string name="ok">OK</string>
     <string name="unknown">unknown</string>
     <string name="add_with_num">Add (%1$d)</string>

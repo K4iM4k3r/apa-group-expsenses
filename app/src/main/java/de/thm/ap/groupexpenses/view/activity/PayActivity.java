@@ -14,11 +14,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.braintreepayments.api.dropin.DropInActivity;
@@ -42,7 +39,7 @@ public class PayActivity extends AppCompatActivity {
     HashMap<String, String> paramHash;
 
     Button btnPay;
-    TextView etAmount;
+    TextView tVAmount;
     LinearLayout llHolder;
 
     @Override
@@ -50,11 +47,11 @@ public class PayActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pay);
         llHolder = findViewById(R.id.llHolder);
-        etAmount = findViewById(R.id.etPrice);
+        tVAmount = findViewById(R.id.tVPrice);
         btnPay = findViewById(R.id.btnPay);
         Bundle extras = getIntent().getExtras();
         String payThis = extras.getString("amount");
-        etAmount.setText(payThis+"€");
+        tVAmount.setText(payThis+"€");
         btnPay.setOnClickListener(v -> onBraintreeSubmit());
         new HttpRequest().execute();
     }
@@ -69,8 +66,8 @@ public class PayActivity extends AppCompatActivity {
                 Log.d("mylog", "Result: " + stringNonce);
                 // Send payment price with the nonce
                 // use the result to update your UI and send the payment method nonce to your server
-                if (!etAmount.getText().toString().isEmpty()) {
-                    amount = etAmount.getText().toString().replace("€", "");
+                if (!tVAmount.getText().toString().isEmpty()) {
+                    amount = tVAmount.getText().toString().replace("€", "");
                     paramHash = new HashMap<>();
                     paramHash.put("amount", amount);
                     paramHash.put("nonce", stringNonce);
@@ -105,6 +102,7 @@ public class PayActivity extends AppCompatActivity {
                     } else
                         Toast.makeText(PayActivity.this, "Transaction failed", Toast.LENGTH_LONG).show();
                     Log.d("mylog", "Final Response: " + response);
+                    finish();
                 }, error -> Log.d("mylog", "Volley error : " + error.toString())) {
             @Override
             protected Map<String, String> getParams() {
