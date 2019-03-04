@@ -6,6 +6,8 @@
     <string name="event_form_name">Name des Events</string>
     <string name="event_form_date_begin">Beginn</string>
     <string name="event_form_date_end">Ende</string>
+    <string name="event_form_one_day">Eintägiges Event</string>
+    <string name="event_form_pay_stretch">Zahlungszeitraum</string>
     <string name="ok">Ok</string>
     <string name="unknown">Unbekannt</string>
     <string name="add_with_num">Hinzufügen (%1$d)</string>
@@ -66,6 +68,7 @@
     <string name="error_field_required">Feld darf nicht leer sein!</string>
     <string name="error_users_required">Mindestens ein Teilnehmer muss vorhanden sein!</string>
     <string name="error_invalid_date">Ungültiges Datum!</string>
+    <string name="error_end_date_before_start_date">Enddatum liegt vor Startdatum!</string>
     <string name="done">Fertig</string>
     <string name="events_loading">"Events werden geladen … "</string>
     <string name="no_positions">Keine Positionen vorhanden!</string>
@@ -158,4 +161,11 @@
     <string name="desc_firebase_lockup">firebase lookup</string>
     <string name="doublebacktoexit">Klicken Sie erneut auf ZURÜCK um die App zu schließen.</string>
     <string name="labeljoinDate">Beigetreten am</string>
+
+    <string-array name="pay_stretch_weeks">
+        <item>1 Woche</item>
+        <item>2 Wochen</item>
+        <item>3 Wochen</item>
+        <item>4 Wochen</item>
+    </string-array>
 </resources>
