@@ -4,7 +4,8 @@
     <string name="action_settings">Einstellungen</string>
     <string name="title_activity_position">PositionActivity</string>
     <string name="event_form_name">Name des Events</string>
-    <string name="event_form_date">Datum</string>
+    <string name="event_form_date_begin">Beginn</string>
+    <string name="event_form_date_end">Ende</string>
     <string name="ok">Ok</string>
     <string name="unknown">Unbekannt</string>
     <string name="add_with_num">Hinzufügen (%1$d)</string>

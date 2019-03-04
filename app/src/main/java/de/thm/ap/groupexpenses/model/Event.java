@@ -12,6 +12,8 @@ public class Event {
     private String eid;
     private String name;
     private String date_begin;
+    private String date_end;
+    private int review_time; // in days
     private String info;
     private String creatorId;
     private List<String> members; // cleaner way with HashSet TODO
@@ -20,9 +22,11 @@ public class Event {
     //region Constructor
     public Event() { }
 
-    public Event(String creatorId, String name, String date_begin, String info, List<String> members, List<Position> positions) {
+    public Event(String creatorId, String name, String date_begin, String date_end, int review_time, String info, List<String> members, List<Position> positions) {
         this.name = name;
         this.date_begin = date_begin;
+        this.date_end = date_end;
+        this.review_time = review_time;
         this.info = info;
         this.creatorId = creatorId;
         this.members = new ArrayList<>();
@@ -31,25 +35,12 @@ public class Event {
         this.positions = positions;
     }
 
-    public Event(String creatorId, String name, String date_begin, String info, List<String> members) {
-        this.creatorId = creatorId;
-        this.name = name;
-        this.date_begin = date_begin;
-        this.info = info;
-        this.members = new ArrayList<>();
-        this.members.addAll(members);
-        addMember(creatorId);
-        this.positions = new ArrayList<>();
+    public Event(String creatorId, String name, String date_begin, String date_end, int review_time, String info, List<String> members) {
+        this(creatorId, name, date_begin, date_end, review_time, info, members, new ArrayList<>());
     }
 
-    public Event(String creatorId, String name, String date_begin, String info) {
-        this.creatorId = creatorId;
-        this.name = name;
-        this.date_begin = date_begin;
-        this.info = info;
-        this.members = new ArrayList<>();
-        this.members.add(creatorId);
-        this.positions = new ArrayList<>();
+    public Event(String creatorId, String name, String date_begin, String date_end, int review_time, String info) {
+        this(creatorId, name, date_begin, date_end, review_time, info, new ArrayList<>());
     }
     //endregion
 
@@ -57,7 +48,6 @@ public class Event {
     public String getEid() {
         return eid;
     }
-
     public void setEid(String eid) {
         this.eid = eid;
     }
@@ -65,7 +55,6 @@ public class Event {
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -73,15 +62,27 @@ public class Event {
     public String getDate_begin() {
         return date_begin;
     }
-
     public void setDate_begin(String date_begin) {
         this.date_begin = date_begin;
+    }
+
+    public String getDate_end() {
+        return date_end;
+    }
+    public void setDate_end(String date_end) {
+        this.date_end = date_end;
+    }
+
+    public int getReview_time() {
+        return review_time;
+    }
+    public void setReview_time(int review_time) {
+        this.review_time = review_time;
     }
 
     public String getInfo() {
         return info;
     }
-
     public void setInfo(String info) {
         this.info = info;
     }
@@ -89,7 +90,6 @@ public class Event {
     public String getCreatorId() {
         return creatorId;
     }
-
     public List<String> getMembers() {
         return members;
     }

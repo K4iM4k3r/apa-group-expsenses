@@ -126,6 +126,7 @@ public class EventFormActivity extends BaseActivity {
                 Event event = new Event(creator.getUid(),
                         eventName,
                         eventDateEditText.getText().toString(),
+                        null, 1, //TODO: implement new fields
                         eventInfoEditText.getText().toString(),
                         eventUserListStrings
                         );
