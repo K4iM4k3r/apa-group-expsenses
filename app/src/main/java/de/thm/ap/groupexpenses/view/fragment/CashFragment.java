@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +25,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
@@ -271,10 +269,10 @@ public class CashFragment extends Fragment {
 
     private void showCashOrReminderDialog(UserValue currentUserValue) {
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        View promptView = layoutInflater.inflate(R.layout.dialog_choose_remind_or_cash, null);
+        View promptView = layoutInflater.inflate(R.layout.dialog_choose_2_options, null);
         final android.app.AlertDialog confirmDialogBuilder = new android.app.AlertDialog.Builder(getContext()).create();
-        Button cash_pay_btn = promptView.findViewById(R.id.dialog_end_position_cash_pay_btn);
-        Button remind_btn = promptView.findViewById(R.id.dialog_end_position_remind_btn);
+        Button cash_pay_btn = promptView.findViewById(R.id.dialog_chose_2_options_option1_btn);
+        Button remind_btn = promptView.findViewById(R.id.dialog_chose_2_options_option2_btn);
 
         remind_btn.setOnClickListener(v -> {
             // remind user of payment per mail
@@ -316,7 +314,7 @@ public class CashFragment extends Fragment {
 
         cash_pay_btn.setOnClickListener(v -> {
             // user is paying per cash
-            TextView confirm_text = promptView.findViewById(R.id.dialog_end_position_cash_confirm_text);
+            TextView confirm_text = promptView.findViewById(R.id.dialog_chose_2_options_text);
             confirm_text.setText(getString(R.string.confirm_cash_payment, currentUserValue.name,
                     new DecimalFormat("0.00").format(currentUserValue.value)));
             confirm_text.setVisibility(View.VISIBLE);

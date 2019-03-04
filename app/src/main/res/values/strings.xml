@@ -16,8 +16,8 @@
     <string name="info_small">info</string>
     <string name="inspect_users">Teilnehmer inspizieren</string>
     <string name="no_position_info">No position info available!</string>
-    <string name="event_expenses_you">Your total expenses:</string>
-    <string name="event_expenses_ratio">(%1s\%% participation)</string>
+    <string name="event_expenses_you">Your expenses:</string>
+    <string name="event_expenses_ratio">(%1s\%% from total)</string>
     <string name="event_form_users">Teilnehmer</string>
     <string name="event_form_begin">Beginn</string>
     <string name="event_form_create_event">create new event</string>
@@ -28,6 +28,7 @@
     <string name="chose_cash">Cash Transaction</string>
     <string name="confirm_cash_payment">%1$s has paid you %2$s€ per cash?</string>
     <string name="done_cash_payment">Cash transaction complete!</string>
+    <string name="done_delete_position">Position deleted!</string>
     <string name="error_cash_payment">No cash transaction could be completed!</string>
     <string name="chose_remind">Remind for payment</string>
     <string name="position_inspect_change_dept_claim_val">Edit debt amount</string>
@@ -39,6 +40,7 @@
     <string name="confirm">Confirm</string>
     <string name="events_loading">loading events...</string>
     <string name="no_positions">no positions found!</string>
+    <string name="confirm_delete_position">Delete position?\nImportant: All of your claims will be gone!</string>
     <string name="total_balance">Total Balance</string>
     <string name="your_event_balance">Your event balance:</string>
     <string name="total_expenses">Global Expenses</string>

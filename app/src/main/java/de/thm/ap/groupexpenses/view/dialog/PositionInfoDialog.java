@@ -19,38 +19,36 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.DecimalFormat;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.Stats;
-import de.thm.ap.groupexpenses.model.User;
 import de.thm.ap.groupexpenses.view.activity.PayActivity;
-import de.thm.ap.groupexpenses.view.fragment.UserListDialogFragment;
 
 public class PositionInfoDialog {
-    Activity payActivity;
     private AlertDialog.Builder positionDialog;
     private AlertDialog dialog;
     private Position position;
     private Event selectedEvent;
     private View view;
     private TextView positionInfo;
+    ImageView delete_position_img;
     private Spannable creatorAndDateDefaultVal;
-    private Button valueEditBtn, payBtn;
-    private TextView dept_val, positionDepts;
+    private TextView debt_val, positionDepts;
     private AtomicBoolean clickable;
     private TextView positionCreatorAndDate;
     private String creatorNickname, creatorUid;
     private Context context;
-    private float pay_value;
-    private boolean isPositionPaid;
 
     public PositionInfoDialog(Position selectedPosition, Event selectedEvent, String creatorNickname,
                               String creatorUid, Context context) {
@@ -60,29 +58,18 @@ public class PositionInfoDialog {
         this.selectedEvent = selectedEvent;
         positionDialog = new AlertDialog.Builder(context);
         position = selectedPosition;
-        int count = 0;
-        for (String uid : position.getPeopleThatDontHaveToPay()) {
-            for (String user : selectedEvent.getMembers()) {
-                if (user.equals(uid)) {
-                    count++;
-                    break;
-                }
-            }
-        }
-        if (count == selectedEvent.getMembers().size()) {
-            isPositionPaid = true;
-        }
+
         view = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
                 .inflate(R.layout.dialog_position_view, null);
-        payBtn = view.findViewById(R.id.position_dialog_pay_btn);
-        valueEditBtn = view.findViewById(R.id.position_dialog_edit_btn);
-        dept_val = view.findViewById(R.id.position_dialog_dept_val);
+
+        debt_val = view.findViewById(R.id.position_dialog_dept_val);
         clickable = new AtomicBoolean(true);
         createDialog();
     }
 
     @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
     private void createDialog() {
+        delete_position_img = view.findViewById(R.id.position_dialog_delete_img);
         TextView positionName = view.findViewById(R.id.position_dialog_name);
         positionDepts = view.findViewById(R.id.position_dialog_your_depts);
         positionCreatorAndDate = view.findViewById(R.id.position_dialog_creator_and_date);
@@ -91,33 +78,26 @@ public class PositionInfoDialog {
         String positionDeptValue;
         String creator;
 
-        if (creatorNickname == null) {
-            // user is creator
+        if (creatorNickname == null) { // user is creator of position
             creator = context.getString(R.string.you);
+            delete_position_img.setVisibility(View.VISIBLE);
+            debt_val.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+                    R.drawable.ic_edit_grey_24dp, 0);
+            debt_val.setCompoundDrawablePadding(-20);
             positionInfo.setCompoundDrawablesWithIntrinsicBounds(0, 0,
                     R.drawable.ic_edit_grey_24dp, 0);
             positionInfo.setCompoundDrawablePadding(-20);
             positionDeptValue = context.getResources().getString(R.string.your_dept_claim);
-            dept_val.setTextColor(Color.parseColor("#2ba050"));  //green
-            if (!isPositionPaid) {
-                payBtn.setText(context.getString(R.string.add_payment));
-            } else {
-                payBtn.setText(context.getString(R.string.end_position));
-            }
-            valueEditBtn.setVisibility(View.VISIBLE);
-            valueEditBtn.setOnClickListener(v -> {
-                // value edit btn clicked
-                positionInfo.setCompoundDrawablesWithIntrinsicBounds(0, 0,
-                        0, 0);
-                clickable.set(false);
-                onValueEditBtnClick();
-            });
-            payBtn.setOnClickListener(v2 -> {
-                // release dept btn clicked
-                positionInfo.setCompoundDrawablesWithIntrinsicBounds(0, 0,
-                        0, 0);
-                clickable.set(false);
-                //onPayBtnClick();
+            debt_val.setTextColor(Color.parseColor("#2ba050"));  //green
+
+            debt_val.setOnTouchListener(new RightDrawableOnTouchListener(positionInfo) {
+                @Override
+                public boolean onDrawableTouch(final MotionEvent event) {
+                    positionInfo.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+                            0, 0);
+                    onValueEditBtnClick();
+                    return clickable.get();
+                }
             });
 
             // info edit btn clicked
@@ -127,17 +107,14 @@ public class PositionInfoDialog {
                     return clickable.get() && infoEditBtnClicked(event);
                 }
             });
-        } else {
+
+            // delete position icon clicked
+            delete_position_img.setOnClickListener(v -> {
+                showDeleteConfirmDialog();
+            });
+        } else {    // user is not creator of position
             creator = creatorNickname;
             positionDeptValue = context.getResources().getString(R.string.your_depts);
-            payBtn.setOnClickListener(v -> {
-                // pay position dept to user here (just one position)
-                // TODO: David pay system
-                String amountAsString = new DecimalFormat("0.00").format(pay_value * (-1));
-                Intent payIntent = new Intent(context, PayActivity.class);
-                payIntent.putExtra("amount", amountAsString);
-                context.startActivity(payIntent);
-            });
         }
         displayCreator(creator);
         // close btn clicked
@@ -150,8 +127,8 @@ public class PositionInfoDialog {
         });
         positionName.setText(position.getTopic());
         positionDepts.setText(positionDeptValue);
-        pay_value = Stats.getPositionBalance(position, selectedEvent);
-        dept_val.setText(new DecimalFormat("0.00")
+        float pay_value = Stats.getPositionBalance(position, selectedEvent);
+        debt_val.setText(new DecimalFormat("0.00")
                 .format(pay_value) + " " + context.getString(R.string.euro));
         String positionInfoString = position.getInfo();
         if (positionInfoString != null && !positionInfoString.isEmpty())
@@ -170,9 +147,7 @@ public class PositionInfoDialog {
         positionCreatorAndDate.setText(creatorAndDateDefaultVal, TextView.BufferType.SPANNABLE);
         positionCreatorAndDate.setOnClickListener(v -> {
             if (creatorUid != null) {
-                DatabaseHandler.queryUser(creatorUid, user -> {
-                    new ProfileInfoDialog(user, context);
-                });
+                DatabaseHandler.queryUser(creatorUid, user -> new ProfileInfoDialog(user, context));
             }
         });
     }
@@ -184,9 +159,8 @@ public class PositionInfoDialog {
         Button cancelBtn = view.findViewById(R.id.position_dialog_cancel_btn);
         saveBtn.setVisibility(View.VISIBLE);
         cancelBtn.setVisibility(View.VISIBLE);
-        valueEditBtn.setVisibility(View.GONE);
-        payBtn.setVisibility(View.GONE);
-        dept_val.setVisibility(View.GONE);
+        debt_val.setVisibility(View.GONE);
+        delete_position_img.setVisibility(View.GONE);
         quickEditField.setVisibility(View.VISIBLE);
         quickEditField.setText("");  // clear input (could be polluted by info edit)
         saveBtn.setOnClickListener(v2 -> {
@@ -194,7 +168,7 @@ public class PositionInfoDialog {
             resetBackToNormal("edit_value");
 
             position.setValue(Float.parseFloat(quickEditField.getText().toString()));
-            dept_val.setText(new DecimalFormat("0.00")
+            debt_val.setText(new DecimalFormat("0.00")
                     .format(Stats.getPositionBalance(position, selectedEvent)) + " " + context.getString(R.string.euro));
 
             if (!selectedEvent.updatePosition(position)) {
@@ -216,11 +190,10 @@ public class PositionInfoDialog {
         TextView positionInfo = view.findViewById(R.id.position_dialog_info);
         saveBtn.setVisibility(View.VISIBLE);
         cancelBtn.setVisibility(View.VISIBLE);
-        valueEditBtn.setVisibility(View.GONE);
-        payBtn.setVisibility(View.GONE);
         quickEditField.setVisibility(View.VISIBLE);
         positionDepts.setVisibility(View.GONE);
-        dept_val.setVisibility(View.GONE);
+        debt_val.setVisibility(View.GONE);
+        delete_position_img.setVisibility(View.GONE);
         positionInfo.setVisibility(View.GONE);
         view.findViewById(R.id.position_dialog_line1).setVisibility(View.GONE);
         view.findViewById(R.id.position_dialog_line2).setVisibility(View.GONE);
@@ -292,8 +265,7 @@ public class PositionInfoDialog {
         TextView positionInfo = view.findViewById(R.id.position_dialog_info);
         saveBtn.setVisibility(View.GONE);
         cancelBtn.setVisibility(View.GONE);
-        valueEditBtn.setVisibility(View.VISIBLE);
-        payBtn.setVisibility(View.VISIBLE);
+        delete_position_img.setVisibility(View.VISIBLE);
         positionInfo.setCompoundDrawablesWithIntrinsicBounds(0, 0,
                 R.drawable.ic_edit_grey_24dp, 0);
         positionInfo.setCompoundDrawablePadding(-20);
@@ -302,7 +274,7 @@ public class PositionInfoDialog {
         switch (type) {
             case "edit_info":
                 positionDepts.setVisibility(View.VISIBLE);
-                dept_val.setVisibility(View.VISIBLE);
+                debt_val.setVisibility(View.VISIBLE);
                 positionInfo.setVisibility(View.VISIBLE);
                 view.findViewById(R.id.position_dialog_line1).setVisibility(View.VISIBLE);
                 view.findViewById(R.id.position_dialog_line2).setVisibility(View.VISIBLE);
@@ -324,12 +296,40 @@ public class PositionInfoDialog {
                 break;
             case "release_dept":
                 positionDepts.setText(context.getResources().getString(R.string.your_dept_claim) + ":");
-                dept_val.setTextColor(Color.parseColor("#2ba050"));  //green
+                debt_val.setTextColor(Color.parseColor("#2ba050"));  //green
                 break;
             case "edit_value":
                 quickEditField.setVisibility(View.GONE);
-                dept_val.setVisibility(View.VISIBLE);
+                debt_val.setVisibility(View.VISIBLE);
                 break;
         }
+    }
+
+    private void showDeleteConfirmDialog() {
+        LayoutInflater layoutInflater = LayoutInflater.from(context);
+        View promptView = layoutInflater.inflate(R.layout.dialog_choose_2_options, null);
+        final android.app.AlertDialog confirmDialogBuilder = new android.app.AlertDialog.Builder(context).create();
+        TextView dialog_message_text = promptView.findViewById(R.id.dialog_chose_2_options_text);
+        Button confirm_btn = promptView.findViewById(R.id.dialog_chose_2_options_option1_btn);
+        Button cancel_btn = promptView.findViewById(R.id.dialog_chose_2_options_option2_btn);
+        dialog_message_text.setVisibility(View.VISIBLE);
+        dialog_message_text.setText(context.getString(R.string.confirm_delete_position));
+        confirm_btn.setText(context.getString(R.string.confirm));
+        cancel_btn.setText(context.getString(R.string.cancel));
+
+        confirm_btn.setOnClickListener(v -> {
+            selectedEvent.deletePosition(position);
+            DatabaseHandler.updateEvent(selectedEvent);
+            Toast.makeText(context, context.getString(R.string.done_delete_position), Toast.LENGTH_SHORT).show();
+            confirmDialogBuilder.dismiss();
+            dialog.dismiss();
+        });
+
+        cancel_btn.setOnClickListener(v -> {
+            confirmDialogBuilder.dismiss();
+        });
+
+        confirmDialogBuilder.setView(promptView);
+        confirmDialogBuilder.show();
     }
 }

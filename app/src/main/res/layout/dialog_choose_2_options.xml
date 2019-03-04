@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/dialog_end_position_cash_confirm_text"
+        android:id="@+id/dialog_chose_2_options_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/app_margin"
@@ -18,7 +18,7 @@
         android:visibility="gone" />
 
     <Button
-        android:id="@+id/dialog_end_position_cash_pay_btn"
+        android:id="@+id/dialog_chose_2_options_option1_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/app_margin"
@@ -28,7 +28,7 @@
         android:text="@string/chose_cash" />
 
     <Button
-        android:id="@+id/dialog_end_position_remind_btn"
+        android:id="@+id/dialog_chose_2_options_option2_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/app_margin"
