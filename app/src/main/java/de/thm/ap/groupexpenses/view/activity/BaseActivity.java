@@ -121,7 +121,10 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
             ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT);
-            View stubView = inflater.inflate(layoutResID, view_stub, false);
+            View stubView = null;
+            if (inflater != null) {
+                stubView = inflater.inflate(layoutResID, view_stub, false);
+            }
             view_stub.addView(stubView, lp);
         }
     }
@@ -248,13 +251,11 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
     }
 
     private void checkFriendsList(){
-        if(App.CurrentUser.getFriendsIds() != null){
-            if(App.CurrentUser.getFriendsIds().isEmpty()){
-                findViewById(R.id.notification_friends).setVisibility(View.VISIBLE);
-            }
-            else {
-                findViewById(R.id.notification_friends).setVisibility(View.GONE);
-            }
+        if(App.CurrentUser.getFriendsIds() == null || App.CurrentUser.getFriendsIds().isEmpty()){
+            findViewById(R.id.notification_friends).setVisibility(View.VISIBLE);
+        }
+        else {
+            findViewById(R.id.notification_friends).setVisibility(View.GONE);
         }
     }
 }
