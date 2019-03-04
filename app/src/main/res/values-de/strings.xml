@@ -36,7 +36,8 @@
     <string name="title_activity_friends">FriendsActivity</string>
     <string name="no_friends">Sie haben noch keine Freunde</string>
     <string name="loading">laden</string>
-    <string name="your_depts_event">Deine Gesamtschulden:</string>
+    <string name="event_expenses_you">Deine Gesamtschulden:</string>
+    <string name="event_expenses_ratio">(%2s%% Anteil)</string>
     <string name="your_dept_claim_event">Deine Gesamtforderungen:</string>
     <string name="creator_and_date_position">Erstellt von %1$s am %2$s</string>
     <string name="creator_and_date_event">Erstellt von %1$s für den %2$s</string>
@@ -51,8 +52,11 @@
     <string name="position_inspect_position_info">Positionsinfo</string>
     <string name="position_inspect_clear_dept">Schulden begleichen</string>
     <string name="add_payment">Zahlung hinzufügen</string>
-    <string name="end_position">Position abschliessen</string>
+    <string name="end_position">Position abschließen</string>
     <string name="chose_cash">Barzahlung abschließen</string>
+    <string name="confirm_cash_payment">%1$s hat Ihnen %2$s€ bar bezahlt?</string>
+    <string name="done_cash_payment">Barzahlung abgeschlossen!</string>
+    <string name="error_cash_payment">Keine Barzahlung konnte abgeschlossen werden!</string>
     <string name="chose_remind">An Zahlung erinnern</string>
     <string name="position_inspect_release_dept_claim_ask">Schulden wirklich erlassen?</string>
     <string name="position_inspect_change_dept_claim_val">Schuldbetrag bearbeiten</string>
@@ -84,7 +88,7 @@
     <string name="resetPassword">Passwort zurücksetzen</string>
     <string name="resetPassword_success">Sende Rücksetzungsmail an %s</string>
     <string name="resetPassword_error">Fehler aufgetreten</string>
-    <string name="info_verification_fmt">Sende Bestätigungsmail an  %s</string>
+    <string name="info_verification_fmt">Sende Bestätigungsmail an %s </string>
     <string name="info_verification_error">Bestätigungsmail konnte nicht versendet werden</string>
     <string name="detail_verification">Sie haben eine Email erhalten! Sie müssen auf den Link in der Nachricht klicken, um ihren Account zu verfizieren.</string>
     <string name="menu_item_logout">Logout</string>

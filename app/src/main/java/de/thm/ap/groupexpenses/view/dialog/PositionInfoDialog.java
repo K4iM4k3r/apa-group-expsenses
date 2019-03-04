@@ -117,7 +117,7 @@ public class PositionInfoDialog {
                 positionInfo.setCompoundDrawablesWithIntrinsicBounds(0, 0,
                         0, 0);
                 clickable.set(false);
-                onPayBtnClick();
+                //onPayBtnClick();
             });
 
             // info edit btn clicked
@@ -204,25 +204,6 @@ public class PositionInfoDialog {
                 DatabaseHandler.updateEvent(selectedEvent);
         });
         cancelBtn.setOnClickListener(v3 -> resetBackToNormal("edit_value"));
-    }
-
-    @SuppressLint("SetTextI18n")
-    private void onPayBtnClick() {
-        if (!isPositionPaid) {
-            DatabaseHandler.getAllMembersOfEvent(selectedEvent.getEid(), membersList -> {
-                UserListDialogFragment userListDialog = new UserListDialogFragment();
-                for (String uid : position.getPeopleThatDontHaveToPay()) {
-                    for (User user : membersList) {
-                        if (user.getUid().equals(uid)) {
-                            membersList.remove(user);
-                            break;
-                        }
-                    }
-                }
-                userListDialog.build(membersList, position);
-                userListDialog.show(((Activity) context).getFragmentManager(), "pay_position");
-            });
-        }
     }
 
     @SuppressLint("SetTextI18n")

@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
@@ -32,6 +34,7 @@ import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.livedata.EventListLiveData;
 import de.thm.ap.groupexpenses.livedata.EventLiveData;
 import de.thm.ap.groupexpenses.model.Event;
+import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.Stats;
 import de.thm.ap.groupexpenses.view.activity.PayActivity;
 import de.thm.ap.groupexpenses.view.dialog.ProfileInfoDialog;
@@ -266,56 +269,101 @@ public class CashFragment extends Fragment {
         }
     }
 
-    private void showCashOrReminderDialog(UserValue currentUserValue){
-            LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-            View promptView = layoutInflater.inflate(R.layout.dialog_choose_remind_or_cash, null);
-            final android.app.AlertDialog confirmDialogBuilder = new android.app.AlertDialog.Builder(getContext()).create();
-            Button cash_pay_btn = promptView.findViewById(R.id.dialog_end_position_cash_pay_btn);
-            Button remind_btn = promptView.findViewById(R.id.dialog_end_position_remind_btn);
+    private void showCashOrReminderDialog(UserValue currentUserValue) {
+        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+        View promptView = layoutInflater.inflate(R.layout.dialog_choose_remind_or_cash, null);
+        final android.app.AlertDialog confirmDialogBuilder = new android.app.AlertDialog.Builder(getContext()).create();
+        Button cash_pay_btn = promptView.findViewById(R.id.dialog_end_position_cash_pay_btn);
+        Button remind_btn = promptView.findViewById(R.id.dialog_end_position_remind_btn);
 
-            remind_btn.setOnClickListener(v -> {
-                // remind user of payment per mail
-                String[] email_address = {currentUserValue.email};
-                String email_subject = getString(R.string.reminder);
-                String eventListString = "";
-                if (event != null) {
-                    email_subject += " " + getString(R.string.tab_expenses) + " " + event.getName();
-                    eventListString = event.getName() + "\n";
-                    event = null;
-                } else if (eventList != null) {
-                    eventList = Stats.getOpenEvents(App.CurrentUser.getUid(), currentUserValue.uid, eventList);
-                    email_subject += " " + getString(R.string.tab_events);
-                    for (Event e : eventList) {
-                        eventListString += e.getName() + "\n";
+        remind_btn.setOnClickListener(v -> {
+            // remind user of payment per mail
+            String[] email_address = {currentUserValue.email};
+            String email_subject = getString(R.string.reminder);
+            String eventListString = "";
+            if (event != null) {
+                email_subject += " " + getString(R.string.tab_expenses) + " " + event.getName();
+                eventListString = event.getName() + "\n";
+                event = null;
+            } else if (eventList != null) {
+                eventList = Stats.getOpenEvents(App.CurrentUser.getUid(), currentUserValue.uid, eventList);
+                email_subject += " " + getString(R.string.tab_events);
+                for (Event e : eventList) {
+                    eventListString += e.getName() + "\n";
+                }
+            }
+            String email_body = getString(R.string.reminder_mail_body,
+                    currentUserValue.name,                // debtor name
+                    eventListString,                                  // event list
+                    new DecimalFormat("0.00")
+                            .format(currentUserValue.value),          // dept value
+                    App.CurrentUser.getFirstName()
+                            + " " + App.CurrentUser.getLastName());   // creditor name
+
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("text/html");
+            intent.putExtra(Intent.EXTRA_EMAIL, email_address);
+            intent.putExtra(Intent.EXTRA_SUBJECT, email_subject);
+            intent.putExtra(Intent.EXTRA_TEXT, email_body);
+            try {
+                startActivity(Intent.createChooser(intent, getString(R.string.send_reminder_mail,
+                        currentUserValue.name)));
+            } catch (android.content.ActivityNotFoundException ex) {
+                Toast.makeText(getContext(), "There are no email clients installed.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        cash_pay_btn.setOnClickListener(v -> {
+            // user is paying per cash
+            TextView confirm_text = promptView.findViewById(R.id.dialog_end_position_cash_confirm_text);
+            confirm_text.setText(getString(R.string.confirm_cash_payment, currentUserValue.name,
+                    new DecimalFormat("0.00").format(currentUserValue.value)));
+            confirm_text.setVisibility(View.VISIBLE);
+
+            cash_pay_btn.setText(getString(R.string.confirm));
+            remind_btn.setText(getString(R.string.cancel));
+
+            cash_pay_btn.setOnClickListener(v2 -> {
+                if (event != null) {   // user is paying for one event
+                    for (Position p : event.getPositions()) {
+                        releaseAllDebtsBetweenUsers(p, App.CurrentUser.getUid(), currentUserValue.uid);
                     }
+                    DatabaseHandler.updateEvent(event);
+                    Toast.makeText(getContext(), getString(R.string.done_cash_payment), Toast.LENGTH_SHORT).show();
+                } else if (eventList != null) {    // user is paying for all events
+                    for (Event e : Stats.getOpenEvents(App.CurrentUser.getUid(), currentUserValue.uid, eventList)) {
+                        for (Position p : e.getPositions()) {
+                            releaseAllDebtsBetweenUsers(p, App.CurrentUser.getUid(), currentUserValue.uid);
+                        }
+                        DatabaseHandler.updateEvent(e);
+                    }
+                    Toast.makeText(getContext(), getString(R.string.done_cash_payment), Toast.LENGTH_SHORT).show();
                 }
-                String email_body = getString(R.string.reminder_mail_body,
-                        currentUserValue.name,                // debtor name
-                        eventListString,                                  // event list
-                        new DecimalFormat("0.00")
-                                .format(currentUserValue.value),          // dept value
-                        App.CurrentUser.getFirstName()
-                                + " " + App.CurrentUser.getLastName());   // creditor name
-
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.setType("text/html");
-                intent.putExtra(Intent.EXTRA_EMAIL, email_address);
-                intent.putExtra(Intent.EXTRA_SUBJECT, email_subject);
-                intent.putExtra(Intent.EXTRA_TEXT, email_body);
-                try {
-                    startActivity(Intent.createChooser(intent, getString(R.string.send_reminder_mail,
-                            currentUserValue.name)));
-                } catch (android.content.ActivityNotFoundException ex) {
-                    Toast.makeText(getContext(), "There are no email clients installed.",
-                            Toast.LENGTH_SHORT).show();
-                }
+                confirmDialogBuilder.dismiss();
             });
 
-            cash_pay_btn.setOnClickListener(v -> {
-                // user is paying per cash
+            remind_btn.setOnClickListener(v2 -> {
+                confirmDialogBuilder.dismiss();
             });
+        });
 
-            confirmDialogBuilder.setView(promptView);
-            confirmDialogBuilder.show();
+        confirmDialogBuilder.setView(promptView);
+        confirmDialogBuilder.show();
+    }
+
+    /*
+    releases all debts for one position between two users
+     */
+    private void releaseAllDebtsBetweenUsers(Position p, String user_one, String user_two) {
+        if (p.getCreatorId().equals(user_one)) {
+            if (!p.isExcludedFromPayments(user_two)) {
+                p.removeDebtor(user_two);
+            }
+        } else if (p.getCreatorId().equals(user_two)) {
+            if (!p.isExcludedFromPayments(user_one)) {
+                p.removeDebtor(user_one);
+            }
         }
+    }
 }

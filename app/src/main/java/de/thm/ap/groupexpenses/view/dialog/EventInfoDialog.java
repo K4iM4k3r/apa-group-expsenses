@@ -14,9 +14,11 @@ import android.widget.TextView;
 
 import java.text.DecimalFormat;
 
+import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.model.Event;
+import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.Stats;
 
 public class EventInfoDialog {
@@ -24,7 +26,6 @@ public class EventInfoDialog {
     private AlertDialog dialog;
     private Event event;
     private View view;
-    private TextView dept_val;
     private String creatorNickname, creatorUid;
     private Context context;
 
@@ -36,16 +37,17 @@ public class EventInfoDialog {
         this.creatorUid = creatorUid;
         view = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
                 .inflate(R.layout.dialog_event_view, null);
-        dept_val = view.findViewById(R.id.event_dialog_dept_val);
+
         createDialog();
     }
 
     @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
     private void createDialog() {
         TextView eventName = view.findViewById(R.id.event_dialog_name);
-        TextView eventDepts = view.findViewById(R.id.event_dialog_your_depts);
         TextView positionCreatorAndDate = view.findViewById(R.id.event_dialog_creator_and_date);
         TextView eventInfo = view.findViewById(R.id.event_dialog_info);
+        TextView your_expenses = view.findViewById(R.id.event_dialog_expenses_you_val);
+        TextView expenses_ratio = view.findViewById(R.id.event_dialog_expenses_participation);
 
         eventName.setText(event.getName());
 
@@ -66,14 +68,20 @@ public class EventInfoDialog {
                 });
             }
         });
-
-        float balance = Stats.getEventBalance(event);
-        if (balance >= 0) {
-            eventDepts.setText(R.string.your_dept_claim_event);
-            dept_val.setTextColor(Color.parseColor("#2ba050")); // green
+        float my_expenses = 0;
+        float expenses_others = 0;
+        for (Position p : event.getPositions()) {
+            if (p.getCreatorId().equals(App.CurrentUser.getUid())) {
+                my_expenses += p.getValue();
+            } else {
+                expenses_others += p.getValue();
+            }
         }
-        dept_val.setText(new DecimalFormat("0.00")
-                .format(balance) + " " + context.getString(R.string.euro));
+        float ratio = (my_expenses / (expenses_others + my_expenses)) * 100;
+        String event_expenses_ratio = context.getString(R.string.event_expenses_ratio,
+                new DecimalFormat("0").format(ratio));
+        expenses_ratio.setText(event_expenses_ratio);
+        your_expenses.setText(new DecimalFormat("0.00").format(my_expenses)+"€");
         String eventInfoString = event.getInfo();
         if (!eventInfoString.isEmpty()) eventInfo.setText(eventInfoString);
 
