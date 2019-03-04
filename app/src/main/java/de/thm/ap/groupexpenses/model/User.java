@@ -153,6 +153,15 @@ public class User implements Comparable<User> {
         this.events.add(event);
     }
 
+    /**
+     * Remove Event with eid  on User
+     * @param eid Event ID
+     * @return true if successful, else false
+     */
+    public boolean removeEvent(String eid){
+        return events.remove(eid);
+    }
+
     @NonNull
     @Override
     public String toString() {

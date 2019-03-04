@@ -7,8 +7,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -16,6 +19,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 import de.thm.ap.groupexpenses.livedata.EventListLiveData;
 import de.thm.ap.groupexpenses.livedata.EventLiveData;
@@ -320,6 +326,28 @@ public class DatabaseHandler {
             }
         });
     }
+
+    public static void deleteEvent(String eid, OnFailureListener failureListener){
+        FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS)
+                .document(eid)
+                .delete()
+                .addOnFailureListener(failureListener);
+        CollectionReference usersRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_USERS);
+        usersRef.whereArrayContains(Constants.DOC_USERS_EVENTS, eid).get().addOnFailureListener(failureListener).addOnSuccessListener(querySnapshot ->{
+            if(querySnapshot != null){
+                List<User> eventUser = querySnapshot.getDocuments().stream().map(event -> event.toObject(User.class)).collect(Collectors.toList());
+                eventUser.forEach(u -> {
+                    if (u.removeEvent(eid)){
+                        updateUserWithFeedback(u,null,  failureListener);
+                    }
+                    else {
+                        failureListener.onFailure(new Exception("Could not delete Event(" + eid +") from User "+ u.getUid()));
+                    }
+                });
+            }
+        });
+    }
+
 
 }
 
