@@ -107,9 +107,6 @@ public class EventActivity extends BaseActivity implements PositionEventListFrag
                 if (success) DatabaseHandler.updateEvent(event);
             });
         }
-
-        Toast.makeText(this, data.toString(), Toast.LENGTH_LONG).show();
-
     }
 
     @Override
