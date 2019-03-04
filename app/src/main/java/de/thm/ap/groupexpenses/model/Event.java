@@ -20,8 +20,7 @@ public class Event {
     private List<Position> positions;
 
     //region Constructor
-    public Event() {
-    }
+    public Event() { }
 
     public Event(String creatorId, String name, String date, String info, List<String> members, List<Position> positions) {
         this.name = name;
@@ -194,6 +193,20 @@ public class Event {
         positions.removeIf(position -> position.getCreatorId().equals(userId));
     }
     //endregion
+
+    /**
+     * Checks if this event can be closed due to no open transactions.
+     */
+    public boolean isClosable() {
+        if (positions == null || members == null) throw new IllegalStateException("Event undefined.");
+        for (Position pos: positions) {
+            for (String member: members){
+                if (!pos.isExcludedFromPayments(member))
+                    return false;
+            }
+        }
+        return true;
+    }
 
     @NonNull
     @Override

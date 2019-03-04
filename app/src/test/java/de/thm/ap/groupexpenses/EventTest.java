@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -144,5 +145,27 @@ public class EventTest {
         // Jan does not occure.
         assertEquals(0, event.getPositions().stream().map(Position::getCreatorId).filter(id -> id.equals("Jan")).count());
 
+    }
+
+    @Test
+    public void isClosableTest(){
+
+        // Open transactions
+        assertFalse(event.isClosable());
+
+        // Settle only a few debts
+        event.removeAllDebtsOf("Mia");
+        event.removeAllDebtsOf("Tom");
+        assertFalse(event.isClosable());
+
+        // Settle all debts
+        for(String member: event.getMembers())
+            event.removeAllDebtsOf(member);
+        assertTrue(event.isClosable());
+
+        // No positions
+        List<Position> emptyPositions = new ArrayList<>();
+        Event event1 = new Event(creator.getUid(), "", "", "", Arrays.stream(member).map(User::getUid).collect(Collectors.toList()), emptyPositions);
+        assertTrue(event1.isClosable());
     }
 }
