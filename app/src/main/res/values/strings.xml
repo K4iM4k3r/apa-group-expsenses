@@ -5,6 +5,8 @@
     <string name="event_form_name">name of event</string>
     <string name="event_form_date_begin">begin date</string>
     <string name="event_form_date_end">end date</string>
+    <string name="event_form_one_day">One-day-Event</string>
+    <string name="event_form_pay_stretch">Pay stretch</string>
     <string name="ok">OK</string>
     <string name="unknown">unknown</string>
     <string name="add_with_num">Add (%1$d)</string>
@@ -36,6 +38,7 @@
     <string name="error_field_required">field cannot be empty!</string>
     <string name="error_users_required">Atleast one member is required!</string>
     <string name="error_invalid_date">Invalid date!</string>
+    <string name="error_end_date_before_start_date">End date comes before start date!</string>
     <string name="done">done</string>
     <string name="create">create</string>
     <string name="confirm">Confirm</string>
@@ -162,5 +165,12 @@
     <string name="error_passwords_dont_match">Passwords dont match</string>
     <string name="hint_password_again">Password again</string>
     <string name="doublebacktoexit">Please click BACK again to exit</string>
+
+    <string-array name="pay_stretch_weeks">
+        <item>1 week</item>
+        <item>2 weeks</item>
+        <item>3 weeks</item>
+        <item>4 weeks</item>
+    </string-array>
 </resources>
 

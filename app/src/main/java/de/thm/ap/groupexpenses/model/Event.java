@@ -13,7 +13,7 @@ public class Event {
     private String name;
     private String date_begin;
     private String date_end;
-    private int review_time; // in days
+    private int pay_stretch_weeks; // in weeks
     private String info;
     private String creatorId;
     private List<String> members; // cleaner way with HashSet TODO
@@ -22,11 +22,11 @@ public class Event {
     //region Constructor
     public Event() { }
 
-    public Event(String creatorId, String name, String date_begin, String date_end, int review_time, String info, List<String> members, List<Position> positions) {
+    public Event(String creatorId, String name, String date_begin, String date_end, int pay_stretch_weeks, String info, List<String> members, List<Position> positions) {
         this.name = name;
         this.date_begin = date_begin;
         this.date_end = date_end;
-        this.review_time = review_time;
+        this.pay_stretch_weeks = pay_stretch_weeks;
         this.info = info;
         this.creatorId = creatorId;
         this.members = new ArrayList<>();
@@ -35,12 +35,12 @@ public class Event {
         this.positions = positions;
     }
 
-    public Event(String creatorId, String name, String date_begin, String date_end, int review_time, String info, List<String> members) {
-        this(creatorId, name, date_begin, date_end, review_time, info, members, new ArrayList<>());
+    public Event(String creatorId, String name, String date_begin, String date_end, int pay_stretch_weeks, String info, List<String> members) {
+        this(creatorId, name, date_begin, date_end, pay_stretch_weeks, info, members, new ArrayList<>());
     }
 
-    public Event(String creatorId, String name, String date_begin, String date_end, int review_time, String info) {
-        this(creatorId, name, date_begin, date_end, review_time, info, new ArrayList<>());
+    public Event(String creatorId, String name, String date_begin, String date_end, int pay_stretch_weeks, String info) {
+        this(creatorId, name, date_begin, date_end, pay_stretch_weeks, info, new ArrayList<>());
     }
     //endregion
 
@@ -73,11 +73,11 @@ public class Event {
         this.date_end = date_end;
     }
 
-    public int getReview_time() {
-        return review_time;
+    public int getPayStretchWeeks() {
+        return pay_stretch_weeks;
     }
-    public void setReview_time(int review_time) {
-        this.review_time = review_time;
+    public void setPayStretchWeeks(int num_pay_stretch_weeks) {
+        this.pay_stretch_weeks = num_pay_stretch_weeks;
     }
 
     public String getInfo() {

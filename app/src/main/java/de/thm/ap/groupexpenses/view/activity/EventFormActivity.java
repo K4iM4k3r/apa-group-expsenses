@@ -7,16 +7,22 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
-import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
@@ -27,27 +33,46 @@ import de.thm.ap.groupexpenses.model.User;
 
 public class EventFormActivity extends BaseActivity {
 
-    private EditText eventNameEditText, eventDateEditText, eventInfoEditText;
+    private EditText eventNameEditText, eventBeginDateEditText, eventEndDateEditText, eventInfoEditText;
     private TextView eventUsersTextView;
     private ArrayList<User> eventUsersList;
     private Button addMembersBtn;
-    private DatePickerDialog.OnDateSetListener dateSetListener;
-    private boolean fromDateSet;
+    private Switch one_day_event_switch;
+    private Spinner pay_stretch_spinner;
+    int pay_stretch_item_selected_index;
+    private Date end_date, start_date;
+    private DatePickerDialog.OnDateSetListener beginDateSetListener, endDateSetListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_form);
         ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null){
+        if (actionBar != null) {
             actionBar.setTitle(R.string.event_form_create_event);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+        one_day_event_switch = findViewById(R.id.event_form_one_day_event_switch);
+        pay_stretch_spinner = findViewById(R.id.event_form_pay_stretch_spinner);
         eventNameEditText = findViewById(R.id.event_form_name_edit);
-        eventDateEditText = findViewById(R.id.event_form_date_edit);
+        eventBeginDateEditText = findViewById(R.id.event_form_date_begin_edit);
+        eventEndDateEditText = findViewById(R.id.event_form_date_end_edit);
         eventInfoEditText = findViewById(R.id.event_form_info_edit);
         addMembersBtn = findViewById(R.id.event_form_add_members_btn);
         eventUsersTextView = findViewById(R.id.event_form_users_textView);
+        ImageView edit_start_date_btn = findViewById(R.id.event_form_date_begin_edit_btn);
+        ImageView edit_end_date_btn = findViewById(R.id.event_form_date_end_edit_btn);
+
+        // Create an ArrayAdapter using the string array and a default spinner
+        ArrayAdapter<CharSequence> pay_stretch_spinner_adapter = ArrayAdapter
+                .createFromResource(this, R.array.pay_stretch_weeks,
+                        android.R.layout.simple_spinner_item);
+        pay_stretch_spinner_adapter
+                .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        pay_stretch_spinner.setAdapter(pay_stretch_spinner_adapter);
+        pay_stretch_item_selected_index = 1;
+        pay_stretch_spinner
+                .setSelection(pay_stretch_item_selected_index); // set 2 weeks pay stretch per default
 
         addMembersBtn.setOnClickListener(v -> {
             DatabaseHandler.getAllFriendsOfUser(auth.getCurrentUser().getUid(), result -> {
@@ -59,29 +84,94 @@ public class EventFormActivity extends BaseActivity {
 
         });
 
-        eventDateEditText.setOnFocusChangeListener((view, hasFocus) -> {
-            if (hasFocus && !fromDateSet) {
+        eventBeginDateEditText.setOnFocusChangeListener((view, hasFocus) ->
+                eventBeginDateEditText.setEnabled(false));
+
+        edit_start_date_btn.setOnClickListener(v -> {
+            int year, month, day;
+            if (start_date != null) {
+                year = end_date.getYear() + 1900;
+                month = end_date.getMonth();
+                day = end_date.getDate();
+            } else {
                 Calendar cal = Calendar.getInstance();
-                int year = cal.get(Calendar.YEAR);
-                int month = cal.get(Calendar.MONTH);
-                int day = cal.get(Calendar.DAY_OF_MONTH);
+                year = cal.get(Calendar.YEAR);
+                month = cal.get(Calendar.MONTH);
+                day = cal.get(Calendar.DAY_OF_MONTH);
+            }
+
+            DatePickerDialog dialog = new DatePickerDialog(
+                    EventFormActivity.this,
+                    R.style.Theme_AppCompat_DayNight_Dialog,
+                    beginDateSetListener,
+                    year, month, day);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+            dialog.show();
+        });
+
+        eventEndDateEditText.setOnFocusChangeListener((view, hasFocus) ->
+                eventEndDateEditText.setEnabled(false));
+
+        edit_end_date_btn.setOnClickListener(v -> {
+            if (!one_day_event_switch.isChecked()) {
+                int year, month, day;
+                if (end_date != null) {
+                    year = end_date.getYear() + 1900;
+                    month = end_date.getMonth();
+                    day = end_date.getDate();
+                } else {
+                    Calendar cal = Calendar.getInstance();
+                    year = cal.get(Calendar.YEAR);
+                    month = cal.get(Calendar.MONTH);
+                    day = cal.get(Calendar.DAY_OF_MONTH);
+                }
 
                 DatePickerDialog dialog = new DatePickerDialog(
                         EventFormActivity.this,
                         R.style.Theme_AppCompat_DayNight_Dialog,
-                        dateSetListener,
+                        endDateSetListener,
                         year, month, day);
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
                 dialog.show();
-            } else if(fromDateSet)
-                fromDateSet = false;
+            }
         });
 
-        dateSetListener = (view, year, month, day) -> {
-            month = month + 1;
-            String date = day + "." + month + "." + year;
-            eventDateEditText.setText(date);
-            fromDateSet = true;
+        one_day_event_switch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                eventEndDateEditText.setText(getString(R.string.event_form_one_day));
+                eventEndDateEditText.setEnabled(false);
+            } else {
+                end_date = null;
+                eventEndDateEditText.setText("");
+            }
+        });
+
+        pay_stretch_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                pay_stretch_item_selected_index = position;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        beginDateSetListener = (view, year, month, day) -> {
+            year -= 1900;
+            start_date = new Date(year, month, day);
+            Format format = new SimpleDateFormat("dd.MM.yyyy");
+            String date_string = format.format(start_date);
+            eventBeginDateEditText.setText(date_string);
+        };
+
+        endDateSetListener = (view, year, month, day) -> {
+            year -= 1900;
+            end_date = new Date(year, month, day);
+            Format format = new SimpleDateFormat("dd.MM.yyyy");
+            String date_string = format.format(end_date);
+            eventEndDateEditText.setText(date_string);
         };
     }
 
@@ -95,41 +185,54 @@ public class EventFormActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
+        boolean isValidInput = true;
+
         if (id == R.id.event_form_create_event_btn) {
-            if(eventNameEditText.getText().toString().isEmpty()){
+            if (eventNameEditText.getText().toString().isEmpty()) {
                 eventNameEditText.setError(getString(R.string.error_field_required));
                 eventNameEditText.requestFocus();
-            } else if(eventDateEditText.getText().toString().isEmpty()){
-                eventDateEditText.setError(getString(R.string.error_field_required));
-                eventDateEditText.requestFocus();
-            } else if(!isValidDate(eventDateEditText.getText().toString())){
-                eventDateEditText.setError(getString(R.string.error_invalid_date));
-                eventDateEditText.requestFocus();
-            } /* else if(eventUsersList == null || eventUsersList.isEmpty()){
-                eventUsersTextView.setText(getString(R.string.error_users_required));
-                addMembersBtn.setError("");
-                addMembersBtn.requestFocus();
-            } */ else {
+                isValidInput = false;
+            } else if (start_date == null) {
+                eventBeginDateEditText.setError(getString(R.string.error_field_required));
+                eventBeginDateEditText.setEnabled(true);
+                isValidInput = false;
+            } else {
+                if (!one_day_event_switch.isChecked()) {
+                    // event is not an one day event
+                    if (end_date == null) {
+                        eventEndDateEditText.setError(getString(R.string.error_field_required));
+                        eventEndDateEditText.setEnabled(true);
+                        isValidInput = false;
+                    } else if (!isStartDateBeforeEndDate()) {
+                        eventEndDateEditText.setError(getString(R.string.error_end_date_before_start_date));
+                        eventEndDateEditText.setEnabled(true);
+                        isValidInput = false;
+                    }
+                }
+            }
+
+            if (isValidInput) {
                 // save event strings here
-
-                if(eventUsersList == null) eventUsersList = new ArrayList<>();
-
+                if (eventUsersList == null) eventUsersList = new ArrayList<>();
                 User creator = App.CurrentUser;
                 String eventName = eventNameEditText.getText().toString().trim();
-                eventName = eventName.substring(0,1).toUpperCase() + eventName.substring(1);
+                eventName = eventName.substring(0, 1).toUpperCase() + eventName.substring(1);
 
                 ArrayList<String> eventUserListStrings = new ArrayList<>();
-                for(int idx = 0; idx < eventUsersList.size(); ++idx){
+                for (int idx = 0; idx < eventUsersList.size(); ++idx) {
                     eventUserListStrings.add(eventUsersList.get(idx).getUid());
                 }
 
-                Event event = new Event(creator.getUid(),
-                        eventName,
-                        eventDateEditText.getText().toString(),
-                        null, 1, //TODO: implement new fields
-                        eventInfoEditText.getText().toString(),
-                        eventUserListStrings
-                        );
+                Event event = new Event(
+                        creator.getUid(),                                    // creatorId
+                        eventName,                                           // name
+                        eventBeginDateEditText.getText().toString(),         // date_begin
+                        eventEndDateEditText.getText().toString(),           // date_end
+                        pay_stretch_item_selected_index + 1, // pay_stretch_weeks
+                        eventInfoEditText.getText().toString(),              // info
+                        eventUserListStrings                                 // members
+                );
+
                 DatabaseHandler.createEvent(event);
                 finish();
             }
@@ -137,15 +240,11 @@ public class EventFormActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private static boolean isValidDate(String inputDate) {
-        final String MODULE_NAME_PATTERN = "^([1-9]|0[1-9]|[12][0-9]|3[01])[-\\.]([1-9]|0[1-9]|1[012])[-\\.]\\d{4}$";
-        Pattern pattern = Pattern.compile(MODULE_NAME_PATTERN);
-        Matcher matcher = pattern.matcher(inputDate);
-        return matcher.matches();
+    private boolean isStartDateBeforeEndDate() {
+        return !start_date.after(end_date);
     }
 
-
-    public void setEventMembers(List<User> userList){
+    public void setEventMembers(List<User> userList) {
         eventUsersList = (ArrayList<User>) userList;
         eventUsersTextView.setText(App.listToString(eventUsersList));
     }
