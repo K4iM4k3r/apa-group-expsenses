@@ -144,4 +144,5 @@
     <string name="hint_password_again">Passwort wiederholen</string>
     <string name="notification_friends_empty">Sie haben noch keine Freunde in ihrer Freundesliste!</string>
     <string name="desc_firebase_lockup">firebase lookup</string>
+    <string name="doublebacktoexit">Klicken Sie erneut auf ZURÜCK um die App zu schließen.</string>
 </resources>

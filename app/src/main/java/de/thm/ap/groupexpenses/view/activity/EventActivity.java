@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -29,7 +28,6 @@ import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.view.fragment.CashFragment;
 import de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment;
 
-import static android.support.v4.app.Fragment.instantiate;
 import static de.thm.ap.groupexpenses.view.activity.LoginActivity.CONFIRM_PROCESS;
 import static de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment.USERID;
 
@@ -38,6 +36,7 @@ public class EventActivity extends BaseActivity implements PositionEventListFrag
     private EventListLiveData listLiveData;
     private ViewPager mViewPager;
     private static final String TAG = "EventActivity";
+    private long mBackPressed;;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +120,22 @@ public class EventActivity extends BaseActivity implements PositionEventListFrag
         Intent intent = new Intent(EventActivity.this, PositionActivity.class);
         intent.putExtra("eventEid", ((Event) event).getEid());
         startActivity(intent);
+    }
+
+    @Override
+    public void onBackPressed(){
+        final int TIME_INTERVAL = 2000;
+
+        if (mBackPressed + TIME_INTERVAL > System.currentTimeMillis()) {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            return;
+        }
+        else { Toast.makeText(getBaseContext(), R.string.doublebacktoexit, Toast.LENGTH_SHORT).show(); }
+
+        mBackPressed = System.currentTimeMillis();
     }
 
     private class CollectionPagerAdapter extends FragmentPagerAdapter {

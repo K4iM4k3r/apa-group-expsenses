@@ -149,5 +149,6 @@
     <string name="deleted_user">"deleted user "</string>
     <string name="error_passwords_dont_match">Passwords dont match</string>
     <string name="hint_password_again">Password again</string>
+    <string name="doublebacktoexit">Please click BACK again to exit</string>
 </resources>
 
