@@ -1,7 +1,5 @@
 package de.thm.ap.groupexpenses.model;
 
-import java.io.Serializable;
-
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -13,7 +11,7 @@ public class Event {
 
     private String eid;
     private String name;
-    private String date;
+    private String date_begin;
     private String info;
     private String creatorId;
     private List<String> members; // cleaner way with HashSet TODO
@@ -22,9 +20,9 @@ public class Event {
     //region Constructor
     public Event() { }
 
-    public Event(String creatorId, String name, String date, String info, List<String> members, List<Position> positions) {
+    public Event(String creatorId, String name, String date_begin, String info, List<String> members, List<Position> positions) {
         this.name = name;
-        this.date = date;
+        this.date_begin = date_begin;
         this.info = info;
         this.creatorId = creatorId;
         this.members = new ArrayList<>();
@@ -33,10 +31,10 @@ public class Event {
         this.positions = positions;
     }
 
-    public Event(String creatorId, String name, String date, String info, List<String> members) {
+    public Event(String creatorId, String name, String date_begin, String info, List<String> members) {
         this.creatorId = creatorId;
         this.name = name;
-        this.date = date;
+        this.date_begin = date_begin;
         this.info = info;
         this.members = new ArrayList<>();
         this.members.addAll(members);
@@ -44,10 +42,10 @@ public class Event {
         this.positions = new ArrayList<>();
     }
 
-    public Event(String creatorId, String name, String date, String info) {
+    public Event(String creatorId, String name, String date_begin, String info) {
         this.creatorId = creatorId;
         this.name = name;
-        this.date = date;
+        this.date_begin = date_begin;
         this.info = info;
         this.members = new ArrayList<>();
         this.members.add(creatorId);
@@ -72,12 +70,12 @@ public class Event {
         this.name = name;
     }
 
-    public String getDate() {
-        return date;
+    public String getDate_begin() {
+        return date_begin;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setDate_begin(String date_begin) {
+        this.date_begin = date_begin;
     }
 
     public String getInfo() {
