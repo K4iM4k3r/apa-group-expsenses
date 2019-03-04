@@ -178,7 +178,8 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
     @Override
     public void onClick(View v) {
         if(v == headerView){
-                startActivity(new Intent(this, ProfileActivity.class));
+            mDrawerLayout.closeDrawer(GravityCompat.START, false);
+            startActivity(new Intent(this, ProfileActivity.class));
         }
     }
 
