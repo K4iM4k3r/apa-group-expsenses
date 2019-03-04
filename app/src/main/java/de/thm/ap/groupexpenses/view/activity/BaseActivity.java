@@ -8,10 +8,12 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -43,6 +45,7 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
     private TextView name;
     private UserLiveData userLiveData;
     private CircleImageView picture;
+    private DrawerLayout mDrawerLayout;
     protected FirebaseAuth auth;
     protected FirebaseFirestore db;
     public ProgressDialog mProgressDialog;
@@ -57,7 +60,7 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
         // The new navigation view from Android Design Library. Can inflate menu resources. Easy
         NavigationView navigation_view = findViewById(R.id.navigation_view);
         headerView = navigation_view.getHeaderView(0);
-        DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
+        mDrawerLayout = findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, 0, 0);
         mDrawerLayout.addDrawerListener(mDrawerToggle);
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -181,6 +184,7 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
+        mDrawerLayout.closeDrawer(GravityCompat.START, false);
         switch (item.getItemId()) {
             case R.id.menu_item_profile:
                 startActivity(new Intent(this, ProfileActivity.class));
