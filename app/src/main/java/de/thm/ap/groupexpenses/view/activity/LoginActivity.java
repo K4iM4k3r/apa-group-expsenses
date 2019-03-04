@@ -84,6 +84,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         findViewById(R.id.sendNewPassword).setOnClickListener(this);
         findViewById(R.id.passwordForgot).setOnClickListener(this);
         findViewById(R.id.backToLoginButton).setOnClickListener(this);
+        findViewById(R.id.backButtonForgot).setOnClickListener(this);
 
         auth = FirebaseAuth.getInstance();
     }
@@ -352,6 +353,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             case R.id.emailSignInButton:
                 signIn(edLoginEmail.getText().toString(), edLoginPassword.getText().toString());
                 break;
+            case R.id.backButtonForgot:
             case R.id.backToLoginButton:
             case R.id.backButton:
                 signOut();
