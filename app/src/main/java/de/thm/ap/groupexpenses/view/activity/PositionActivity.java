@@ -147,23 +147,30 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
         if (isEventCreator && selectedEvent.isClosable() && lifecycleState!=CLOSED){
            // lFab shown + delete event
             lFab.setVisibility(View.VISIBLE);
+            lFab.setImageResource(R.drawable.ic_delete_white_24dp);
+
         }
         else if (!isEventCreator && selectedEvent.isEven(App.CurrentUser.getUid()) && lifecycleState!=CLOSED){
             // lFab shown + leave event
             lFab.setVisibility(View.VISIBLE);
+            lFab.setImageResource(R.drawable.ic_exit_white_24dp);
         }
 
         if (isEventCreator && lifecycleState==CLOSED){
             // rFab shown + delete
             rFab.setVisibility(View.VISIBLE);
+            rFab.setImageResource(R.drawable.ic_delete_white_24dp);
+
         }
         else if (!isEventCreator && lifecycleState==CLOSED){
             // rFab shown + leave
             rFab.setVisibility(View.VISIBLE);
+            rFab.setImageResource(R.drawable.ic_exit_white_24dp);
         }
         else {
             // rFab + addPosition
             rFab.setVisibility(View.VISIBLE);
+            rFab.setImageResource(R.drawable.ic_add_white_24dp);
             rFab.setOnClickListener(v -> {
                 if (selectedEvent.getMembers() == null || selectedEvent.getMembers().size() == 1) {
                     Toast error_no_members_toast = Toast.makeText(this, R.string.error_no_members,
