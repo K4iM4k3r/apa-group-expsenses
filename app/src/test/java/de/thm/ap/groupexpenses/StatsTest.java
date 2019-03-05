@@ -46,7 +46,7 @@ public class StatsTest {
     public void getGlobalBalanceTest(){
         int BREAKPOINT = 0;
 
-        Event event1 = new Event(creator.getUid(), "event1", "11.01.2018", "",
+        Event event1 = new Event(creator.getUid(), "event1", 0L, 0L, 0L, "",
                 Arrays.stream(member).map(User::getUid).collect(Collectors.toList()), Arrays.asList(positions));
 
         List<Event> events = new ArrayList<>();
@@ -69,7 +69,8 @@ public class StatsTest {
     public void getEventBalanceTest(){
 
         Stats stats = new Stats();
-        Event event = new Event(creator.getUid(), "Festival2", "Morgen", "", Arrays.stream(member).map(User::getUid).collect(Collectors.toList()));
+        Event event = new Event(creator.getUid(), "Festival2", 0L, 0L, 0L, "",
+                Arrays.stream(member).map(User::getUid).collect(Collectors.toList()));
         event.addPositions(positions);
 
         float balance = Stats.getEventBalance(creator, event);
@@ -91,9 +92,11 @@ public class StatsTest {
         Stats stats = new Stats();
         List<Event> events = new ArrayList<>();
 
-        Event event = new Event(creator.getUid(), "Festival2", "Morgen", "", Arrays.stream(member).map(User::getUid).collect(Collectors.toList()));
+        Event event = new Event(creator.getUid(), "Festival2",0L, 0L, 0L, "",
+                Arrays.stream(member).map(User::getUid).collect(Collectors.toList()));
         event.addPositions(positions);
-        Event event1 = new Event(creator.getUid(), "bla", "blub", "", Arrays.stream(member).map(User::getUid).collect(Collectors.toList()));
+        Event event1 = new Event(creator.getUid(), "bla", 0L, 0L, 0L, "",
+                Arrays.stream(member).map(User::getUid).collect(Collectors.toList()));
         event1.addPositions(positions2);
 
         events.add(event);
@@ -123,7 +126,8 @@ public class StatsTest {
     @Test(expected = IllegalStateException.class)
     public void getEventBalanceErrorTest(){
         Stats stats = new Stats();
-        Event event = new Event(creator.getUid(), "Festival2", "Morgen", "", Arrays.stream(member).map(User::getUid).collect(Collectors.toList()));
+        Event event = new Event(creator.getUid(), "Festival2", 0L, 0L, 0L, "",
+                Arrays.stream(member).map(User::getUid).collect(Collectors.toList()));
 
         Stats.getEventBalance(event);
     }
@@ -134,9 +138,11 @@ public class StatsTest {
         Stats stats = new Stats();
         List<Event> events = new ArrayList<>();
 
-        Event event = new Event(creator.getUid(), "Festival2", "Morgen", "", Arrays.stream(member).map(User::getUid).collect(Collectors.toList()));
+        Event event = new Event(creator.getUid(), "Festival2", 0L, 0L, 0L, "",
+                Arrays.stream(member).map(User::getUid).collect(Collectors.toList()));
         event.addPositions(positions);
-        Event event1 = new Event(creator.getUid(), "bla", "blub", "", Arrays.stream(member).map(User::getUid).collect(Collectors.toList()));
+        Event event1 = new Event(creator.getUid(), "bla", 0L, 0L, 0L, "",
+                Arrays.stream(member).map(User::getUid).collect(Collectors.toList()));
         event1.addPositions(positions2);
 
         events.add(event);

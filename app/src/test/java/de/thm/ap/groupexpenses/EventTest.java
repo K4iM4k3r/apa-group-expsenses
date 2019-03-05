@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,8 +27,22 @@ public class EventTest {
     private User[] member;
     private Position[] positions;
 
+    private long date_now;
+
+    private long date_begin;
+    private long date_end;
+    private long date_deadlineDay;
+
+
     @Before
     public void setup(){
+
+        date_now = Calendar.getInstance().getTimeInMillis();
+
+        date_begin = 1557439200000L; //10.05.2019
+        date_end = 1557698400000L; //13.05.2019
+        date_deadlineDay = 1558908000000L; //27.05.2019
+
         member = new User[]{
                 new User("Nils", "Nils", "Müller", "", "nMueller@mail.de", null, null),
                 new User("Jan", "Jan", "Müller","", "jMueller@mail.de", null, null),
@@ -44,7 +59,7 @@ public class EventTest {
                 new Position(member[3].getUid(), "Essen", 15f)
         };
 
-        event = new Event(creator.getUid(), "Festival2", "Morgen", "", Arrays.stream(member).map(User::getUid).collect(Collectors.toList()));
+        event = new Event(creator.getUid(), "Festival2", date_begin, date_end, date_deadlineDay, "", Arrays.stream(member).map(User::getUid).collect(Collectors.toList()));
         event.addPositions(positions);
     }
 
@@ -165,7 +180,44 @@ public class EventTest {
 
         // No positions
         List<Position> emptyPositions = new ArrayList<>();
-        Event event1 = new Event(creator.getUid(), "", "", "", Arrays.stream(member).map(User::getUid).collect(Collectors.toList()), emptyPositions);
+        Event event1 = new Event(creator.getUid(), "", date_begin, date_end, date_deadlineDay, "", Arrays.stream(member).map(User::getUid).collect(Collectors.toList()), emptyPositions);
         assertTrue(event1.isClosable());
+    }
+
+    @Test
+    public void isEvenTest(){
+
+        assertFalse(event.isEven("Nils"));
+        assertFalse(event.isEven("Jan"));
+        assertFalse(event.isEven("Tom"));
+        assertFalse(event.isEven("Sina"));
+        assertFalse(event.isEven("Mia"));
+
+        event.removeAllDebtsOf("Mia");
+
+        assertFalse(event.isEven("Nils"));
+        assertFalse(event.isEven("Jan"));
+        assertFalse(event.isEven("Tom"));
+        assertFalse(event.isEven("Sina"));
+        assertTrue(event.isEven("Mia"));
+
+        event.removeAllDebtsOf("Nils");
+
+        assertTrue(event.isEven("Nils"));
+        assertFalse(event.isEven("Jan"));
+        assertFalse(event.isEven("Tom"));
+        assertFalse(event.isEven("Sina"));
+        assertTrue(event.isEven("Mia"));
+
+        event.removeAllDebtsOf("Tom");
+
+        assertTrue(event.isEven("Nils"));
+        assertFalse(event.isEven("Jan"));
+        assertFalse(event.isEven("Tom")); // still false till he still gets money
+        assertFalse(event.isEven("Sina"));
+        assertTrue(event.isEven("Mia"));
+
+
+        int bre = 0;
     }
 }
