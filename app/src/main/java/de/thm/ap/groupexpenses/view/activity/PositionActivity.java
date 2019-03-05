@@ -126,6 +126,17 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 mViewPager.setCurrentItem(tab.getPosition());
+                switch (tab.getPosition()){
+                    case 0:
+                        chooseFabs();
+                        break;
+                    case 1:
+                        lFab.setVisibility(View.GONE);
+                        rFab.setVisibility(View.GONE);
+                        break;
+                    default:
+                        break;
+                }
             }
 
             @Override
