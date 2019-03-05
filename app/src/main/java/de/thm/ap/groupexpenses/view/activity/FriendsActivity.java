@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import de.thm.ap.groupexpenses.App;
@@ -38,7 +39,7 @@ import de.thm.ap.groupexpenses.view.dialog.ProfileInfoDialog;
 public class FriendsActivity extends BaseActivity {
     private ListView friendListView;
     private UserArrayAdapter friendsAdapter;
-    private TextView friendsListInfo;
+//    private TextView friendsListInfo;
     private UserListLiveData listLiveData;
 
 
@@ -51,7 +52,7 @@ public class FriendsActivity extends BaseActivity {
             actionBar.setTitle(R.string.FriendsActivityTitle);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        friendsListInfo = findViewById(R.id.friends_list_info);
+//        friendsListInfo = findViewById(R.id.friends_list_info);
 
         FloatingActionButton fab = findViewById(R.id.friends_activity_add_friends_btn);
         fab.setOnClickListener(view -> {
@@ -168,11 +169,9 @@ public class FriendsActivity extends BaseActivity {
     private void loadFriends(List<User> friends) {
         super.hideProgressDialog();
         if(friends.isEmpty()){
-            friendsListInfo.setVisibility(View.VISIBLE);
             friendListView.setVisibility(View.GONE);
         }
         else {
-            friendsListInfo.setVisibility(View.GONE);
             friendListView.setVisibility(View.VISIBLE);
             Collections.sort(friends, Collections.reverseOrder()); //alphabetical sort
             friendsAdapter = new UserArrayAdapter(this, friends);
@@ -194,7 +193,7 @@ public class FriendsActivity extends BaseActivity {
             if (view == null) {
                 LayoutInflater vi = (LayoutInflater) getContext().getSystemService(
                         Context.LAYOUT_INFLATER_SERVICE);
-                view = vi.inflate(VIEW_RESOURCE, null);
+                view = Objects.requireNonNull(vi).inflate(VIEW_RESOURCE, null);
             }
 
             User user = getItem(pos);
@@ -205,12 +204,6 @@ public class FriendsActivity extends BaseActivity {
                 }
                 TextView nickname = view.findViewById(R.id.list_item_nickname);
                 nickname.setText(user.getNickname());
-                /*
-                TextView firstname = view.findViewById(R.id.list_item_firstname);
-                firstname.setText(user.getFirstName());
-                TextView lastname = view.findViewById(R.id.list_item_lastname);
-                lastname.setText(user.getLastName());
-                */
             }
 
             return view;
