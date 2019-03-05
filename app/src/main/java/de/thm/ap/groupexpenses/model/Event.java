@@ -3,8 +3,10 @@ package de.thm.ap.groupexpenses.model;
 import android.support.annotation.NonNull;
 
 import com.google.firebase.firestore.Exclude;
+import com.google.firebase.firestore.auth.User;
 import com.google.protobuf.Enum;
 
+import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -22,6 +24,11 @@ public class Event {
     private String creatorId;
     private List<String> members; // cleaner way with HashSet TODO
     private List<Position> positions;
+
+    // NonDB-Stuff
+    public enum LifecycleState {
+        ERROR, ONGOING, LIVE, LOCKED, CLOSED
+    }
 
     //region Constructor
     public Event() { }
@@ -211,7 +218,7 @@ public class Event {
     /**
      * Checks if this event can be closed due to no open transactions.
      */
-    @Exclude 
+    @Exclude
     public boolean isClosable() {
 
         switch (getLifecycleState()){
@@ -232,12 +239,8 @@ public class Event {
     }
 
     private boolean hasNoOpenTransactions(){
-        if (positions == null || members == null) throw new IllegalStateException("Event undefined.");
-        for (Position pos: positions) {
-            for (String member: members){
-                if (!pos.isExcludedFromPayments(member))
-                    return false;
-            }
+        for (String member : members){
+            if(!isEven(member)) return false;
         }
         return true;
     }
@@ -246,7 +249,7 @@ public class Event {
     public LifecycleState getLifecycleState(){
 
         // TODO: Consider using Server Time for no "cheating"
-
+        
         long date_now = Calendar.getInstance().getTimeInMillis();
 
         if (date_now <= 0 || date_begin <= 0 || date_end <= 0 || date_deadlineDay <= 0)
@@ -258,11 +261,6 @@ public class Event {
 
         return LifecycleState.ONGOING;
     }
-
-    public enum LifecycleState {
-        ERROR, ONGOING, LIVE, LOCKED, CLOSED
-    }
-
     //endregion
 
     @NonNull
