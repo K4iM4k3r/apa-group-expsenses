@@ -37,6 +37,7 @@ import de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment;
 import de.thm.ap.groupexpenses.view.fragment.UserListDialogFragment;
 
 import static de.thm.ap.groupexpenses.model.Event.LifecycleState.CLOSED;
+import static de.thm.ap.groupexpenses.model.Event.LifecycleState.LIVE;
 
 public class PositionActivity extends BaseActivity implements PositionEventListFragment.ItemClickListener {
 
@@ -44,8 +45,17 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
     private List<User> eventMembers;
     private ViewPager mViewPager;
 
-    FloatingActionButton lFab;
-    FloatingActionButton rFab;
+    private FloatingActionButton lFab;
+    private FloatingActionButton rFab;
+
+    private View.OnClickListener leaveEvent = view -> {
+        DatabaseHandler.hideEvent(selectedEvent.getEid(), App.CurrentUser.getUid());
+        finish();
+    };
+    private View.OnClickListener deleteEvent = view -> {
+        DatabaseHandler.deleteEvent(selectedEvent.getEid(), null);
+        finish();
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,12 +172,14 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
            // lFab shown + delete event
             lFab.setVisibility(View.VISIBLE);
             lFab.setImageResource(R.drawable.ic_delete_white_24dp);
+            lFab.setOnClickListener(deleteEvent);
 
         }
-        else if (!isEventCreator && selectedEvent.isEven(App.CurrentUser.getUid()) && lifecycleState!=CLOSED){
+        else if (!isEventCreator && selectedEvent.isEven(App.CurrentUser.getUid()) && lifecycleState!=CLOSED && lifecycleState!=LIVE){
             // lFab shown + leave event
             lFab.setVisibility(View.VISIBLE);
             lFab.setImageResource(R.drawable.ic_exit_white_24dp);
+            lFab.setOnClickListener(leaveEvent);
         }
 
         //-- rFab
@@ -176,12 +188,13 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
             // rFab shown + delete
             rFab.setVisibility(View.VISIBLE);
             rFab.setImageResource(R.drawable.ic_delete_white_24dp);
-
+            rFab.setOnClickListener(deleteEvent);
         }
         else if (!isEventCreator && lifecycleState==CLOSED){
             // rFab shown + leave
             rFab.setVisibility(View.VISIBLE);
             rFab.setImageResource(R.drawable.ic_exit_white_24dp);
+            rFab.setOnClickListener(leaveEvent);
         }
         else {
             // rFab + addPosition
