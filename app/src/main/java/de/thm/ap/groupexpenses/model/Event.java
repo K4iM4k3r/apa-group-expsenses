@@ -2,7 +2,10 @@ package de.thm.ap.groupexpenses.model;
 
 import android.support.annotation.NonNull;
 
+import com.google.protobuf.Enum;
+
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +16,7 @@ public class Event {
     private String name;
     private Long date_begin;
     private Long date_end;
-    private int pay_stretch_weeks; // in weeks
+    private Long date_deadlineDay;
     private String info;
     private String creatorId;
     private List<String> members; // cleaner way with HashSet TODO
@@ -22,11 +25,11 @@ public class Event {
     //region Constructor
     public Event() { }
 
-    public Event(String creatorId, String name, Long date_begin, Long date_end, int pay_stretch_weeks, String info, List<String> members, List<Position> positions) {
+    public Event(String creatorId, String name, Long date_begin, Long date_end, Long date_deadlineDay, String info, List<String> members, List<Position> positions) {
         this.name = name;
         this.date_begin = date_begin;
         this.date_end = date_end;
-        this.pay_stretch_weeks = pay_stretch_weeks;
+        this.date_deadlineDay = date_deadlineDay;
         this.info = info;
         this.creatorId = creatorId;
         this.members = new ArrayList<>();
@@ -35,12 +38,12 @@ public class Event {
         this.positions = positions;
     }
 
-    public Event(String creatorId, String name, Long date_begin, Long date_end, int pay_stretch_weeks, String info, List<String> members) {
-        this(creatorId, name, date_begin, date_end, pay_stretch_weeks, info, members, new ArrayList<>());
+    public Event(String creatorId, String name, Long date_begin, Long date_end, Long date_deadlineDay, String info, List<String> members) {
+        this(creatorId, name, date_begin, date_end, date_deadlineDay, info, members, new ArrayList<>());
     }
 
-    public Event(String creatorId, String name, Long date_begin, Long date_end, int pay_stretch_weeks, String info) {
-        this(creatorId, name, date_begin, date_end, pay_stretch_weeks, info, new ArrayList<>());
+    public Event(String creatorId, String name, Long date_begin, Long date_end, Long date_deadlineDay, String info) {
+        this(creatorId, name, date_begin, date_end, date_deadlineDay, info, new ArrayList<>());
     }
     //endregion
 
@@ -73,11 +76,11 @@ public class Event {
         this.date_end = date_end;
     }
 
-    public int getPayStretchWeeks() {
-        return pay_stretch_weeks;
+    public Long getDate_deadlineDay() {
+        return date_deadlineDay;
     }
-    public void setPayStretchWeeks(int num_pay_stretch_weeks) {
-        this.pay_stretch_weeks = num_pay_stretch_weeks;
+    public void setDate_deadlineDay(long deadlineDay) {
+        this.date_deadlineDay = deadlineDay;
     }
 
     public String getInfo() {
@@ -200,10 +203,31 @@ public class Event {
     public boolean removeMember(String uid){
         return members.remove(uid);
     }
+
+    //region Lifecycle
     /**
      * Checks if this event can be closed due to no open transactions.
      */
     public boolean isClosable() {
+
+        switch (getLifecycleState()){
+            case ONGOING:
+            case LIVE:
+            case LOCKED:
+                return hasNoOpenTransactions();
+            case CLOSED:
+                return true;
+            case ERROR:
+            default:
+                return false;
+        }
+    }
+
+    public boolean hasOpenTransactions(){
+        return !hasNoOpenTransactions();
+    }
+
+    private boolean hasNoOpenTransactions(){
         if (positions == null || members == null) throw new IllegalStateException("Event undefined.");
         for (Position pos: positions) {
             for (String member: members){
@@ -213,6 +237,28 @@ public class Event {
         }
         return true;
     }
+
+    public LifecycleState getLifecycleState(){
+
+        // TODO: Consider using Server Time for no "cheating"
+
+        long date_now = Calendar.getInstance().getTimeInMillis();
+
+        if (date_now <= 0 || date_begin <= 0 || date_end <= 0 || date_deadlineDay <= 0)
+            return LifecycleState.ERROR;
+
+        if (date_now >= date_deadlineDay) return LifecycleState.CLOSED;
+        if (date_now >= date_end) return LifecycleState.LOCKED;
+        if (date_now >= date_begin) return LifecycleState.LIVE;
+
+        return LifecycleState.ONGOING;
+    }
+
+    public enum LifecycleState {
+        ERROR, ONGOING, LIVE, LOCKED, CLOSED
+    }
+
+    //endregion
 
     @NonNull
     @Override
