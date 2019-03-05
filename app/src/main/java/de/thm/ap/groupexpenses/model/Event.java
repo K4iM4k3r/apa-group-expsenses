@@ -2,6 +2,7 @@ package de.thm.ap.groupexpenses.model;
 
 import android.support.annotation.NonNull;
 
+import com.google.firebase.firestore.Exclude;
 import com.google.protobuf.Enum;
 
 import java.util.ArrayList;
@@ -210,6 +211,7 @@ public class Event {
     /**
      * Checks if this event can be closed due to no open transactions.
      */
+    @Exclude 
     public boolean isClosable() {
 
         switch (getLifecycleState()){
@@ -240,6 +242,7 @@ public class Event {
         return true;
     }
 
+    @Exclude // ignore in firebase
     public LifecycleState getLifecycleState(){
 
         // TODO: Consider using Server Time for no "cheating"
