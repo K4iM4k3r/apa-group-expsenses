@@ -20,6 +20,8 @@ import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 
+import static de.thm.ap.groupexpenses.App.getDateFromLong;
+
 public class EventInfoDialog {
     private AlertDialog.Builder eventDialog;
     private AlertDialog dialog;
@@ -55,7 +57,7 @@ public class EventInfoDialog {
         if (creatorNickname == null) creator = context.getString(R.string.you);
         else creator = creatorNickname;
 
-        String creatorAndDate = context.getResources().getString(R.string.creator_and_date_event, creator, event.getDate_begin());
+        String creatorAndDate = context.getResources().getString(R.string.creator_and_date_event, creator, getDateFromLong(event.getDate_begin()));
         Spannable creatorAndDateDefaultVal = new SpannableString(creatorAndDate);
         creatorAndDateDefaultVal.setSpan(new ForegroundColorSpan(Color.parseColor("#3a90e0")),
                 13, 13 + creator.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
