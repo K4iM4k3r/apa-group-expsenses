@@ -374,6 +374,22 @@ public class DatabaseHandler {
         });
     }
 
+    /**
+     * Method to leave event entirely
+     * @param eid
+     * @param uid
+     */
+    public static void leaveEvent(String eid, String uid){
+        queryEvent(eid, event -> {
+            event.removeMember(uid);
+            updateEventWithoutMakeAllMemberActive(event);
+        });
+        queryUser(uid, user -> {
+            user.removeEvent(eid);
+            updateUser(user);
+        });
+    }
+
 }
 
 
