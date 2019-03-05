@@ -87,9 +87,12 @@ public class PositionEventListFragment<T> extends Fragment {
             if (eid != null) {
                 EventLiveData eventLiveData = DatabaseHandler.getEventLiveData(eid);
                 eventLiveData.observe(this, event -> {
-                    if (event != null) {
+                    if (event != null && !event.getPositions().isEmpty()) {
+                        headerView.setVisibility(View.VISIBLE);
+                        object_listView.setVisibility(View.VISIBLE);
                         noObjects_textView.setVisibility(View.GONE);
-                        header_text.setText(getString(R.string.total_expenses) + ":");
+                        String headerText = getString(R.string.total_expenses) + ":";
+                        header_text.setText(headerText);
                         relatedEventToPosition = event;
                         updateTotalBalanceOfPositions(event);
                         List<Position> positions = event.getPositions();
@@ -97,6 +100,15 @@ public class PositionEventListFragment<T> extends Fragment {
                             creatorMap.putIfAbsent(positions.get(idx).getCreatorId(), "");
                         }
                         generateAdapter((List<T>) positions, true);
+                    }
+                    else {
+                        headerView.setVisibility(View.GONE);
+                        noObjects_textView.setVisibility(View.VISIBLE);
+                        noObjects_textView.setText(R.string.no_positions);
+                        if(adapter != null){
+                            object_listView.setVisibility(View.GONE);
+                            adapter.clear();
+                        }
                     }
                 });
             }
@@ -120,6 +132,7 @@ public class PositionEventListFragment<T> extends Fragment {
                     else {
                         headerView.setVisibility(View.GONE);
                         noObjects_textView.setVisibility(View.VISIBLE);
+                        noObjects_textView.setText(R.string.no_events);
                         if(adapter != null){
                             object_listView.setVisibility(View.GONE);
                             adapter.clear();
