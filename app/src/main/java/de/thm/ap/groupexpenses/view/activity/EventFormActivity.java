@@ -16,8 +16,6 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -25,12 +23,15 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
-import de.thm.ap.groupexpenses.view.fragment.UserListDialogFragment;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.User;
+import de.thm.ap.groupexpenses.view.fragment.UserListDialogFragment;
+
+import static de.thm.ap.groupexpenses.App.CurrentUser;
+import static de.thm.ap.groupexpenses.App.getDateFromLong;
+import static de.thm.ap.groupexpenses.App.listToString;
 
 public class EventFormActivity extends BaseActivity {
 
@@ -149,7 +150,7 @@ public class EventFormActivity extends BaseActivity {
             Calendar c = Calendar.getInstance();
             c.set(year, month, day, 0, 0, 0);
             start_date = c.getTime();
-            String date = App.getDateFromLong(start_date.getTime());
+            String date = getDateFromLong(start_date.getTime());
             eventBeginDateEditText.setText(date);
 
             if (start_date.after(end_date)){
@@ -163,7 +164,7 @@ public class EventFormActivity extends BaseActivity {
             Calendar c = Calendar.getInstance();
             c.set(year, month, day, 23, 59, 59);
             end_date = c.getTime();
-            String date = App.getDateFromLong(end_date.getTime());
+            String date = getDateFromLong(end_date.getTime());
             eventEndDateEditText.setText(date);
 
             if (start_date.after(end_date)){
@@ -213,7 +214,7 @@ public class EventFormActivity extends BaseActivity {
         Long deadlineday = end_date.getTime() + timeSpanInMillis;
 
         Event event = new Event(
-                App.CurrentUser.getUid(),                            // creatorId
+                CurrentUser.getUid(),                            // creatorId
                 eventName,                                           // name
                 start_date.getTime(),                                // date_begin
                 end_date.getTime(),                                  // date_end
@@ -249,13 +250,12 @@ public class EventFormActivity extends BaseActivity {
 
     public void setEventMembers(List<User> userList) {
         addedMembers = (ArrayList<User>) userList;
-        eventUsersTextView.setText(App.listToString(addedMembers));
+        eventUsersTextView.setText(listToString(addedMembers));
     }
 
     private void setDefaultDates(){
 
         Calendar c = Calendar.getInstance();
-        DateFormat format = new SimpleDateFormat("dd.MM.yyyy");
 
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
@@ -263,11 +263,11 @@ public class EventFormActivity extends BaseActivity {
 
         c.set(year, month, day, 0,0,0);
         start_date = c.getTime();
-        eventBeginDateEditText.setText(format.format(c.getTime()));
+        eventBeginDateEditText.setText(getDateFromLong(start_date.getTime()));
 
         c.set(year, month, day, 23, 59, 59);
         end_date = c.getTime();
-        eventEndDateEditText.setText(format.format(c.getTime()));
+        eventEndDateEditText.setText(getDateFromLong(end_date.getTime()));
     }
 
 }
