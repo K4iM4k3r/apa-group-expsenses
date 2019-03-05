@@ -104,11 +104,18 @@ public class Event {
         }
         return false;
     }
-
     public void addMembers(String... users) {
         for (String userUid : users)
             if (!this.members.contains(userUid))
                 this.members.add(userUid);
+    }
+    /**
+     * Remove Member with uid
+     * @param uid User Id of Member
+     * @return true if successful, else false
+     */
+    public boolean removeMember(String uid){
+        return members.remove(uid);
     }
     //endregion
 
@@ -198,15 +205,6 @@ public class Event {
         positions.removeIf(position -> position.getCreatorId().equals(userId));
     }
     //endregion
-
-    /**
-     * Remove Member with uid
-     * @param uid User Id of Member
-     * @return true if successful, else false
-     */
-    public boolean removeMember(String uid){
-        return members.remove(uid);
-    }
 
     //region Lifecycle
     /**
