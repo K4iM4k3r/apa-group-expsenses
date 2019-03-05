@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import de.thm.ap.groupexpenses.model.Event;
@@ -219,5 +220,57 @@ public class EventTest {
 
 
         int bre = 0;
+    }
+
+    @Test
+    public void getLifecycleTest(){
+
+        date_now = Calendar.getInstance().getTimeInMillis();
+        Event event;
+
+        // ---------------------------------| Ongoing |---------------------------------------------
+
+        date_begin = date_now + TimeUnit.DAYS.toMillis(5);
+        date_end = date_begin + TimeUnit.DAYS.toMillis(3);
+        date_deadlineDay = date_end + TimeUnit.DAYS.toMillis(14);
+
+        event = new Event("Tom", "Urlaub", date_begin, date_end, date_deadlineDay, "");
+        assert event.getLifecycleState() == Event.LifecycleState.ONGOING;
+
+        // ---------------------------------| Live |------------------------------------------------
+
+        date_begin = date_now - TimeUnit.DAYS.toMillis(1);
+        date_end = date_now + TimeUnit.DAYS.toMillis(1);
+        date_deadlineDay = date_end + TimeUnit.DAYS.toMillis(14);
+
+        event = new Event("Tom", "Urlaub", date_begin, date_end, date_deadlineDay, "");
+        assert event.getLifecycleState() == Event.LifecycleState.LIVE;
+
+        // ---------------------------------| Locked |----------------------------------------------
+
+        date_begin = date_now - TimeUnit.DAYS.toMillis(2);
+        date_end = date_now - TimeUnit.DAYS.toMillis(1);
+        date_deadlineDay = date_now + TimeUnit.DAYS.toMillis(14);
+
+        event = new Event("Tom", "Urlaub", date_begin, date_end, date_deadlineDay, "");
+        assert event.getLifecycleState() == Event.LifecycleState.LOCKED;
+
+        // ---------------------------------| Closed |----------------------------------------------
+
+        date_begin = date_now - TimeUnit.DAYS.toMillis(16);
+        date_end = date_now - TimeUnit.DAYS.toMillis(14);
+        date_deadlineDay = date_now - TimeUnit.DAYS.toMillis(1);
+
+        event = new Event("Tom", "Urlaub", date_begin, date_end, date_deadlineDay, "");
+        assert event.getLifecycleState() == Event.LifecycleState.CLOSED;
+
+        // ---------------------------------| ERROR |----------------------------------------------
+
+        date_begin = -5L;
+        date_end = date_now - TimeUnit.DAYS.toMillis(1);
+        date_deadlineDay = date_now + TimeUnit.DAYS.toMillis(14);
+
+        event = new Event("Tom", "Urlaub", date_begin, date_end, date_deadlineDay, "");
+        assert event.getLifecycleState() == Event.LifecycleState.ERROR;
     }
 }
