@@ -2,6 +2,7 @@ package de.thm.ap.groupexpenses.database;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -332,7 +333,7 @@ public class DatabaseHandler {
      * @param eid Event Id
      * @param failureListener listener if something fails
      */
-    public static void deleteEvent(String eid, OnFailureListener failureListener){
+    public static void deleteEvent(String eid, @NonNull OnFailureListener failureListener){
         FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS)
                 .document(eid)
                 .delete()
