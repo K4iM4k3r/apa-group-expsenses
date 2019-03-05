@@ -12,7 +12,8 @@
         android:textAlignment="center"
         android:textAppearance="?android:textAppearanceListItem"
         android:textColor="@color/app_grey"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:text="@string/no_events"/>
 
     <ListView
         android:id="@+id/fragment_listView"

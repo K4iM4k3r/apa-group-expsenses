@@ -103,14 +103,20 @@ public class PositionEventListFragment<T> extends Fragment {
             else if (uid != null) {
                 EventListLiveData listLiveData = DatabaseHandler.getEventListLiveData(uid);
                 listLiveData.observe(this, eventList -> {
-                    if (eventList != null) {
+                    if (eventList != null && !eventList.isEmpty()) {
+                        String headerText = getString(R.string.total_balance) + ":";
                         noObjects_textView.setVisibility(View.GONE);
-                        header_text.setText(getString(R.string.total_balance) + ":");
+                        header_text.setText(headerText);
                         updateTotalBalanceOfEvents(eventList);
                         for (int idx = 0; idx < eventList.size(); ++idx) {
                             creatorMap.putIfAbsent(eventList.get(idx).getCreatorId(), "");
                         }
                         generateAdapter((List<T>) eventList, false);
+
+                    }
+                    else {
+                        headerView.setVisibility(View.GONE);
+                        noObjects_textView.setVisibility(View.VISIBLE);
 
                     }
                 });

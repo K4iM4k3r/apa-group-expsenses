@@ -150,7 +150,6 @@
     <string name="delete">delete</string>
     <string name="edit">edit</string>
     <string name="nobody">nobody</string>
-    <string name="no_events">no events found!</string>
     <string name="position_inspect_positions">event postions</string>
     <string name="no_friends">no friends were found!</string>
     <string name="loading">loading</string>
@@ -173,5 +172,6 @@
         <item>3 weeks</item>
         <item>4 weeks</item>
     </string-array>
+    <string name="no_events">no events found!</string>
 </resources>
 
