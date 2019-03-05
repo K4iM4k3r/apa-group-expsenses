@@ -22,13 +22,25 @@
         android:visibility="visible" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/create_position_btn"
+        android:id="@+id/rightFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
+        android:backgroundTint="#008577"
+        app:borderWidth="0dp"
+        app:srcCompat="@drawable/ic_add_white_24dp" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/leftFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
         android:backgroundTint="#008577"
         app:borderWidth="0dp"
         app:srcCompat="@drawable/ic_add_white_24dp" />

@@ -100,7 +100,7 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
         } else {
             finish();
         }
-        FloatingActionButton createPositionBtn = findViewById(R.id.create_position_btn);
+        FloatingActionButton createPositionBtn = findViewById(R.id.rightFab);
         createPositionBtn.setOnClickListener(v -> {
             if (selectedEvent.getMembers() == null || selectedEvent.getMembers().size() == 1) {
                 Toast error_no_members_toast = Toast.makeText(this, R.string.error_no_members,
