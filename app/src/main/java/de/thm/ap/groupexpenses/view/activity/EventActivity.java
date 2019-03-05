@@ -36,7 +36,8 @@ public class EventActivity extends BaseActivity implements PositionEventListFrag
     private EventListLiveData listLiveData;
     private ViewPager mViewPager;
     private static final String TAG = "EventActivity";
-    private long mBackPressed;;
+    private long mBackPressed;
+    private FloatingActionButton createEventBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +63,7 @@ public class EventActivity extends BaseActivity implements PositionEventListFrag
             });
 
         }
-        FloatingActionButton createEventBtn = findViewById(R.id.create_event_btn);
+        createEventBtn = findViewById(R.id.create_event_btn);
         createEventBtn.setOnClickListener(v -> startActivity(
                 new Intent(EventActivity.this, EventFormActivity.class)));
         auth = FirebaseAuth.getInstance();
@@ -82,6 +83,16 @@ public class EventActivity extends BaseActivity implements PositionEventListFrag
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 mViewPager.setCurrentItem(tab.getPosition());
+                switch (tab.getPosition()){
+                    case 0:
+                        createEventBtn.setVisibility(View.VISIBLE);
+                        break;
+                    case 1:
+                        createEventBtn.setVisibility(View.GONE);
+                        break;
+                    default:
+                        break;
+                }
             }
 
             @Override
