@@ -36,11 +36,16 @@ import de.thm.ap.groupexpenses.view.fragment.CashFragment;
 import de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment;
 import de.thm.ap.groupexpenses.view.fragment.UserListDialogFragment;
 
+import static de.thm.ap.groupexpenses.model.Event.LifecycleState.CLOSED;
+
 public class PositionActivity extends BaseActivity implements PositionEventListFragment.ItemClickListener {
 
     private Event selectedEvent;
     private List<User> eventMembers;
     private ViewPager mViewPager;
+
+    FloatingActionButton lFab;
+    FloatingActionButton rFab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,18 +105,9 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
         } else {
             finish();
         }
-        FloatingActionButton createPositionBtn = findViewById(R.id.rightFab);
-        createPositionBtn.setOnClickListener(v -> {
-            if (selectedEvent.getMembers() == null || selectedEvent.getMembers().size() == 1) {
-                Toast error_no_members_toast = Toast.makeText(this, R.string.error_no_members,
-                        Toast.LENGTH_LONG);
-                error_no_members_toast.show();
-            } else {
-                Intent intent = new Intent(PositionActivity.this, PositionFormActivity.class);
-                intent.putExtra("relatedEventEid", selectedEvent.getEid());
-                startActivity(intent);
-            }
-        });
+
+        lFab = findViewById(R.id.leftFab);
+        rFab = findViewById(R.id.rightFab);
 
         CollectionPagerAdapter mCollectionPagerAdapter = new CollectionPagerAdapter(
                 getSupportFragmentManager(), 2, selectedEventEid);
@@ -138,6 +134,48 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
+    }
+
+    private void chooseFabs(){
+        boolean isEventCreator = selectedEvent.getCreatorId().equals(App.CurrentUser.getUid());
+        Event.LifecycleState lifecycleState = selectedEvent.getLifecycleState();
+
+        lFab.setVisibility(View.GONE);
+        rFab.setVisibility(View.GONE);
+
+
+        if (isEventCreator && selectedEvent.isClosable() && lifecycleState!=CLOSED){
+           // lFab shown + delete event
+            lFab.setVisibility(View.VISIBLE);
+        }
+        else if (!isEventCreator && selectedEvent.isEven(App.CurrentUser.getUid()) && lifecycleState!=CLOSED){
+            // lFab shown + leave event
+            lFab.setVisibility(View.VISIBLE);
+        }
+
+        if (isEventCreator && lifecycleState==CLOSED){
+            // rFab shown + delete
+            rFab.setVisibility(View.VISIBLE);
+        }
+        else if (!isEventCreator && lifecycleState==CLOSED){
+            // rFab shown + leave
+            rFab.setVisibility(View.VISIBLE);
+        }
+        else {
+            // rFab + addPosition
+            rFab.setVisibility(View.VISIBLE);
+            rFab.setOnClickListener(v -> {
+                if (selectedEvent.getMembers() == null || selectedEvent.getMembers().size() == 1) {
+                    Toast error_no_members_toast = Toast.makeText(this, R.string.error_no_members,
+                            Toast.LENGTH_LONG);
+                    error_no_members_toast.show();
+                } else {
+                    Intent intent = new Intent(PositionActivity.this, PositionFormActivity.class);
+                    intent.putExtra("relatedEventEid", selectedEvent.getEid());
+                    startActivity(intent);
+                }
+            });
+        }
     }
 
     /*
