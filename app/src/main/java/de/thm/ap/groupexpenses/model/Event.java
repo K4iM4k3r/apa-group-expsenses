@@ -144,7 +144,7 @@ public class Event {
      * @return true if successful, else false
      */
     public boolean removeMember(String uid){
-        return members.remove(uid);
+        return members.remove(uid) && activeMembers.remove(uid);
     }
     //endregion
 
