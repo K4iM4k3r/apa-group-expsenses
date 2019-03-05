@@ -3,6 +3,8 @@ package de.thm.ap.groupexpenses;
 import android.app.Application;
 import android.content.Context;
 
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import de.thm.ap.groupexpenses.model.User;
@@ -59,4 +61,8 @@ public class App extends Application {
         return result;
     }
 
+    public static String getDateFromLong(long date){
+        Format format = new SimpleDateFormat("dd.MM.yyyy");
+        return format.format(date);
+    }
 }
