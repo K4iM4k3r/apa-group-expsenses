@@ -51,6 +51,10 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_position);
+
+        lFab = findViewById(R.id.leftFab);
+        rFab = findViewById(R.id.rightFab);
+
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -98,6 +102,7 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
                     }
 
                 }
+                chooseFabs();
             });
 
             UserListLiveData userListLiveData = DatabaseHandler.getAllMembersOfEvent(selectedEventEid);
@@ -105,9 +110,6 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
         } else {
             finish();
         }
-
-        lFab = findViewById(R.id.leftFab);
-        rFab = findViewById(R.id.rightFab);
 
         CollectionPagerAdapter mCollectionPagerAdapter = new CollectionPagerAdapter(
                 getSupportFragmentManager(), 2, selectedEventEid);
@@ -143,6 +145,7 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
         lFab.setVisibility(View.GONE);
         rFab.setVisibility(View.GONE);
 
+        //-- lFab
 
         if (isEventCreator && selectedEvent.isClosable() && lifecycleState!=CLOSED){
            // lFab shown + delete event
@@ -155,6 +158,8 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
             lFab.setVisibility(View.VISIBLE);
             lFab.setImageResource(R.drawable.ic_exit_white_24dp);
         }
+
+        //-- rFab
 
         if (isEventCreator && lifecycleState==CLOSED){
             // rFab shown + delete
