@@ -149,6 +149,10 @@ public class Event {
     //endregion
 
     //region Expense-Management
+    public boolean isEven(String userId){
+        return getBalanceTable(userId).isEmpty();
+    }
+
     public Map<String, Float> getBalanceTable(String userId) {
         Map<String, Float> result = new HashMap<>();
         for (Position p : positions) {

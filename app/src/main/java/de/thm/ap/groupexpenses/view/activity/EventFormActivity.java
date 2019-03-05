@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
@@ -223,12 +224,17 @@ public class EventFormActivity extends BaseActivity {
                     eventUserListStrings.add(eventUsersList.get(idx).getUid());
                 }
 
+                int weeks = pay_stretch_item_selected_index+1;
+                int days = weeks * 7;
+                long millis = TimeUnit.DAYS.toMillis(days);
+                Long deadlineday = end_date.getTime() + millis;
+
                 Event event = new Event(
                         creator.getUid(),                                    // creatorId
                         eventName,                                           // name
                         start_date.getTime(),                                // date_begin
                         end_date == null ? null : end_date.getTime(),        // date_end
-                        pay_stretch_item_selected_index + 1, // pay_stretch_weeks
+                        deadlineday,                                         // deadline_day
                         eventInfoEditText.getText().toString(),              // info
                         eventUserListStrings                                 // members
                 );
