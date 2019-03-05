@@ -160,6 +160,10 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
     }
 
     private void chooseFabs(){
+
+
+        if (selectedEvent == null) return;
+
         boolean isEventCreator = selectedEvent.getCreatorId().equals(App.CurrentUser.getUid());
         Event.LifecycleState lifecycleState = selectedEvent.getLifecycleState();
 
@@ -173,7 +177,6 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
             lFab.setVisibility(View.VISIBLE);
             lFab.setImageResource(R.drawable.ic_delete_white_24dp);
             lFab.setOnClickListener(deleteEvent);
-
         }
         else if (!isEventCreator && selectedEvent.isEven(App.CurrentUser.getUid()) && lifecycleState!=CLOSED && lifecycleState!=LIVE){
             // lFab shown + leave event
