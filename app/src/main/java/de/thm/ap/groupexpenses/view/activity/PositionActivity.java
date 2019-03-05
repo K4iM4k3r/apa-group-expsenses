@@ -179,16 +179,17 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
             lFab.setImageResource(R.drawable.ic_delete_white_24dp);
             lFab.setOnClickListener(deleteEvent);
         }
-        else if (!isEventCreator && selectedEvent.isEven(App.CurrentUser.getUid()) && lifecycleState!=CLOSED && lifecycleState!=LIVE){
-            lFab.setVisibility(View.VISIBLE);
-            lFab.setImageResource(R.drawable.ic_exit_white_24dp);
-            lFab.setOnClickListener(hideEvent);
-        }
         else if (!isEventCreator && selectedEvent.isEven(App.CurrentUser.getUid()) && lifecycleState==ONGOING){
             lFab.setVisibility(View.VISIBLE);
             lFab.setImageResource(R.drawable.ic_delete_white_24dp);
             lFab.setOnClickListener(leaveEvent);
         }
+        else if (!isEventCreator && selectedEvent.isEven(App.CurrentUser.getUid()) && lifecycleState!=CLOSED && lifecycleState!=LIVE){
+            lFab.setVisibility(View.VISIBLE);
+            lFab.setImageResource(R.drawable.ic_exit_white_24dp);
+            lFab.setOnClickListener(hideEvent);
+        }
+
 
         //-- rFab
 
