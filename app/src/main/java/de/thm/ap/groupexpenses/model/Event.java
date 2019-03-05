@@ -123,7 +123,7 @@ public class Event {
 
 
     public void removeActiveMember(String uid){
-        this.activeMembers.add(uid);
+        this.activeMembers.remove(uid);
     }
     public boolean addMember(String user) {
         if (!this.members.contains(user)) {
