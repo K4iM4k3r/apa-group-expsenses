@@ -37,7 +37,7 @@
         android:layout_width="240dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        app:itemTextColor="@color/colorAccent"
+        app:itemTextColor="@color/black"
         app:menu="@menu/menu_drawer"
         app:headerLayout="@layout/header_layout"
         />
