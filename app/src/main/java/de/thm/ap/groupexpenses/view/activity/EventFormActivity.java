@@ -160,16 +160,25 @@ public class EventFormActivity extends BaseActivity {
         });
 
         beginDateSetListener = (view, year, month, day) -> {
-            year -= 1900;
-            start_date = new Date(year, month, day);
+            Calendar c = Calendar.getInstance();
+            c.set(year, month, day, 0, 0, 0);
+            start_date = c.getTime();
             Format format = new SimpleDateFormat("dd.MM.yyyy");
             String date_string = format.format(start_date);
             eventBeginDateEditText.setText(date_string);
+
+            if (end_date == null){
+                c.set(year, month, day, 23, 59, 59);
+                end_date = c.getTime();
+                date_string = format.format(end_date);
+                eventEndDateEditText.setText(date_string);
+            }
         };
 
         endDateSetListener = (view, year, month, day) -> {
-            year -= 1900;
-            end_date = new Date(year, month, day);
+            Calendar c = Calendar.getInstance();
+            c.set(year, month, day, 23, 59, 59);
+            end_date = c.getTime();
             Format format = new SimpleDateFormat("dd.MM.yyyy");
             String date_string = format.format(end_date);
             eventEndDateEditText.setText(date_string);
