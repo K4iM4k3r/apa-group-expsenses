@@ -6,7 +6,7 @@
     <string name="event_form_date_begin">begin date</string>
     <string name="event_form_date_end">end date</string>
     <string name="event_form_one_day">One-day-Event</string>
-    <string name="event_form_pay_stretch">Pay stretch</string>
+    <string name="event_form_payment_deadline">Payment Deadline</string>
     <string name="ok">OK</string>
     <string name="unknown">unknown</string>
     <string name="add_with_num">Add (%1$d)</string>

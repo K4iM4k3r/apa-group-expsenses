@@ -58,14 +58,6 @@
 
     </LinearLayout>
 
-    <Switch
-        android:id="@+id/event_form_one_day_event_switch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/app_margin"
-        android:layout_marginStart="@dimen/app_margin"
-        android:text="@string/event_form_one_day"
-        android:textColor="@color/app_grey" />
 
     <TextView
         android:id="@+id/event_form_date_end_view"
@@ -112,7 +104,7 @@
         android:layout_marginEnd="@dimen/app_margin"
         android:layout_marginStart="@dimen/app_margin"
         android:layout_marginTop="@dimen/app_small_margin"
-        android:text="@string/event_form_pay_stretch" />
+        android:text="@string/event_form_payment_deadline" />
 
     <Spinner
         android:id="@+id/event_form_pay_stretch_spinner"

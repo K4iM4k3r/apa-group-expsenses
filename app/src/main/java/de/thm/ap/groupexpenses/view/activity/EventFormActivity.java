@@ -38,7 +38,6 @@ public class EventFormActivity extends BaseActivity {
     private TextView eventUsersTextView;
     private ArrayList<User> eventUsersList;
     private Button addMembersBtn;
-    private Switch one_day_event_switch;
     private Spinner pay_stretch_spinner;
     int pay_stretch_item_selected_index;
     private Date end_date, start_date;
@@ -53,7 +52,6 @@ public class EventFormActivity extends BaseActivity {
             actionBar.setTitle(R.string.event_form_create_event);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        one_day_event_switch = findViewById(R.id.event_form_one_day_event_switch);
         pay_stretch_spinner = findViewById(R.id.event_form_pay_stretch_spinner);
         eventNameEditText = findViewById(R.id.event_form_name_edit);
         eventBeginDateEditText = findViewById(R.id.event_form_date_begin_edit);
@@ -114,37 +112,25 @@ public class EventFormActivity extends BaseActivity {
                 eventEndDateEditText.setEnabled(false));
 
         edit_end_date_btn.setOnClickListener(v -> {
-            if (!one_day_event_switch.isChecked()) {
-                int year, month, day;
-                if (end_date != null) {
-                    year = end_date.getYear() + 1900;
-                    month = end_date.getMonth();
-                    day = end_date.getDate();
-                } else {
-                    Calendar cal = Calendar.getInstance();
-                    year = cal.get(Calendar.YEAR);
-                    month = cal.get(Calendar.MONTH);
-                    day = cal.get(Calendar.DAY_OF_MONTH);
-                }
-
-                DatePickerDialog dialog = new DatePickerDialog(
-                        EventFormActivity.this,
-                        R.style.Theme_AppCompat_DayNight_Dialog,
-                        endDateSetListener,
-                        year, month, day);
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-                dialog.show();
-            }
-        });
-
-        one_day_event_switch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                eventEndDateEditText.setText(getString(R.string.event_form_one_day));
-                eventEndDateEditText.setEnabled(false);
-                end_date = null;
+            int year, month, day;
+            if (end_date != null) {
+                year = end_date.getYear() + 1900;
+                month = end_date.getMonth();
+                day = end_date.getDate();
             } else {
-                eventEndDateEditText.setText("");
+                Calendar cal = Calendar.getInstance();
+                year = cal.get(Calendar.YEAR);
+                month = cal.get(Calendar.MONTH);
+                day = cal.get(Calendar.DAY_OF_MONTH);
             }
+
+            DatePickerDialog dialog = new DatePickerDialog(
+                    EventFormActivity.this,
+                    R.style.Theme_AppCompat_DayNight_Dialog,
+                    endDateSetListener,
+                    year, month, day);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+            dialog.show();
         });
 
         pay_stretch_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -207,17 +193,15 @@ public class EventFormActivity extends BaseActivity {
                 eventBeginDateEditText.setEnabled(true);
                 isValidInput = false;
             } else {
-                if (!one_day_event_switch.isChecked()) {
-                    // event is not an one day event
-                    if (end_date == null) {
-                        eventEndDateEditText.setError(getString(R.string.error_field_required));
-                        eventEndDateEditText.setEnabled(true);
-                        isValidInput = false;
-                    } else if (!isStartDateBeforeEndDate()) {
-                        eventEndDateEditText.setError(getString(R.string.error_end_date_before_start_date));
-                        eventEndDateEditText.setEnabled(true);
-                        isValidInput = false;
-                    }
+                // event is not an one day event
+                if (end_date == null) {
+                    eventEndDateEditText.setError(getString(R.string.error_field_required));
+                    eventEndDateEditText.setEnabled(true);
+                    isValidInput = false;
+                } else if (!isStartDateBeforeEndDate()) {
+                    eventEndDateEditText.setError(getString(R.string.error_end_date_before_start_date));
+                    eventEndDateEditText.setEnabled(true);
+                    isValidInput = false;
                 }
             }
 
@@ -242,7 +226,7 @@ public class EventFormActivity extends BaseActivity {
                         creator.getUid(),                                    // creatorId
                         eventName,                                           // name
                         start_date.getTime(),                                // date_begin
-                        end_date == null ? null : end_date.getTime(),        // date_end
+                        end_date.getTime(),                                  // date_end
                         deadlineday,                                         // deadline_day
                         eventInfoEditText.getText().toString(),              // info
                         eventUserListStrings                                 // members
