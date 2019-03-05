@@ -2,17 +2,13 @@ package de.thm.ap.groupexpenses.database;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -21,8 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
 
 import de.thm.ap.groupexpenses.livedata.EventListLiveData;
 import de.thm.ap.groupexpenses.livedata.EventLiveData;
@@ -148,6 +142,8 @@ public class DatabaseHandler {
      * @param event updated Event
      */
     public static void updateEvent(Event event){
+        // if event get updated all user which hide the event are now active
+        event.setActiveMembers(event.getMembers());
         DocumentReference documentReference = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS).document(event.getEid());
         documentReference.set(event).addOnCompleteListener(c -> event.getMembers().forEach(m -> queryUser(m, member -> {
             if(member != null && !member.getEvents().contains(event.getEid())){
@@ -155,6 +151,11 @@ public class DatabaseHandler {
                 updateUser(member);
             }
         })));
+    }
+
+    private static void updateEventWithoutMakeAllMemberActive(Event event){
+        DocumentReference documentReference = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS).document(event.getEid());
+        documentReference.set(event);
     }
 
     /**
@@ -231,8 +232,8 @@ public class DatabaseHandler {
      * @return LiveDataObject of EventList
      */
     public static EventListLiveData getEventListLiveData(String uid){
-        CollectionReference usersRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS);
-        Query query = usersRef.whereArrayContains(Constants.DOC_EVENTS_MEMBERS, uid);
+        CollectionReference eventsRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS);
+        Query query = eventsRef.whereArrayContains(Constants.DOC_EVENTS_ACTIVE_MEMBER, uid);
         return new EventListLiveData(query);
     }
 
@@ -333,7 +334,7 @@ public class DatabaseHandler {
      * @param eid Event Id
      * @param failureListener listener if something fails
      */
-    public static void deleteEvent(String eid, @NonNull OnFailureListener failureListener){
+    public static void deleteEvent(String eid, OnFailureListener failureListener){
         FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS)
                 .document(eid)
                 .delete()
@@ -360,6 +361,10 @@ public class DatabaseHandler {
      * @param uid User Id
      */
     public static void hideEvent(String eid, String uid){
+        queryEvent(eid, event ->{
+            event.removeActiveMember(uid);
+            updateEventWithoutMakeAllMemberActive(event);
+        });
         queryUser(uid, user -> {
             user.removeEvent(eid);
             updateUser(user);

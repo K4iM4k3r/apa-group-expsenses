@@ -2,6 +2,7 @@ package de.thm.ap.groupexpenses.model;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
+import android.util.ArraySet;
 
 import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.auth.User;
@@ -11,8 +12,10 @@ import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Event {
 
@@ -23,7 +26,8 @@ public class Event {
     private Long date_deadlineDay;
     private String info;
     private String creatorId;
-    private List<String> members; // cleaner way with HashSet TODO
+    private List<String> members;
+    private List<String> activeMembers;
     private List<Position> positions;
 
     // NonDB-Stuff
@@ -43,6 +47,8 @@ public class Event {
         this.creatorId = creatorId;
         this.members = new ArrayList<>();
         this.members.addAll(members);
+        this.activeMembers = new ArrayList<>();
+        this.activeMembers.addAll(members);
         addMember(creatorId);
         this.positions = positions;
     }
@@ -106,9 +112,23 @@ public class Event {
         return members;
     }
 
+
+    public List<String> getActiveMembers() {
+        return activeMembers;
+    }
+
+    public void setActiveMembers(List<String> activeMembers) {
+        this.activeMembers = activeMembers;
+    }
+
+
+    public void removeActiveMember(String uid){
+        this.activeMembers.add(uid);
+    }
     public boolean addMember(String user) {
         if (!this.members.contains(user)) {
             this.members.add(user);
+            this.activeMembers.add(user);
             return true;
         }
         return false;
