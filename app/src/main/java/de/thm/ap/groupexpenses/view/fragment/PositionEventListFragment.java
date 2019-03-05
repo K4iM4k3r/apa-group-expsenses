@@ -41,7 +41,6 @@ public class PositionEventListFragment<T> extends Fragment {
     private ListView object_listView;
     private View headerView;
     private ObjectItemAdapter adapter;
-    private Event relatedEventToPosition;
     private HashMap<String, String> creatorMap;
 
     ItemClickListener itemClickListener;
@@ -93,7 +92,6 @@ public class PositionEventListFragment<T> extends Fragment {
                         noObjects_textView.setVisibility(View.GONE);
                         String headerText = getString(R.string.total_expenses) + ":";
                         header_text.setText(headerText);
-                        relatedEventToPosition = event;
                         updateTotalBalanceOfPositions(event);
                         List<Position> positions = event.getPositions();
                         for (int idx = 0; idx < positions.size(); ++idx) {
