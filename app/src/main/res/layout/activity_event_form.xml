@@ -107,7 +107,7 @@
         android:text="@string/event_form_payment_deadline" />
 
     <Spinner
-        android:id="@+id/event_form_pay_stretch_spinner"
+        android:id="@+id/event_form_deadline_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/app_margin"
