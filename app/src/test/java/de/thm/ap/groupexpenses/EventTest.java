@@ -44,6 +44,10 @@ public class EventTest {
         date_end = 1557698400000L; //13.05.2019
         date_deadlineDay = 1558908000000L; //27.05.2019
 
+        init();
+    }
+
+    private void init(){
         member = new User[]{
                 new User("Nils", "Nils", "Müller", "", "nMueller@mail.de", null, null),
                 new User("Jan", "Jan", "Müller","", "jMueller@mail.de", null, null),
@@ -166,23 +170,93 @@ public class EventTest {
     @Test
     public void isClosableTest(){
 
-        // Open transactions
-        assertFalse(event.isClosable());
+        date_now = Calendar.getInstance().getTimeInMillis();
+        Event event;
 
-        // Settle only a few debts
-        event.removeAllDebtsOf("Mia");
-        event.removeAllDebtsOf("Tom");
-        assertFalse(event.isClosable());
+        // ---------------------------------| Ongoing |---------------------------------------------x
 
-        // Settle all debts
-        for(String member: event.getMembers())
-            event.removeAllDebtsOf(member);
-        assertTrue(event.isClosable());
+        date_begin = date_now + TimeUnit.DAYS.toMillis(5);
+        date_end = date_begin + TimeUnit.DAYS.toMillis(3);
+        date_deadlineDay = date_end + TimeUnit.DAYS.toMillis(14);
 
-        // No positions
-        List<Position> emptyPositions = new ArrayList<>();
-        Event event1 = new Event(creator.getUid(), "", date_begin, date_end, date_deadlineDay, "", Arrays.stream(member).map(User::getUid).collect(Collectors.toList()), emptyPositions);
-        assertTrue(event1.isClosable());
+        event = new Event(creator.getUid(), "Festival2", date_begin, date_end, date_deadlineDay, "",
+                Arrays.stream(member).map(User::getUid).collect(Collectors.toList()), Arrays.asList(positions));
+
+        assertFalse(event.isClosable()); // has positions - not closable
+
+        settleAllDepts(event);
+        assertTrue(event.isClosable()); // no positions - closable
+
+        event.destroy();
+        init();
+
+        // ---------------------------------| Live |------------------------------------------------
+
+        date_begin = date_now - TimeUnit.DAYS.toMillis(1);
+        date_end = date_now + TimeUnit.DAYS.toMillis(1);
+        date_deadlineDay = date_end + TimeUnit.DAYS.toMillis(14);
+
+        event = new Event(creator.getUid(), "Festival2", date_begin, date_end, date_deadlineDay, "",
+                Arrays.stream(member).map(User::getUid).collect(Collectors.toList()), Arrays.asList(positions));
+
+        assertFalse(event.isClosable()); // has positions - not closable
+
+        settleAllDepts(event);
+        assertFalse(event.isClosable()); // no positions - live never closable
+
+        event.destroy();
+        init();
+
+        // ---------------------------------| Locked |----------------------------------------------
+
+        date_begin = date_now - TimeUnit.DAYS.toMillis(2);
+        date_end = date_now - TimeUnit.DAYS.toMillis(1);
+        date_deadlineDay = date_now + TimeUnit.DAYS.toMillis(14);
+
+        event = new Event(creator.getUid(), "Festival2", date_begin, date_end, date_deadlineDay, "",
+                Arrays.stream(member).map(User::getUid).collect(Collectors.toList()), Arrays.asList(positions));
+
+        assertFalse(event.isClosable()); // has positions - not closable
+
+        settleAllDepts(event);
+        assertTrue(event.isClosable()); // no positions - closable
+
+        event.destroy();
+        init();
+
+        // ---------------------------------| Closed |----------------------------------------------
+
+        date_begin = date_now - TimeUnit.DAYS.toMillis(16);
+        date_end = date_now - TimeUnit.DAYS.toMillis(14);
+        date_deadlineDay = date_now - TimeUnit.DAYS.toMillis(1);
+
+        event = new Event(creator.getUid(), "Festival2", date_begin, date_end, date_deadlineDay, "",
+                Arrays.stream(member).map(User::getUid).collect(Collectors.toList()), Arrays.asList(positions));
+
+        assertTrue(event.isClosable()); // done, closable even with positions opened
+
+        settleAllDepts(event);
+        assertTrue(event.isClosable()); // no positions - closable
+
+        event.destroy();
+        init();
+
+        // ---------------------------------| ERROR |----------------------------------------------
+
+        date_begin = -5L;
+        date_end = date_now - TimeUnit.DAYS.toMillis(1);
+        date_deadlineDay = date_now + TimeUnit.DAYS.toMillis(14);
+
+        event = new Event(creator.getUid(), "Festival2", date_begin, date_end, date_deadlineDay, "",
+                Arrays.stream(member).map(User::getUid).collect(Collectors.toList()), Arrays.asList(positions));
+
+        assertFalse(event.isClosable()); // never closable
+
+        settleAllDepts(event);
+        assertFalse(event.isClosable()); // never closable
+
+        event.destroy();
+        init();
     }
 
     @Test
@@ -272,5 +346,10 @@ public class EventTest {
 
         event = new Event("Tom", "Urlaub", date_begin, date_end, date_deadlineDay, "");
         assert event.getLifecycleState() == Event.LifecycleState.ERROR;
+    }
+
+    private void settleAllDepts(Event e){
+        for(String member: e.getMembers())
+            e.removeAllDebtsOf(member);
     }
 }

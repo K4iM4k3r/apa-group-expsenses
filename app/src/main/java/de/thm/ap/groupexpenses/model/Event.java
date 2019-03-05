@@ -223,7 +223,9 @@ public class Event {
 
         switch (getLifecycleState()){
             case ONGOING:
+                return hasNoOpenTransactions();
             case LIVE:
+                return false;
             case LOCKED:
                 return hasNoOpenTransactions();
             case CLOSED:
@@ -262,6 +264,18 @@ public class Event {
         return LifecycleState.ONGOING;
     }
     //endregion
+
+    public void destroy(){
+        eid = null;
+        name = null;
+        date_begin = null;
+        date_end = null;
+        date_deadlineDay = null;
+        info = null;
+        creatorId = null;
+        members = null;
+        positions = null;
+    }
 
     @NonNull
     @Override
