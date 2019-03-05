@@ -225,9 +225,8 @@ public class Event {
             case ONGOING:
                 return hasNoOpenTransactions();
             case LIVE:
-                return false;
             case LOCKED:
-                return hasNoOpenTransactions();
+                return false;
             case CLOSED:
                 return true;
             case ERROR:

@@ -219,7 +219,7 @@ public class EventTest {
         assertFalse(event.isClosable()); // has positions - not closable
 
         settleAllDepts(event);
-        assertTrue(event.isClosable()); // no positions - closable
+        assertFalse(event.isClosable()); // not closable in review time
 
         event.destroy();
         init();
