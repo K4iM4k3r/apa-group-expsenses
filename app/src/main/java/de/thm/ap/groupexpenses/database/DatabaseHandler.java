@@ -241,7 +241,9 @@ public class DatabaseHandler {
      * Returns LiveData Object which includes the all members of an Event
      * @param eid Event id
      * @return LiveData Object which includes all members
+     * @deprecated Use getAllMembersOfEvent without callback
      */
+    @Deprecated
     public static UserListLiveData getAllMembersOfEvent(String eid){
         CollectionReference usersRef = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_USERS);
         Query query = usersRef.whereArrayContains(Constants.DOC_USERS_EVENTS, eid);
@@ -305,10 +307,6 @@ public class DatabaseHandler {
         });
     }
 
-    /**
-     * @deprecated Use getAllMembersOfEvent without callback
-     */
-    @Deprecated
     public static void getAllMembersOfEvent(String eid, Callback<List<User>> callback){
         List<User> result = new ArrayList<>();
         queryEvent(eid, event -> {

@@ -42,7 +42,6 @@ import static de.thm.ap.groupexpenses.model.Event.LifecycleState.LIVE;
 public class PositionActivity extends BaseActivity implements PositionEventListFragment.ItemClickListener {
 
     private Event selectedEvent;
-    private List<User> eventMembers;
     private ViewPager mViewPager;
 
     private FloatingActionButton lFab;
@@ -114,9 +113,6 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
                 }
                 chooseFabs();
             });
-
-            UserListLiveData userListLiveData = DatabaseHandler.getAllMembersOfEvent(selectedEventEid);
-            userListLiveData.observe(this, userList -> eventMembers = userList);
         } else {
             finish();
         }
@@ -259,9 +255,11 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
             case R.id.position_menu_add_invite_users:
                 // display event user list
                 DatabaseHandler.getAllFriendsOfUser(Objects.requireNonNull(auth.getCurrentUser()).getUid(), friendsList -> {
-                    UserListDialogFragment dialog = new UserListDialogFragment();
-                    dialog.build(selectedEvent, eventMembers, friendsList);
-                    dialog.show(getFragmentManager(), "edit_event");
+                    DatabaseHandler.getAllMembersOfEvent(selectedEvent.getEid(), eventMembers ->{
+                        UserListDialogFragment dialog = new UserListDialogFragment();
+                        dialog.build(selectedEvent, eventMembers, friendsList);
+                        dialog.show(getFragmentManager(), "edit_event");
+                    });
                 });
                 break;
         }
