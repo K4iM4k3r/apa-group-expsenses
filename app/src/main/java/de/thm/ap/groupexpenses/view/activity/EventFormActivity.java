@@ -17,7 +17,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.text.DateFormat;
-import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -51,7 +50,7 @@ public class EventFormActivity extends BaseActivity {
             actionBar.setTitle(R.string.event_form_create_event);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        Spinner deadline_spinner = findViewById(R.id.event_form_pay_stretch_spinner);
+        Spinner deadline_spinner = findViewById(R.id.event_form_deadline_spinner);
         eventNameEditText = findViewById(R.id.event_form_name_edit);
         eventBeginDateEditText = findViewById(R.id.event_form_date_begin_edit);
         eventEndDateEditText = findViewById(R.id.event_form_date_end_edit);
