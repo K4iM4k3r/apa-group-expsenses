@@ -307,6 +307,11 @@ public class DatabaseHandler {
         });
     }
 
+    /**
+     * Return list of user of the event
+     * @param eid Event id
+     * @param callback list of members
+     */
     public static void getAllMembersOfEvent(String eid, Callback<List<User>> callback){
         List<User> result = new ArrayList<>();
         queryEvent(eid, event -> {
