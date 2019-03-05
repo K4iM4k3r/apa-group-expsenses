@@ -1,6 +1,7 @@
 package de.thm.ap.groupexpenses.model;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 
 import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.auth.User;
@@ -264,6 +265,7 @@ public class Event {
     }
     //endregion
 
+    @VisibleForTesting
     public void destroy(){
         eid = null;
         name = null;
