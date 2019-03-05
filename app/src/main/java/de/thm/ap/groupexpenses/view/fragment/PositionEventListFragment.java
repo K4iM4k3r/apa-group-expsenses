@@ -69,6 +69,7 @@ public class PositionEventListFragment<T> extends Fragment {
             parent.removeView(view);
         }
         headerView = getLayoutInflater().inflate(R.layout.fragment_object_list_header, null);
+        object_listView = view.findViewById(R.id.fragment_listView);
 
         TextView header_text = headerView.findViewById(R.id.object_balance_summary_text);
 
@@ -105,6 +106,8 @@ public class PositionEventListFragment<T> extends Fragment {
                 listLiveData.observe(this, eventList -> {
                     if (eventList != null && !eventList.isEmpty()) {
                         String headerText = getString(R.string.total_balance) + ":";
+                        headerView.setVisibility(View.VISIBLE);
+                        object_listView.setVisibility(View.VISIBLE);
                         noObjects_textView.setVisibility(View.GONE);
                         header_text.setText(headerText);
                         updateTotalBalanceOfEvents(eventList);
@@ -117,7 +120,10 @@ public class PositionEventListFragment<T> extends Fragment {
                     else {
                         headerView.setVisibility(View.GONE);
                         noObjects_textView.setVisibility(View.VISIBLE);
-
+                        if(adapter != null){
+                            object_listView.setVisibility(View.GONE);
+                            adapter.clear();
+                        }
                     }
                 });
             }
@@ -149,7 +155,6 @@ public class PositionEventListFragment<T> extends Fragment {
         if (adapter == null) {
             adapter = new ObjectItemAdapter(getActivity(),
                     R.layout.fragment_object_list_row, objectList, isPosition);
-            object_listView = view.findViewById(R.id.fragment_listView);
             object_listView.addHeaderView(headerView);
             object_listView.setAdapter(adapter);
             object_listView.setOnItemClickListener((parent, view, position, id) ->
