@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -286,7 +285,7 @@ public class PositionEventListFragment<T> extends Fragment {
                         break;
                     case LOCKED:
                         event_status.setText(getString(R.string.event_status_locked));
-                        event_status.setBackgroundResource(R.drawable.event_status_lock);
+                        event_status.setBackgroundResource(R.drawable.event_status_locked);
                         break;
                     case CLOSED:
                         event_status.setText(getString(R.string.event_status_closed));
