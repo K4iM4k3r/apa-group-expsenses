@@ -138,7 +138,7 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 mViewPager.setCurrentItem(tab.getPosition());
-                switch (tab.getPosition()){
+                switch (tab.getPosition()) {
                     case 0:
                         chooseFabs();
                         break;
@@ -161,7 +161,7 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
         });
     }
 
-    private void chooseFabs(){
+    private void chooseFabs() {
 
 
         if (selectedEvent == null) return;
@@ -172,14 +172,13 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
         lFab.setVisibility(View.GONE);
         rFab.setVisibility(View.GONE);
 
-        if(isEventCreator && lifecycleState==ERROR) {
+        if (isEventCreator && lifecycleState == ERROR) {
             rFab.setImageResource(R.drawable.ic_delete_white_24dp);
             rFab.setVisibility(View.VISIBLE);
             rFab.setOnClickListener(deleteEvent);
             Toast.makeText(this, R.string.brokenEventCreator, Toast.LENGTH_LONG).show();
             return;
-        }
-        else if(!isEventCreator && lifecycleState==ERROR) {
+        } else if (!isEventCreator && lifecycleState == ERROR) {
             Toast.makeText(this, R.string.brokenEventClient, Toast.LENGTH_LONG).show();
             rFab.setImageResource(R.drawable.ic_exit_white_24dp);
             rFab.setVisibility(View.VISIBLE);
@@ -189,17 +188,15 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
 
         //-- lFab
 
-        if (isEventCreator && selectedEvent.isClosable() && lifecycleState!=CLOSED){
+        if (isEventCreator && selectedEvent.isClosable() && lifecycleState != CLOSED) {
             lFab.setVisibility(View.VISIBLE);
             lFab.setImageResource(R.drawable.ic_delete_white_24dp);
             lFab.setOnClickListener(deleteEvent);
-        }
-        else if (!isEventCreator && selectedEvent.isEven(App.CurrentUser.getUid()) && lifecycleState==ONGOING){
+        } else if (!isEventCreator && selectedEvent.isEven(App.CurrentUser.getUid()) && lifecycleState == ONGOING) {
             lFab.setVisibility(View.VISIBLE);
             lFab.setImageResource(R.drawable.ic_delete_white_24dp);
             lFab.setOnClickListener(leaveEvent);
-        }
-        else if (!isEventCreator && selectedEvent.isEven(App.CurrentUser.getUid()) && lifecycleState!=CLOSED && lifecycleState!=LIVE){
+        } else if (!isEventCreator && selectedEvent.isEven(App.CurrentUser.getUid()) && lifecycleState != CLOSED && lifecycleState != LIVE) {
             lFab.setVisibility(View.VISIBLE);
             lFab.setImageResource(R.drawable.ic_exit_white_24dp);
             lFab.setOnClickListener(hideEvent);
@@ -208,17 +205,15 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
 
         //-- rFab
 
-        if (isEventCreator && lifecycleState==CLOSED){
+        if (isEventCreator && lifecycleState == CLOSED) {
             rFab.setVisibility(View.VISIBLE);
             rFab.setImageResource(R.drawable.ic_delete_white_24dp);
             rFab.setOnClickListener(deleteEvent);
-        }
-        else if (!isEventCreator && lifecycleState==CLOSED){
+        } else if (!isEventCreator && lifecycleState == CLOSED) {
             rFab.setVisibility(View.VISIBLE);
             rFab.setImageResource(R.drawable.ic_exit_white_24dp);
             rFab.setOnClickListener(hideEvent);
-        }
-        else {
+        } else {
             rFab.setVisibility(View.VISIBLE);
             rFab.setImageResource(R.drawable.ic_add_white_24dp);
             rFab.setOnClickListener(v -> {
@@ -277,7 +272,7 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
             case R.id.position_menu_add_invite_users:
                 // display event user list
                 DatabaseHandler.getAllFriendsOfUser(Objects.requireNonNull(auth.getCurrentUser()).getUid(), friendsList -> {
-                    DatabaseHandler.getAllMembersOfEvent(selectedEvent.getEid(), eventMembers ->{
+                    DatabaseHandler.getAllMembersOfEvent(selectedEvent.getEid(), eventMembers -> {
                         UserListDialogFragment dialog = new UserListDialogFragment();
                         dialog.build(selectedEvent, eventMembers, friendsList);
                         dialog.show(getFragmentManager(), "edit_event");
@@ -308,14 +303,6 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
                 }
             });
         }
-    }
-
-    public void setUsersPaid(List<User> usersPaidList, Position position) {
-        for (User user : usersPaidList) {
-            position.removeDebtor(user.getUid());
-        }
-        selectedEvent.updatePosition(position);
-        DatabaseHandler.updateEvent(selectedEvent);
     }
 
     private class CollectionPagerAdapter extends FragmentPagerAdapter {

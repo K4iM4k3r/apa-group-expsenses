@@ -12,7 +12,7 @@
     <string name="add_with_num">Add (%1$d)</string>
     <string name="remove_with_num">Remove (%1$d)</string>
     <string name="add_remove">Add/Remove</string>
-    <string name="event_form_add_members">add member</string>
+    <string name="event_form_add_friend">Add friend</string>
     <string name="search_name_hint">search a name</string>
     <string name="info">Info</string>
     <string name="show_info">show info</string>
@@ -91,8 +91,6 @@
     <string name="success_download_ProfilePic">Successful download profile pic</string>
     <string name="error_download_ProfilePic">Error while downloading profile pic</string>
     <string name="menu_item_event">My Events</string>
-    <string name="invite">Invite</string>
-    <string name="invite_link_share">Share Invite Link</string>
     <string name="send_per_mail">send via E-Mail</string>
     <string name="send_per_whatsapp">send via WhatsApp</string>
     <string name="send_per_copy">copy link to phone cache</string>
@@ -105,6 +103,7 @@
     <string name="no_bounty">Sie haben keine offenen Positionen</string>
     <string name="error_already_in_use">Nickname exists already</string>
     <string name="hint_nickname">nickname</string>
+    <string name="invite_link_share">Share invite link</string>
     <string name="menu_item_friends">Friends</string>
     <string name="reminder">payment reminder</string>
     <string name="send_reminder_mail">Send remainder mail to %1$s</string>
