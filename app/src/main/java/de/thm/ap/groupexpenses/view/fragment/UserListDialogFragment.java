@@ -2,8 +2,6 @@ package de.thm.ap.groupexpenses.view.fragment;
 
 import android.app.AlertDialog;
 import android.app.DialogFragment;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -21,7 +19,6 @@ import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,11 +27,9 @@ import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.model.Event;
-import de.thm.ap.groupexpenses.model.MessageHelper;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.User;
 import de.thm.ap.groupexpenses.view.activity.EventFormActivity;
-import de.thm.ap.groupexpenses.view.activity.PositionActivity;
 import de.thm.ap.groupexpenses.view.dialog.InviteDialog;
 import de.thm.ap.groupexpenses.view.dialog.ProfileInfoDialog;
 
@@ -396,7 +391,7 @@ public class UserListDialogFragment extends DialogFragment {
                     switch (edit_state) {
                         case EDIT_STATE_INSPECT_USERS:
                             if (currentUser.getUid().equals(App.CurrentUser.getUid())) {
-                                name.setText(R.string.yourself);
+                                name.setText(R.string.you);
                             }
                             if (previous_edit_state != 0) {
                                 image = listItem.findViewById(R.id.fragment_user_list_row_image_delete);

@@ -54,7 +54,7 @@ public class EventInfoDialog {
 
         String creator;
 
-        if (creatorNickname == null) creator = context.getString(R.string.you);
+        if (creatorNickname == null) creator = context.getString(R.string.yourself);
         else creator = creatorNickname;
 
         String creatorAndDate = context.getResources().getString(R.string.creator_and_date_event, creator, getDateFromLong(event.getDate_begin()));

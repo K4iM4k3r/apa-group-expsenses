@@ -1,67 +1,51 @@
-<RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:background="?android:activatedBackgroundIndicator"
-android:minHeight="?android:listPreferredItemHeight"
-xmlns:android="http://schemas.android.com/apk/res/android">
+    android:layout_height="wrap_content"
+    android:background="?android:activatedBackgroundIndicator"
+    android:minHeight="?android:listPreferredItemHeight">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="9dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/app_margin"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TestName"
+            android:textAppearance="?android:textAppearanceListItem" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="0dp"
-            android:layout_marginTop="0dp"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/name"
+                android:id="@+id/event_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/app_margin"
-                android:text="TestName"
-                android:textAppearance="?android:textAppearanceListItem" />
+                android:layout_marginEnd="@dimen/app_small_margin"
+                android:background="@drawable/event_status_live"
+                android:paddingEnd="@dimen/app_small_margin"
+                android:paddingStart="@dimen/app_small_margin"
+                android:text="LIVE"
+                android:textAppearance="?android:textAppearanceListItemSmall"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:visibility="visible" />
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/creator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/event_status"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/app_margin"
-                    android:background="@drawable/event_status_live"
-                    android:paddingEnd="@dimen/app_small_margin"
-                    android:paddingStart="@dimen/app_small_margin"
-                    android:text="LIVE"
-                    android:textAppearance="?android:textAppearanceListItemSmall"
-                    android:textColor="@color/black"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:id="@+id/creator"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/app_small_margin"
-                    android:text="creator"
-                    android:textAppearance="?android:textAppearanceListItemSmall"
-                    android:textColor="?android:textColorHint" />
-            </LinearLayout>
-
+                android:text="creator"
+                android:textAppearance="?android:textAppearanceListItemSmall"
+                android:textColor="?android:textColorHint" />
         </LinearLayout>
+
     </LinearLayout>
 
     <TextView

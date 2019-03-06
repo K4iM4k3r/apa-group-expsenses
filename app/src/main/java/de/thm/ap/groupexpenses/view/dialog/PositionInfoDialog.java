@@ -1,9 +1,7 @@
 package de.thm.ap.groupexpenses.view.dialog;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
@@ -27,13 +25,11 @@ import android.widget.Toast;
 import java.text.DecimalFormat;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.Stats;
-import de.thm.ap.groupexpenses.view.activity.PayActivity;
 
 public class PositionInfoDialog {
     private AlertDialog.Builder positionDialog;

@@ -239,8 +239,8 @@ public class PositionEventListFragment<T> extends Fragment {
             holder.object_creator = view.findViewById(R.id.creator);
             holder.object_balance = view.findViewById(R.id.balance);
             m_object = retrievedObjects.get(index);
-            String fromPart = getString(R.string.from);
-            String creatorPart;
+            String creator_part = getString(R.string.creator);
+            String creator_name;
             String creatorUid;
             String wholePart;
             Spannable spannable;
@@ -251,20 +251,20 @@ public class PositionEventListFragment<T> extends Fragment {
                 float position_expense = position.getValue();
                 holder.object_name.setText(position.getTopic());
                 if (position.getCreatorId().equals(App.CurrentUser.getUid())) {
-                    creatorPart = getString(R.string.you);
+                    creator_name = getString(R.string.you);
                     creatorUid = App.CurrentUser.getUid();
                 } else {
                     creatorUid = position.getCreatorId();
-                    creatorPart = creatorMap.get(creatorUid);
+                    creator_name = creatorMap.get(creatorUid);
                     final int CREATOR_NAME_MAX_LENGTH = 20;
-                    if (creatorPart.length() > CREATOR_NAME_MAX_LENGTH) {
-                        creatorPart = creatorPart.substring(0, CREATOR_NAME_MAX_LENGTH) + "...";
+                    if (creator_name.length() > CREATOR_NAME_MAX_LENGTH) {
+                        creator_name = creator_name.substring(0, CREATOR_NAME_MAX_LENGTH) + "...";
                     }
                 }
-                wholePart = fromPart + " " + creatorPart;
+                wholePart = creator_part + " " + creator_name;
                 spannable = new SpannableString(wholePart);
                 spannable.setSpan(new ForegroundColorSpan(Color.parseColor("#3a90e0")),
-                        fromPart.length(), wholePart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        creator_part.length(), wholePart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 holder.object_creator.setText(spannable, TextView.BufferType.SPANNABLE);
                 holder.object_balance.setText(new DecimalFormat("0.00 €")
                         .format(position_expense));
@@ -300,20 +300,20 @@ public class PositionEventListFragment<T> extends Fragment {
                 holder.object_name.setText(event.getName());
 
                 if (event.getCreatorId().equals(App.CurrentUser.getUid())) {
-                    creatorPart = getString(R.string.you);
+                    creator_name = getString(R.string.you);
                     creatorUid = App.CurrentUser.getUid();
                 } else {
                     creatorUid = event.getCreatorId();
-                    creatorPart = creatorMap.get(creatorUid);
+                    creator_name = creatorMap.get(creatorUid);
                     final int CREATOR_NAME_MAX_LENGTH = 20;
-                    if (creatorPart.length() > CREATOR_NAME_MAX_LENGTH) {
-                        creatorPart = creatorPart.substring(0, CREATOR_NAME_MAX_LENGTH) + "...";
+                    if (creator_name.length() > CREATOR_NAME_MAX_LENGTH) {
+                        creator_name = creator_name.substring(0, CREATOR_NAME_MAX_LENGTH) + "...";
                     }
                 }
-                wholePart = fromPart + " " + creatorPart;
+                wholePart = creator_part + " " + creator_name;
                 spannable = new SpannableString(wholePart);
                 spannable.setSpan(new ForegroundColorSpan(Color.parseColor("#3a90e0")),
-                        fromPart.length(), wholePart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        creator_part.length(), wholePart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 holder.object_creator.setText(spannable, TextView.BufferType.SPANNABLE);
                 holder.object_balance.setText(new DecimalFormat("0.00 €")
                         .format(balance));

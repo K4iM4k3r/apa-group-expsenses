@@ -162,7 +162,7 @@ public class CashFragment extends Fragment {
             if (currentUserValue.value < 0) { // App.CurrentUser owes money
                 Drawable arrow = getResources().getDrawable(R.drawable.ic_arrow_forward_red_24dp);
                 arrow_imageView.setImageDrawable(arrow);
-                userValueName.setText(R.string.yourself);
+                userValueName.setText(R.string.you);
                 if (currentUserValue.name.length() > MAX_NAME_LENGTH) {
                     userValueName2.setText(currentUserValue.name.substring(0, MAX_NAME_LENGTH)
                             + "...");
@@ -191,7 +191,7 @@ public class CashFragment extends Fragment {
             } else {    // App.CurrentUser gets money
                 Drawable arrow = getResources().getDrawable(R.drawable.ic_arrow_forward_green_24dp);
                 arrow_imageView.setImageDrawable(arrow);
-                userValueName2.setText(R.string.you);
+                userValueName2.setText(R.string.yourself);
                 if (currentUserValue.name.length() > MAX_NAME_LENGTH) {
                     userValueName.setText(currentUserValue.name.substring(0, MAX_NAME_LENGTH)
                             + "...");
@@ -225,9 +225,9 @@ public class CashFragment extends Fragment {
     Comparator<UserValue> DEBT_SORT = (userValue1, userValue2) -> {
         if (userValue1.value < userValue2.value) {
             return -1;
-        } else {
+        } else if (userValue1.value > userValue2.value) {
             return 1;
-        }
+        } else return 0;
     };
 
     @Override

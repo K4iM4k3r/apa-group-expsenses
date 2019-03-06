@@ -18,8 +18,8 @@
     <string name="info">Info</string>
     <string name="show_info">Info anzeigen</string>
     <string name="inspect_users">Teilnehmer inspizieren</string>
-    <string name="you">Dir</string>
-    <string name="yourself">Du</string>
+    <string name="yourself">Dir</string>
+    <string name="you">Du</string>
     <string name="no_position_info">Keine Positionsinfo vorhanden!</string>
     <string name="no_event_info">Keine Eventinfo vorhanden!</string>
     <string name="your_depts">Deine Schulden:</string>
@@ -27,7 +27,7 @@
     <string name="euro">€</string>
     <string name="event_form_users">Teilnehmer</string>
     <string name="position_form_value">Wert (€)</string>
-    <string name="from">Von</string>
+    <string name="creator">Ersteller:</string>
     <string name="create">Erstellen</string>
     <string name="history">Verlauf</string>
     <string name="delete">Löschen</string>
