@@ -173,5 +173,7 @@
         <item>4 weeks</item>
     </string-array>
     <string name="no_events">no events found!</string>
+    <string name="brokenEventCreator">your event seems to be broken, please delete and recreate it.</string>
+    <string name="brokenEventClient">this event seems to be broken, feel free to leave</string>
 </resources>
 

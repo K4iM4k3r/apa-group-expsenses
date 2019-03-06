@@ -168,4 +168,6 @@
         <item>4 Wochen</item>
     </string-array>
     <string name="no_events">Keine Events gefunden!</string>
+    <string name="brokenEventCreator">Ihr Event ist fehlerhaft. Bitte erstellen Sie es erneut.</string>
+    <string name="brokenEventClient">Dieses Event weist einen Fehler auf. Sie können es verlassen.</string>
 </resources>
