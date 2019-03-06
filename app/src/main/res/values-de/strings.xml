@@ -56,6 +56,7 @@
     <string name="position_inspect_clear_dept">Schulden begleichen</string>
     <string name="confirm_delete_position">Position wirklich löschen?\nWichtig: Alle deine Forderungen werden weg sein!</string>
     <string name="add_payment">Zahlung hinzufügen</string>
+    <string name="fulfill_payment_confirm_msg">%1$s jetzt %2$s€ online überweisen?</string>
     <string name="end_position">Position abschließen</string>
     <string name="chose_cash">Barzahlung abschließen</string>
     <string name="confirm_cash_payment">%1$s hat Ihnen %2$s€ bar bezahlt?</string>

@@ -170,13 +170,7 @@ public class CashFragment extends Fragment {
                     userValueName2.setText(currentUserValue.name);
                 }
                 value_layout.setOnClickListener(v -> {
-                    // pay ALL debts to user here (multiple positions)
-                    float totalDebt = currentUserValue.value * (-1);
-                    String amountAsString = new DecimalFormat("0.00").format(totalDebt);
-                    Intent payIntent = new Intent(getContext(), PayActivity.class);
-                    payIntent.putExtra("amount", amountAsString);
-                    payIntent.putExtra("debtor_uid", currentUserValue.uid);
-                    startActivityForResult(payIntent, PAY_REQUEST_CODE);
+                    fulfillPaymentConfirmDialog(currentUserValue);
                 });
                 userValueName.setOnClickListener(v -> {
                     DatabaseHandler.queryUser(App.CurrentUser.getUid(), user -> {
@@ -374,6 +368,42 @@ public class CashFragment extends Fragment {
             remind_btn.setOnClickListener(v2 -> {
                 confirmDialogBuilder.dismiss();
             });
+        });
+
+        confirmDialogBuilder.setView(promptView);
+        confirmDialogBuilder.show();
+    }
+
+    private void fulfillPaymentConfirmDialog(UserValue currentUserValue) {
+        // pay ALL debts to user here (multiple positions)
+        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+        View promptView = layoutInflater.inflate(R.layout.dialog_choose_2_options, null);
+        final android.app.AlertDialog confirmDialogBuilder = new android.app.AlertDialog.Builder(getContext()).create();
+        Button confirm_pay_btn = promptView.findViewById(R.id.dialog_chose_2_options_option1_btn);
+        Button cancel_pay_btn = promptView.findViewById(R.id.dialog_chose_2_options_option2_btn);
+        TextView confirm_text = promptView.findViewById(R.id.dialog_chose_2_options_text);
+        confirm_pay_btn.setText(getString(R.string.confirm));
+        cancel_pay_btn.setText(getString(R.string.cancel));
+
+        float amount = currentUserValue.value * (-1);
+        String amountAsString = new DecimalFormat("0.00").format(amount);
+
+        confirm_text.setText(getString(R.string.fulfill_payment_confirm_msg,
+                currentUserValue.name, amountAsString));
+        confirm_text.setVisibility(View.VISIBLE);
+
+        confirm_pay_btn.setOnClickListener(v -> {
+            // fulfill payment
+            Intent payIntent = new Intent(getContext(), PayActivity.class);
+            payIntent.putExtra("amount", amountAsString);
+            payIntent.putExtra("debtor_uid", amount);
+            startActivityForResult(payIntent, PAY_REQUEST_CODE);
+            confirmDialogBuilder.dismiss();
+        });
+
+        cancel_pay_btn.setOnClickListener(v -> {
+            // cancel payment
+            confirmDialogBuilder.dismiss();
         });
 
         confirmDialogBuilder.setView(promptView);

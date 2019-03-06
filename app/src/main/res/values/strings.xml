@@ -29,6 +29,7 @@
     <string name="position_form_create_position">create new position</string>
     <string name="position_inspect_position_info">Position info</string>
     <string name="add_payment">add payment</string>
+    <string name="fulfill_payment_confirm_msg">Pay %1$s %2$s€ online now?</string>
     <string name="chose_cash">Cash Transaction</string>
     <string name="confirm_cash_payment">%1$s has paid you %2$s€ per cash?</string>
     <string name="done_cash_payment">Cash transaction complete!</string>
