@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -234,6 +235,7 @@ public class PositionEventListFragment<T> extends Fragment {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(resource, parent, false);
             holder = new Holder();
+            ImageView lifeCycleImageView = view.findViewById(R.id.lifecycleState);
             holder.object_name = view.findViewById(R.id.name);
             holder.object_creator = view.findViewById(R.id.creator);
             holder.object_balance = view.findViewById(R.id.balance);
@@ -245,6 +247,7 @@ public class PositionEventListFragment<T> extends Fragment {
             Spannable spannable;
 
             if (isPosition) {
+                lifeCycleImageView.setVisibility(View.GONE);
                 Position position = (Position) m_object;
                 float position_expense = position.getValue();
                 holder.object_name.setText(position.getTopic());
@@ -269,7 +272,29 @@ public class PositionEventListFragment<T> extends Fragment {
             } else {    // its an Event
                 Event event = (Event) m_object;
                 float balance = Stats.getEventBalance(event);
+
+                lifeCycleImageView.setVisibility(View.VISIBLE);
+
+                switch(event.getLifecycleState()){
+                    case ONGOING:
+                        lifeCycleImageView.setImageResource(R.drawable.ic_lifecycle_ongoing_24dp);
+                        break;
+                    case LIVE:
+                        lifeCycleImageView.setImageResource(R.drawable.ic_lifecycle_live_24dp);
+                        break;
+                    case LOCKED:
+                        lifeCycleImageView.setImageResource(R.drawable.ic_lifecycle_lock_24dp);
+                        break;
+                    case CLOSED:
+                        lifeCycleImageView.setImageResource(R.drawable.ic_lifecycle_closed2_24dp);
+                        break;
+                    case ERROR:
+                    default:
+                        lifeCycleImageView.setImageResource(R.drawable.ic_lifecycle_error_24dp);
+                }
+
                 holder.object_name.setText(event.getName());
+
                 if (event.getCreatorId().equals(App.CurrentUser.getUid())) {
                     creatorPart = getString(R.string.you);
                     creatorUid = App.CurrentUser.getUid();
