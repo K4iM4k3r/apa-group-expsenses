@@ -38,7 +38,7 @@ import de.thm.ap.groupexpenses.model.Stats;
 import de.thm.ap.groupexpenses.view.activity.PayActivity;
 import de.thm.ap.groupexpenses.view.dialog.ProfileInfoDialog;
 
-import static de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment.USERID;
+import static de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment.USER_ID;
 
 public class CashFragment extends Fragment {
     public static final String SELECTED_EID = "seid";
@@ -75,7 +75,7 @@ public class CashFragment extends Fragment {
 
         if (args != null) {
             String eid = args.getString(SELECTED_EID);
-            String uid = args.getString(USERID);
+            String uid = args.getString(USER_ID);
             if (eid != null) {
                 EventLiveData eventLiveData;
                 eventLiveData = DatabaseHandler.getEventLiveData(eid);

@@ -71,6 +71,7 @@
         android:background="@android:color/darker_gray" />
 
     <TextView
+        android:id="@+id/event_dialog_expenses_you_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/app_margin"
@@ -107,5 +108,38 @@
         android:textColor="@color/bt_color_primary"
         android:textSize="18sp"
         android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/event_dialog_quick_edit_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginEnd="@dimen/app_margin"
+        android:layout_marginStart="@dimen/app_margin"
+        android:ems="10"
+        android:inputType="number"
+        android:textAlignment="center"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/event_dialog_save_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/app_margin"
+        android:layout_marginEnd="@dimen/app_margin"
+        android:layout_marginStart="@dimen/app_margin"
+        android:layout_marginTop="@dimen/app_margin"
+        android:text="@string/btn_save_profile"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/event_dialog_cancel_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/app_margin"
+        android:layout_marginEnd="@dimen/app_margin"
+        android:layout_marginStart="@dimen/app_margin"
+        android:text="@string/cancel"
+        android:visibility="gone" />
 
 </LinearLayout>

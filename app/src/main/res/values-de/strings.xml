@@ -8,6 +8,7 @@
     <string name="event_form_date_end">Ende</string>
     <string name="event_form_one_day">Eintägiges Event</string>
     <string name="event_form_payment_deadline">Zahlungszeitraum</string>
+    <string name="event_inspect_event_info">Eventinfo:</string>
     <string name="ok">Ok</string>
     <string name="unknown">Unbekannt</string>
     <string name="add_with_num">Hinzufügen (%1$d)</string>

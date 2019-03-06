@@ -28,9 +28,8 @@ import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.view.fragment.CashFragment;
 import de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment;
 
-import static de.thm.ap.groupexpenses.model.Event.LifecycleState.*;
 import static de.thm.ap.groupexpenses.view.activity.LoginActivity.CONFIRM_PROCESS;
-import static de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment.USERID;
+import static de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment.USER_ID;
 
 public class EventActivity extends BaseActivity implements PositionEventListFragment.ItemClickListener {
 
@@ -181,11 +180,11 @@ public class EventActivity extends BaseActivity implements PositionEventListFrag
             switch (i){
                 case 0:
                     fragment = new PositionEventListFragment<>();
-                    args.putString(USERID, uid);
+                    args.putString(USER_ID, uid);
                     break;
                 case 1:
                     fragment = new CashFragment();
-                    args.putString(USERID, uid);
+                    args.putString(USER_ID, uid);
                     break;
                 default:
                     fragment = new PositionActivity.DemoObjectFragment();

@@ -37,7 +37,7 @@ import de.thm.ap.groupexpenses.view.dialog.ProfileInfoDialog;
 import static de.thm.ap.groupexpenses.view.fragment.CashFragment.SELECTED_EID;
 
 public class PositionEventListFragment<T> extends Fragment {
-    public static final String USERID = "uid";
+    public static final String USER_ID = "uid";
     private View view;
     private ListView object_listView;
     private TextView fragment_header_val;
@@ -78,7 +78,7 @@ public class PositionEventListFragment<T> extends Fragment {
 
         if (args != null) {
             String eid = args.getString(SELECTED_EID);
-            String uid = args.getString(USERID);
+            String uid = args.getString(USER_ID);
 
             if (creatorMap == null) creatorMap = new HashMap<>();
 

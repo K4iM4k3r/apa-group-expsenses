@@ -24,9 +24,10 @@
     <string name="event_form_users">Teilnehmer</string>
     <string name="event_form_begin">Beginn</string>
     <string name="event_form_create_event">create new event</string>
+    <string name="event_inspect_event_info">Event info:</string>
     <string name="position_form_value">Value (€)</string>
     <string name="position_form_create_position">create new position</string>
-    <string name="position_inspect_position_info">Positionsinfo</string>
+    <string name="position_inspect_position_info">Position info</string>
     <string name="add_payment">add payment</string>
     <string name="chose_cash">Cash Transaction</string>
     <string name="confirm_cash_payment">%1$s has paid you %2$s€ per cash?</string>
