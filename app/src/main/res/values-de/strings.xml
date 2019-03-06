@@ -161,6 +161,13 @@
     <string name="desc_firebase_lockup">firebase lookup</string>
     <string name="doublebacktoexit">Klicken Sie erneut auf ZURÜCK um die App zu schließen.</string>
     <string name="labeljoinDate">Beigetreten am</string>
+    <string name="event_status_ongoing">ANSTEHEND</string>
+    <string name="event_status_error">FEHLER</string>
+    <string name="event_status_live">LIVE</string>
+    <string name="event_status_closed">BEENDET</string>
+    <string name="event_status_locked">GESPERRT</string>
+    <string name="delete_event_msg">Dieses Event wirklich löschen?</string>
+    <string name="event_deleted_confirm">Event gelöscht!</string>
 
     <string-array name="pay_stretch_weeks">
         <item>1 Woche</item>

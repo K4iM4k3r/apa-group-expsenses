@@ -171,6 +171,8 @@
     <string name="event_status_live">LIVE</string>
     <string name="event_status_closed">CLOSED</string>
     <string name="event_status_locked">LOCKED</string>
+    <string name="delete_event_msg">Delete this Event?</string>
+    <string name="event_deleted_confirm">Event deleted!</string>
 
     <string-array name="pay_stretch_weeks">
         <item>1 week</item>

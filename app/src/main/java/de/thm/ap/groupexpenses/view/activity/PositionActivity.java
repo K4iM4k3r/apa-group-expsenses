@@ -16,9 +16,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,6 +30,7 @@ import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.livedata.EventLiveData;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
+import de.thm.ap.groupexpenses.model.Stats;
 import de.thm.ap.groupexpenses.model.User;
 import de.thm.ap.groupexpenses.view.dialog.EventInfoDialog;
 import de.thm.ap.groupexpenses.view.dialog.PositionInfoDialog;
@@ -35,6 +38,7 @@ import de.thm.ap.groupexpenses.view.fragment.CashFragment;
 import de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment;
 import de.thm.ap.groupexpenses.view.fragment.UserListDialogFragment;
 
+import static de.thm.ap.groupexpenses.App.getContext;
 import static de.thm.ap.groupexpenses.model.Event.LifecycleState.CLOSED;
 import static de.thm.ap.groupexpenses.model.Event.LifecycleState.ERROR;
 import static de.thm.ap.groupexpenses.model.Event.LifecycleState.LIVE;
@@ -58,8 +62,7 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
         finish();
     };
     private View.OnClickListener deleteEvent = view -> {
-        DatabaseHandler.deleteEvent(selectedEvent.getEid(), null);
-        finish();
+        showDeleteConfirmDialog();
     };
 
     @Override
@@ -367,5 +370,35 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
             }
             return rootView;
         }
+    }
+
+    private void showDeleteConfirmDialog() {
+        LayoutInflater layoutInflater = LayoutInflater.from(PositionActivity.this);
+        View promptView = layoutInflater.inflate(R.layout.dialog_choose_2_options, null);
+        final android.app.AlertDialog confirmDialogBuilder = new android.app.AlertDialog.Builder(PositionActivity.this).create();
+        Button confirm_delete_btn = promptView.findViewById(R.id.dialog_chose_2_options_option1_btn);
+        Button cancel_delete_btn = promptView.findViewById(R.id.dialog_chose_2_options_option2_btn);
+        TextView confirm_text = promptView.findViewById(R.id.dialog_chose_2_options_text);
+        confirm_delete_btn.setText(getString(R.string.confirm));
+        cancel_delete_btn.setText(getString(R.string.cancel));
+        confirm_text.setText(getString(R.string.delete_event_msg));
+        confirm_text.setVisibility(View.VISIBLE);
+
+        confirm_delete_btn.setOnClickListener(v -> {
+            // delete event
+            DatabaseHandler.deleteEvent(selectedEvent.getEid(), null);
+            Toast.makeText(PositionActivity.this, getString(R.string.event_deleted_confirm),
+                    Toast.LENGTH_SHORT).show();
+            confirmDialogBuilder.dismiss();
+            finish();
+        });
+
+        cancel_delete_btn.setOnClickListener(v -> {
+            // cancel delete
+            confirmDialogBuilder.dismiss();
+        });
+
+        confirmDialogBuilder.setView(promptView);
+        confirmDialogBuilder.show();
     }
 }
