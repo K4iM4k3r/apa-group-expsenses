@@ -4,6 +4,38 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/fragment_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#bfddfc"
+        android:minHeight="?android:listPreferredItemHeight"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/fragment_header_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/app_margin"
+            android:layout_toStartOf="@id/fragment_header_val"
+            android:text="@string/total_balance"
+            android:textAppearance="?android:textAppearanceListItem"
+            android:textStyle="bold" />
+
+
+        <TextView
+            android:id="@+id/fragment_header_val"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/app_margin"
+            android:textAppearance="?android:textAppearanceListItem"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+
     <TextView
         android:id="@+id/fragment_no_object_text"
         android:layout_width="match_parent"

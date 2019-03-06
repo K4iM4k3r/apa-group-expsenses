@@ -1,8 +1,8 @@
-<RelativeLayout android:layout_width="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="#bfddfc"
-    android:minHeight="?android:listPreferredItemHeight"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:minHeight="?android:listPreferredItemHeight">
 
     <TextView
         android:id="@+id/object_balance_summary_text"
@@ -10,14 +10,14 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginStart="@dimen/app_margin"
-        android:layout_toStartOf="@id/object_balance_summary_val"
+        android:layout_toStartOf="@id/fragment_header_val"
         android:text="@string/total_balance"
         android:textAppearance="?android:textAppearanceListItem"
         android:textStyle="bold" />
 
 
     <TextView
-        android:id="@+id/object_balance_summary_val"
+        android:id="@+id/fragment_header_val"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"

@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/app_margin"
-            android:layout_toStartOf="@id/object_balance_summary_val"
+            android:layout_toStartOf="@id/fragment_header_val"
             android:text="@string/your_event_balance"
             android:textAppearance="?android:textAppearanceListItem"
             android:textStyle="bold" />

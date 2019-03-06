@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
@@ -39,7 +40,7 @@ public class PositionEventListFragment<T> extends Fragment {
     public static final String USERID = "uid";
     private View view;
     private ListView object_listView;
-    private View headerView;
+    private TextView fragment_header_val;
     private ObjectItemAdapter adapter;
     private HashMap<String, String> creatorMap;
 
@@ -67,11 +68,10 @@ public class PositionEventListFragment<T> extends Fragment {
             ViewGroup parent = (ViewGroup) view.getParent();
             parent.removeView(view);
         }
-        headerView = getLayoutInflater().inflate(R.layout.fragment_object_list_header, null);
+        RelativeLayout fragment_header = view.findViewById(R.id.fragment_header);
+        TextView fragment_header_text = view.findViewById(R.id.fragment_header_text);
+        fragment_header_val = view.findViewById(R.id.fragment_header_val);
         object_listView = view.findViewById(R.id.fragment_listView);
-
-        TextView header_text = headerView.findViewById(R.id.object_balance_summary_text);
-
         TextView noObjects_textView = view.findViewById(R.id.fragment_no_object_text);
 
         Bundle args = getArguments();
@@ -87,11 +87,13 @@ public class PositionEventListFragment<T> extends Fragment {
                 EventLiveData eventLiveData = DatabaseHandler.getEventLiveData(eid);
                 eventLiveData.observe(this, event -> {
                     if (event != null && !event.getPositions().isEmpty()) {
-                        headerView.setVisibility(View.VISIBLE);
+                        fragment_header.setVisibility(View.VISIBLE);
+                        //headerView.setVisibility(View.VISIBLE);
                         object_listView.setVisibility(View.VISIBLE);
                         noObjects_textView.setVisibility(View.GONE);
                         String headerText = getString(R.string.total_expenses) + ":";
-                        header_text.setText(headerText);
+                        fragment_header_text.setText(headerText);
+                        //header_text.setText(headerText);
                         updateTotalBalanceOfPositions(event);
                         List<Position> positions = event.getPositions();
                         for (int idx = 0; idx < positions.size(); ++idx) {
@@ -100,7 +102,8 @@ public class PositionEventListFragment<T> extends Fragment {
                         generateAdapter((List<T>) positions, true);
                     }
                     else {
-                        headerView.setVisibility(View.GONE);
+                        fragment_header.setVisibility(View.GONE);
+                        //headerView.setVisibility(View.GONE);
                         noObjects_textView.setVisibility(View.VISIBLE);
                         noObjects_textView.setText(R.string.no_positions);
                         if(adapter != null){
@@ -116,10 +119,12 @@ public class PositionEventListFragment<T> extends Fragment {
                 listLiveData.observe(this, eventList -> {
                     if (eventList != null && !eventList.isEmpty()) {
                         String headerText = getString(R.string.total_balance) + ":";
-                        headerView.setVisibility(View.VISIBLE);
+                        fragment_header.setVisibility(View.VISIBLE);
+                        //headerView.setVisibility(View.VISIBLE);
                         object_listView.setVisibility(View.VISIBLE);
                         noObjects_textView.setVisibility(View.GONE);
-                        header_text.setText(headerText);
+                        fragment_header_text.setText(headerText);
+                        //header_text.setText(headerText);
                         updateTotalBalanceOfEvents(eventList);
                         for (int idx = 0; idx < eventList.size(); ++idx) {
                             creatorMap.putIfAbsent(eventList.get(idx).getCreatorId(), "");
@@ -128,7 +133,8 @@ public class PositionEventListFragment<T> extends Fragment {
 
                     }
                     else {
-                        headerView.setVisibility(View.GONE);
+                        fragment_header.setVisibility(View.GONE);
+                        //headerView.setVisibility(View.GONE);
                         noObjects_textView.setVisibility(View.VISIBLE);
                         noObjects_textView.setText(R.string.no_events);
                         if(adapter != null){
@@ -166,7 +172,6 @@ public class PositionEventListFragment<T> extends Fragment {
         if (adapter == null) {
             adapter = new ObjectItemAdapter(getActivity(),
                     R.layout.fragment_object_list_row, objectList, isPosition);
-            object_listView.addHeaderView(headerView);
             object_listView.setAdapter(adapter);
             object_listView.setOnItemClickListener((parent, view, position, id) ->
                     itemSelected(object_listView.getItemAtPosition(position)));
@@ -186,25 +191,24 @@ public class PositionEventListFragment<T> extends Fragment {
     }
 
     private void updateTotalBalanceOfPositions(Event event) {
-        TextView obj_val = headerView.findViewById(R.id.object_balance_summary_val);
         List<Position> positions = event.getPositions();
         float total_expenses = 0;
         for (Position p : positions) {
             total_expenses += p.getValue();
         }
-        obj_val.setText(new DecimalFormat("0.00 €").format(total_expenses));
+        fragment_header_val.setText(new DecimalFormat("0.00 €").format(total_expenses));
     }
 
     private void updateTotalBalanceOfEvents(List<Event> eventList) {
-        TextView obj_val = headerView.findViewById(R.id.object_balance_summary_val);
         float balance = Stats.getBalance(eventList);
 
-        obj_val.setText(new DecimalFormat("0.00 €").format(balance));
+        fragment_header_val.setText(new DecimalFormat("0.00 €").format(balance));
 
         if (balance < 0)
-            obj_val.setTextColor(Color.parseColor("#ef4545"));    // red
+            fragment_header_val.setTextColor(Color.parseColor("#ef4545"));    // red
         else
-            obj_val.setTextColor(Color.parseColor("#2ba050"));    // green
+            fragment_header_val.setTextColor(Color.parseColor("#2ba050"));    // green
+
     }
 
     public void itemSelected(Object object) {

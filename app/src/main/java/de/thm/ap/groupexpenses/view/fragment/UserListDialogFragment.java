@@ -1,9 +1,7 @@
 package de.thm.ap.groupexpenses.view.fragment;
 
-import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -28,7 +26,6 @@ import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.model.Event;
-import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.User;
 import de.thm.ap.groupexpenses.view.activity.EventFormActivity;
 import de.thm.ap.groupexpenses.view.dialog.InviteDialog;
@@ -38,7 +35,7 @@ public class UserListDialogFragment extends DialogFragment {
 
     private View view;
     private ListView userListView;
-    private Button addBtn, doneBtn;
+    private Button add_btn, invite_btn;
     private UserArrayAdapter userArrayAdapter;
     private List<User> friendsList;
     private ArrayList<User> addableUsers, addableUsersSelected;
@@ -73,8 +70,8 @@ public class UserListDialogFragment extends DialogFragment {
         ImageView closeIconImageView = view.findViewById(R.id.fragment_user_list_close_imageView);
         TextView headerTextView = view.findViewById(R.id.fragment_user_list_users_textView);
         userListView = view.findViewById(R.id.fragment_user_list_listView);
-        addBtn = view.findViewById(R.id.fragment_user_list_add_btn);
-        doneBtn = view.findViewById(R.id.fragment_user_list_done_btn);
+        add_btn = view.findViewById(R.id.fragment_user_list_add_btn);
+        invite_btn = view.findViewById(R.id.fragment_user_list_done_btn);
         TAG = getTag();
         edit_state = 0;
 
@@ -87,7 +84,7 @@ public class UserListDialogFragment extends DialogFragment {
         switch (TAG) {
             case "create_event":
                 headerTextView.setText(R.string.event_form_add_friend);
-                doneBtn.setVisibility(View.GONE);
+                invite_btn.setVisibility(View.GONE);
                 userArrayAdapter = new UserArrayAdapter(getActivity(), friendsList);
                 break;
 
@@ -98,21 +95,21 @@ public class UserListDialogFragment extends DialogFragment {
                     switch (selectedEvent.getLifecycleState()) {
                         case ONGOING:
                         case LIVE:
-                            addBtn.setText(R.string.event_form_add_friend);
-                            doneBtn.setText(R.string.invite_link_share);
+                            add_btn.setText(R.string.event_form_add_friend);
+                            invite_btn.setText(R.string.invite_link_share);
                             break;
                         case LOCKED:
                         case CLOSED:
                         case ERROR:
-                            addBtn.setVisibility(View.GONE);
-                            doneBtn.setVisibility(View.GONE);
+                            add_btn.setVisibility(View.GONE);
+                            invite_btn.setVisibility(View.GONE);
                         default:
-                            addBtn.setVisibility(View.GONE);
-                            doneBtn.setVisibility(View.GONE);
+                            add_btn.setVisibility(View.GONE);
+                            invite_btn.setVisibility(View.GONE);
                     }
                 } else {
-                    addBtn.setVisibility(View.GONE);
-                    doneBtn.setVisibility(View.GONE);
+                    add_btn.setVisibility(View.GONE);
+                    invite_btn.setVisibility(View.GONE);
                 }
                 userArrayAdapter = new UserArrayAdapter(getActivity(), selectedUsers);
                 break;
@@ -156,7 +153,7 @@ public class UserListDialogFragment extends DialogFragment {
             }
         });
 
-        addBtn.setOnClickListener(v -> {
+        add_btn.setOnClickListener(v -> {
             switch (TAG) {
                 case "create_event":
                     ((EventFormActivity) getActivity()).setEventMembers(selectedUsers);
@@ -167,8 +164,8 @@ public class UserListDialogFragment extends DialogFragment {
                         case EDIT_STATE_INSPECT_USERS: // add btn was pressed in inspect state
                             setEditState(EDIT_STATE_ADD_USERS);
                             headerTextView.setText(R.string.event_form_add_friend);
-                            addBtn.setText(R.string.ok);
-                            doneBtn.setVisibility(View.GONE);
+                            add_btn.setText(R.string.ok);
+                            invite_btn.setVisibility(View.GONE);
                             addableUsers = new ArrayList<>();
                             if (addableUsersSelected == null)
                                 addableUsersSelected = new ArrayList<>();
@@ -213,7 +210,7 @@ public class UserListDialogFragment extends DialogFragment {
             }
         });
 
-        doneBtn.setOnClickListener((View v) -> {
+        invite_btn.setOnClickListener((View v) -> {
             switch (edit_state) {
                 case EDIT_STATE_ADD_USERS:
                     // this cannot be reached
