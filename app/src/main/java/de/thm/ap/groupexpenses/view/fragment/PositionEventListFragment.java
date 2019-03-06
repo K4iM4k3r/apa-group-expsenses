@@ -235,7 +235,7 @@ public class PositionEventListFragment<T> extends Fragment {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(resource, parent, false);
             holder = new Holder();
-            ImageView lifeCycleImageView = view.findViewById(R.id.lifecycleState);
+            TextView event_status = view.findViewById(R.id.event_status);
             holder.object_name = view.findViewById(R.id.name);
             holder.object_creator = view.findViewById(R.id.creator);
             holder.object_balance = view.findViewById(R.id.balance);
@@ -247,7 +247,7 @@ public class PositionEventListFragment<T> extends Fragment {
             Spannable spannable;
 
             if (isPosition) {
-                lifeCycleImageView.setVisibility(View.GONE);
+                event_status.setVisibility(View.GONE);
                 Position position = (Position) m_object;
                 float position_expense = position.getValue();
                 holder.object_name.setText(position.getTopic());
@@ -273,24 +273,29 @@ public class PositionEventListFragment<T> extends Fragment {
                 Event event = (Event) m_object;
                 float balance = Stats.getEventBalance(event);
 
-                lifeCycleImageView.setVisibility(View.VISIBLE);
+                event_status.setVisibility(View.VISIBLE);
 
                 switch(event.getLifecycleState()){
                     case ONGOING:
-                        lifeCycleImageView.setImageResource(R.drawable.ic_lifecycle_ongoing_24dp);
+                        event_status.setText(getString(R.string.event_status_ongoing));
+                        event_status.setBackgroundResource(R.drawable.event_status_ongoing);
                         break;
                     case LIVE:
-                        lifeCycleImageView.setImageResource(R.drawable.ic_lifecycle_live_24dp);
+                        event_status.setText(getString(R.string.event_status_live));
+                        event_status.setBackgroundResource(R.drawable.event_status_live);
                         break;
                     case LOCKED:
-                        lifeCycleImageView.setImageResource(R.drawable.ic_lifecycle_lock_24dp);
+                        event_status.setText(getString(R.string.event_status_locked));
+                        event_status.setBackgroundResource(R.drawable.event_status_lock);
                         break;
                     case CLOSED:
-                        lifeCycleImageView.setImageResource(R.drawable.ic_lifecycle_closed2_24dp);
+                        event_status.setText(getString(R.string.event_status_closed));
+                        event_status.setBackgroundResource(R.drawable.event_status_closed);
                         break;
                     case ERROR:
                     default:
-                        lifeCycleImageView.setImageResource(R.drawable.ic_lifecycle_error_24dp);
+                        event_status.setText(getString(R.string.event_status_error));
+                        event_status.setBackgroundResource(R.drawable.event_status_error);
                 }
 
                 holder.object_name.setText(event.getName());
