@@ -51,7 +51,7 @@ public class PayActivity extends AppCompatActivity {
         btnPay = findViewById(R.id.btnPay);
         Bundle extras = getIntent().getExtras();
         String payThis = extras.getString("amount");
-        tVAmount.setText(payThis+"€");
+        tVAmount.setText(payThis + "€");
         btnPay.setOnClickListener(v -> onBraintreeSubmit());
         new HttpRequest().execute();
     }
@@ -97,10 +97,12 @@ public class PayActivity extends AppCompatActivity {
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.POST, payDetails,
                 response -> {
+                    Intent returnIntent = new Intent();
                     if (response.contains("Successful")) {
-                        Toast.makeText(PayActivity.this, "Transaction successful", Toast.LENGTH_LONG).show();
-                    } else
-                        Toast.makeText(PayActivity.this, "Transaction failed", Toast.LENGTH_LONG).show();
+                        setResult(Activity.RESULT_OK, returnIntent);
+                    } else {
+                        setResult(Activity.RESULT_CANCELED, returnIntent);
+                    }
                     Log.d("mylog", "Final Response: " + response);
                     finish();
                 }, error -> Log.d("mylog", "Volley error : " + error.toString())) {

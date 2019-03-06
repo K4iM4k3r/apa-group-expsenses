@@ -1,5 +1,6 @@
 package de.thm.ap.groupexpenses.view.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -47,6 +48,7 @@ public class CashFragment extends Fragment {
     private ListView cash_check_list;
     private Event event;
     private List<Event> eventList;
+    private final int PAY_REQUEST_CODE = 49824;
 
 
     @Override
@@ -173,9 +175,8 @@ public class CashFragment extends Fragment {
                     String amountAsString = new DecimalFormat("0.00").format(totalDebt);
                     Intent payIntent = new Intent(getContext(), PayActivity.class);
                     payIntent.putExtra("amount", amountAsString);
-                    startActivity(payIntent);
-
-                    // TODO: After successful payment -> add user to has paid list in ALL positions he just payed for
+                    payIntent.putExtra("debtor_uid", currentUserValue.uid);
+                    startActivityForResult(payIntent, PAY_REQUEST_CODE);
                 });
                 userValueName.setOnClickListener(v -> {
                     DatabaseHandler.queryUser(App.CurrentUser.getUid(), user -> {
@@ -228,6 +229,35 @@ public class CashFragment extends Fragment {
             return 1;
         }
     };
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == PAY_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                // payment successful
+                String debtor_uid = data.getStringExtra("debtor_uid");
+                if (event != null) {   // user is paying for one event
+                    for (Position p : event.getPositions()) {
+                        releaseAllDebtsBetweenUsers(p, App.CurrentUser.getUid(), debtor_uid);
+                    }
+                    DatabaseHandler.updateEvent(event);
+                    Toast.makeText(getContext(), getString(R.string.done_paypal_payment), Toast.LENGTH_SHORT).show();
+                } else if (eventList != null) {    // user is paying for all events
+                    for (Event e : Stats.getOpenEvents(App.CurrentUser.getUid(), debtor_uid, eventList)) {
+                        for (Position p : e.getPositions()) {
+                            releaseAllDebtsBetweenUsers(p, App.CurrentUser.getUid(), debtor_uid);
+                        }
+                        DatabaseHandler.updateEvent(e);
+                    }
+                    Toast.makeText(getContext(), getString(R.string.done_paypal_payment), Toast.LENGTH_SHORT).show();
+                }
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                // payment NOT successful
+                Toast.makeText(getContext(), getString(R.string.error_paypal_payment), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
     private void buildCashView() {
         List<String> keyList = new ArrayList<>(cash_check_map.keySet());

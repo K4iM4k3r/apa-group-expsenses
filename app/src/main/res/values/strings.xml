@@ -31,6 +31,8 @@
     <string name="chose_cash">Cash Transaction</string>
     <string name="confirm_cash_payment">%1$s has paid you %2$s€ per cash?</string>
     <string name="done_cash_payment">Cash transaction complete!</string>
+    <string name="done_paypal_payment">Paypal transaction complete!</string>
+    <string name="error_paypal_payment">Paypal transaction could not be completed!</string>
     <string name="done_delete_position">Position deleted!</string>
     <string name="error_cash_payment">No cash transaction could be completed!</string>
     <string name="chose_remind">Remind for payment</string>
