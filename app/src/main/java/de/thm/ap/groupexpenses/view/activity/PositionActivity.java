@@ -26,7 +26,6 @@ import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.livedata.EventLiveData;
-import de.thm.ap.groupexpenses.livedata.UserListLiveData;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.User;
@@ -37,6 +36,7 @@ import de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment;
 import de.thm.ap.groupexpenses.view.fragment.UserListDialogFragment;
 
 import static de.thm.ap.groupexpenses.model.Event.LifecycleState.CLOSED;
+import static de.thm.ap.groupexpenses.model.Event.LifecycleState.ERROR;
 import static de.thm.ap.groupexpenses.model.Event.LifecycleState.LIVE;
 import static de.thm.ap.groupexpenses.model.Event.LifecycleState.ONGOING;
 
@@ -171,6 +171,21 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
 
         lFab.setVisibility(View.GONE);
         rFab.setVisibility(View.GONE);
+
+        if(isEventCreator && lifecycleState==ERROR) {
+            rFab.setImageResource(R.drawable.ic_delete_white_24dp);
+            rFab.setVisibility(View.VISIBLE);
+            rFab.setOnClickListener(deleteEvent);
+            Toast.makeText(this, R.string.brokenEventCreator, Toast.LENGTH_LONG).show();
+            return;
+        }
+        else if(!isEventCreator && lifecycleState==ERROR) {
+            Toast.makeText(this, R.string.brokenEventClient, Toast.LENGTH_LONG).show();
+            rFab.setImageResource(R.drawable.ic_exit_white_24dp);
+            rFab.setVisibility(View.VISIBLE);
+            rFab.setOnClickListener(leaveEvent);
+            return;
+        }
 
         //-- lFab
 
