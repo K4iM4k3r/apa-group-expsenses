@@ -70,7 +70,6 @@ public class CashFragment extends Fragment {
             } else {
                 help_layout.setVisibility(View.GONE);
             }
-
         });
 
         if (args != null) {
@@ -170,7 +169,40 @@ public class CashFragment extends Fragment {
                     userValueName2.setText(currentUserValue.name);
                 }
                 value_layout.setOnClickListener(v -> {
-                    fulfillPaymentConfirmDialog(currentUserValue);
+                    if (event != null) {
+                        switch (event.getLifecycleState()) {
+                            case ONGOING:
+                            case CLOSED:
+                            case LIVE:
+                            case ERROR:
+                                // not possible to pay right now
+                                Toast.makeText(getContext(), getString(R.string.error_wrong_time_for_payment),
+                                        Toast.LENGTH_SHORT).show();
+                                break;
+                            case LOCKED:
+                                // possible to pay in LOCKED state!
+                                // now send reminder mail or do cash transaction
+                                fulfillPaymentConfirmDialog(currentUserValue);
+                                break;
+                            default:
+                        }
+                    } else if (eventList != null) {
+                        boolean allEventsAreLocked = true;
+                        for (Event e : Stats.getOpenEvents(currentUserValue.uid, App.CurrentUser.getUid(), eventList)) {
+                            if (e.getLifecycleState() != Event.LifecycleState.LOCKED) {
+                                allEventsAreLocked = false;
+                                break;
+                            }
+                        }
+                        if (allEventsAreLocked) {
+                            // possible to pay, since ALL events are in LOCKED state!
+                            // now send reminder mail or do cash transaction
+                            fulfillPaymentConfirmDialog(currentUserValue);
+                        } else {
+                            Toast.makeText(getContext(), getString(R.string.error_not_all_events_locked),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
                 });
                 userValueName.setOnClickListener(v -> {
                     DatabaseHandler.queryUser(App.CurrentUser.getUid(), user -> {
@@ -193,8 +225,40 @@ public class CashFragment extends Fragment {
                     userValueName.setText(currentUserValue.name);
                 }
                 value_layout.setOnClickListener(v -> {
-                    // reminder mail or do cash transaction
-                    showCashOrReminderDialog(currentUserValue);
+                    if (event != null) {
+                        switch (event.getLifecycleState()) {
+                            case ONGOING:
+                            case CLOSED:
+                            case LIVE:
+                            case ERROR:
+                                // not possible to pay right now
+                                Toast.makeText(getContext(), getString(R.string.error_wrong_time_for_payment),
+                                        Toast.LENGTH_SHORT).show();
+                                break;
+                            case LOCKED:
+                                // possible to pay in LOCKED state!
+                                // reminder mail or do cash transaction
+                                showCashOrReminderDialog(currentUserValue);
+                                break;
+                            default:
+                        }
+                    } else if(eventList != null){
+                        boolean allEventsAreLocked = true;
+                        for (Event e : Stats.getOpenEvents(App.CurrentUser.getUid(), currentUserValue.uid, eventList)) {
+                            if (e.getLifecycleState() != Event.LifecycleState.LOCKED) {
+                                allEventsAreLocked = false;
+                                break;
+                            }
+                        }
+                        if (allEventsAreLocked) {
+                            // possible to pay in LOCKED state!
+                            // reminder mail or do cash transaction
+                            showCashOrReminderDialog(currentUserValue);
+                        } else {
+                            Toast.makeText(getContext(), getString(R.string.error_not_all_events_locked),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
                 });
                 userValueName.setOnClickListener(v -> {
                     DatabaseHandler.queryUser(currentUserValue.uid, user -> {

@@ -63,6 +63,8 @@
     <string name="done_cash_payment">Barzahlung abgeschlossen!</string>
     <string name="done_paypal_payment">Paypal-Zahlung abgeschlossen!</string>
     <string name="error_paypal_payment">Paypal-Zahlung konnte nicht abgeschlossen werden!</string>
+    <string name="error_wrong_time_for_payment">Zahlungen/ Erinnerungen können nur während dem GESPERRT - Zustand getätigt werden!</string>
+    <string name="error_not_all_events_locked">NICHT MÖGLICH!\nNicht alle Events sind im GESPERRT - Zustand!</string>
     <string name="done_delete_position">Position gelöscht!</string>
     <string name="error_cash_payment">Keine Barzahlung konnte abgeschlossen werden!</string>
     <string name="chose_remind">An Zahlung erinnern</string>
