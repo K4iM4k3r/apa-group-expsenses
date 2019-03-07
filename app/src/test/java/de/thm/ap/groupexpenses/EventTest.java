@@ -4,10 +4,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -173,7 +171,7 @@ public class EventTest {
         date_now = Calendar.getInstance().getTimeInMillis();
         Event event;
 
-        // ---------------------------------| Ongoing |---------------------------------------------x
+        // ---------------------------------| Upcoming |--------------------------------------------
 
         date_begin = date_now + TimeUnit.DAYS.toMillis(5);
         date_end = date_begin + TimeUnit.DAYS.toMillis(3);
@@ -302,14 +300,14 @@ public class EventTest {
         date_now = Calendar.getInstance().getTimeInMillis();
         Event event;
 
-        // ---------------------------------| Ongoing |---------------------------------------------
+        // ---------------------------------| Upcoming |--------------------------------------------
 
         date_begin = date_now + TimeUnit.DAYS.toMillis(5);
         date_end = date_begin + TimeUnit.DAYS.toMillis(3);
         date_deadlineDay = date_end + TimeUnit.DAYS.toMillis(14);
 
         event = new Event("Tom", "Urlaub", date_begin, date_end, date_deadlineDay, "");
-        assert event.getLifecycleState() == Event.LifecycleState.ONGOING;
+        assert event.getLifecycleState() == Event.LifecycleState.UPCOMING;
 
         // ---------------------------------| Live |------------------------------------------------
 

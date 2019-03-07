@@ -117,7 +117,7 @@ public class EventActivity extends BaseActivity implements PositionEventListFrag
                     case ERROR:
                         Toast.makeText(this, R.string.invite_invalid_event_error, Toast.LENGTH_LONG).show();
                         break;
-                    case ONGOING:
+                    case UPCOMING:
                     case LIVE:
                         boolean success = event.addMember(App.CurrentUser.getUid());
                         if (success) DatabaseHandler.updateEvent(event);

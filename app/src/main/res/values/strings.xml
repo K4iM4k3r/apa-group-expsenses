@@ -170,11 +170,11 @@
     <string name="hint_password_again">Password again</string>
     <string name="doublebacktoexit">Please click BACK again to exit</string>
     <string name="labeljoinDate">JoinDate</string>
-    <string name="event_status_ongoing">ONGOING</string>
+    <string name="event_status_upcoming">UPCOMING</string>
     <string name="event_status_error">ERROR</string>
     <string name="event_status_live">LIVE</string>
     <string name="event_status_closed">CLOSED</string>
-    <string name="event_status_locked">LOCKED</string>
+    <string name="event_status_locked">PAYTIME</string>
     <string name="delete_event_msg">Delete this Event?</string>
     <string name="event_deleted_confirm">Event deleted!</string>
 

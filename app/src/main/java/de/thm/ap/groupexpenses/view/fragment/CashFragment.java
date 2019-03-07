@@ -171,7 +171,7 @@ public class CashFragment extends Fragment {
                 value_layout.setOnClickListener(v -> {
                     if (event != null) {
                         switch (event.getLifecycleState()) {
-                            case ONGOING:
+                            case UPCOMING:
                             case CLOSED:
                             case LIVE:
                             case ERROR:
@@ -227,7 +227,7 @@ public class CashFragment extends Fragment {
                 value_layout.setOnClickListener(v -> {
                     if (event != null) {
                         switch (event.getLifecycleState()) {
-                            case ONGOING:
+                            case UPCOMING:
                             case CLOSED:
                             case LIVE:
                             case ERROR:

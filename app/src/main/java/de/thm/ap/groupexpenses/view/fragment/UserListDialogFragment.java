@@ -93,7 +93,7 @@ public class UserListDialogFragment extends DialogFragment {
 
                 if (isCreator) {
                     switch (selectedEvent.getLifecycleState()) {
-                        case ONGOING:
+                        case UPCOMING:
                         case LIVE:
                             add_btn.setText(R.string.event_form_add_friend);
                             invite_btn.setText(R.string.invite_link_share);

@@ -279,9 +279,9 @@ public class PositionEventListFragment<T> extends Fragment {
                 event_status.setVisibility(View.VISIBLE);
 
                 switch(event.getLifecycleState()){
-                    case ONGOING:
-                        event_status.setText(getString(R.string.event_status_ongoing));
-                        event_status.setBackgroundResource(R.drawable.event_status_ongoing);
+                    case UPCOMING:
+                        event_status.setText(getString(R.string.event_status_upcoming));
+                        event_status.setBackgroundResource(R.drawable.event_status_upcoming);
                         break;
                     case LIVE:
                         event_status.setText(getString(R.string.event_status_live));

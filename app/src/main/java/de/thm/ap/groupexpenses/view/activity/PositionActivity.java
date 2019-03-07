@@ -38,7 +38,7 @@ import de.thm.ap.groupexpenses.view.fragment.UserListDialogFragment;
 import static de.thm.ap.groupexpenses.model.Event.LifecycleState.CLOSED;
 import static de.thm.ap.groupexpenses.model.Event.LifecycleState.ERROR;
 import static de.thm.ap.groupexpenses.model.Event.LifecycleState.LIVE;
-import static de.thm.ap.groupexpenses.model.Event.LifecycleState.ONGOING;
+import static de.thm.ap.groupexpenses.model.Event.LifecycleState.UPCOMING;
 
 public class PositionActivity extends BaseActivity implements PositionEventListFragment.ItemClickListener {
 
@@ -172,7 +172,7 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
 
         // changes icon due too lifecycle
         switch (selectedEvent.getLifecycleState()){
-            case ONGOING:
+            case UPCOMING:
             case LIVE:
                 item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_person_add_white_24dp));
                 break;
@@ -214,7 +214,7 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
             lFab.setVisibility(View.VISIBLE);
             lFab.setImageResource(R.drawable.ic_delete_white_24dp);
             lFab.setOnClickListener(deleteEvent);
-        } else if (!isEventCreator && selectedEvent.isEven(App.CurrentUser.getUid()) && lifecycleState == ONGOING) {
+        } else if (!isEventCreator && selectedEvent.isEven(App.CurrentUser.getUid()) && lifecycleState == UPCOMING) {
             lFab.setVisibility(View.VISIBLE);
             lFab.setImageResource(R.drawable.ic_delete_white_24dp);
             lFab.setOnClickListener(leaveEvent);
