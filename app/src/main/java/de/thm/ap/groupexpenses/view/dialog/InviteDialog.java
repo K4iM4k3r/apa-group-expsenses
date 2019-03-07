@@ -58,11 +58,13 @@ public class InviteDialog {
         sendMailLayout.setOnClickListener(v -> {
             String subject = "Invite to join " + selectedEvent.getName() + " in GEO!";
             messageHelper.sendViaMail("", subject, infoText);
+            dialog.dismiss();
         });
 
         sendWhatsappLayout.setOnClickListener(v -> {
             MessageHelper.Providers provider = MessageHelper.Providers.WHATSAPP;
             messageHelper.sendVia(provider, infoText);
+            dialog.dismiss();
         });
 
         copyLinkLayout.setOnClickListener(v -> {
@@ -70,6 +72,7 @@ public class InviteDialog {
             ClipData clip = ClipData.newPlainText("Invite URL", inviteURL);
             clipboard.setPrimaryClip(clip);
             Toast.makeText(getContext(), "copied invite link to clipboard", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
         });
 
         // close btn clicked
