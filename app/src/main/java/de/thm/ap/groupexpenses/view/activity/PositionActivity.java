@@ -164,6 +164,13 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
     private void selectMemberIcon(MenuItem item){
         if (item == null || selectedEvent == null) return;
 
+        // only creator can add people
+        if (!App.CurrentUser.getUid().equals(selectedEvent.getCreatorId())){
+            item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_person_white_24dp));
+            return;
+        }
+
+        // changes icon due too lifecycle
         switch (selectedEvent.getLifecycleState()){
             case ONGOING:
             case LIVE:
