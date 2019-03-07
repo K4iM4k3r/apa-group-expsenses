@@ -160,14 +160,14 @@ public class ProfileActivity extends BaseActivity {
             edNickname.setError(getString(R.string.error_invalid_input));
             valid = false;
         }
-        if (TextUtils.isEmpty(edFirst.getText())) {
-            edFirst.setError(getString(R.string.error_invalid_input));
-            valid = false;
-        }
-        if (TextUtils.isEmpty(edLast.getText())) {
-            edLast.setError(getString(R.string.error_invalid_input));
-            valid = false;
-        }
+//        if (TextUtils.isEmpty(edFirst.getText())) {
+//            edFirst.setError(getString(R.string.error_invalid_input));
+//            valid = false;
+//        }
+//        if (TextUtils.isEmpty(edLast.getText())) {
+//            edLast.setError(getString(R.string.error_invalid_input));
+//            valid = false;
+//        }
         return valid;
     }
 

@@ -99,7 +99,7 @@
     <string name="send_per_whatsapp">send via WhatsApp</string>
     <string name="send_per_copy">copy link to phone cache</string>
     <string name="lastname">last name</string>
-    <string name="firstname">first name</string>
+    <string name="hint_not_set">not set</string>
     <string name="displayname">display name</string>
     <string name="enableEditMode">Editmode</string>
     <string name="labelLastName">Last name</string>

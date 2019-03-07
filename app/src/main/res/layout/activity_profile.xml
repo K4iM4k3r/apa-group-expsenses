@@ -100,7 +100,7 @@
                 android:layout_marginStart="@dimen/app_margin"
                 android:ems="10"
                 android:enabled="false"
-                android:hint="@string/firstname"
+                android:hint="@string/hint_not_set"
                 android:inputType="textPersonName"
                 android:text="" />
 
@@ -121,7 +121,7 @@
                 android:layout_marginStart="@dimen/app_margin"
                 android:ems="10"
                 android:enabled="false"
-                android:hint="@string/lastname"
+                android:hint="@string/hint_not_set"
                 android:inputType="textPersonName" />
 
             <TextView

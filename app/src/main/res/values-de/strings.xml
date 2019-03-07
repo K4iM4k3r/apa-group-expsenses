@@ -121,7 +121,7 @@
     <string name="error_download_ProfilePic">Profilbild konnte nicht geladen werden!</string>
     <string name="menu_item_event">Meine Veranstaltungen</string>
     <string name="lastname">Nachnamen</string>
-    <string name="firstname">Vornamen</string>
+    <string name="hint_not_set">nicht gesetzt</string>
     <string name="displayname">nickname</string>
     <string name="enableEditMode">Bearbeitungsmodus</string>
     <string name="labelLastName">Nachnamen</string>
