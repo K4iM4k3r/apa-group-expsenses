@@ -17,6 +17,8 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -49,12 +51,11 @@ public class ProfileActivity extends BaseActivity {
     private EditText edEmail, edNickname, edFirst, edLast, edInfo;
     private TextView joinDate;
     private CircleImageView profile_pic;
-    private Button btnSave;
     private final int REQUEST_IMAGE_PICK = 1;
     private final String TAG = getClass().getName();
     private User user;
     private FirebaseUser currentUser;
-
+    private boolean editState = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,8 +71,6 @@ public class ProfileActivity extends BaseActivity {
         edFirst = findViewById(R.id.edFirstName);
         edLast = findViewById(R.id.edLastName);
         edInfo = findViewById(R.id.edInfo);
-        Button btnEdit = findViewById(R.id.edit_profile_btn);
-        btnSave = findViewById(R.id.btn_save_profile_btn);
         profile_pic = findViewById(R.id.profile_pic);
         joinDate = findViewById(R.id.tvJoinDate);
         LinearLayout profilePicLayout = findViewById(R.id.profile_pic_layout);
@@ -99,35 +98,6 @@ public class ProfileActivity extends BaseActivity {
             });
         }
 
-        btnEdit.setOnClickListener(l -> {
-            edNickname.setEnabled(true);
-            edLast.setEnabled(true);
-            edFirst.setEnabled(true);
-            edInfo.setEnabled(true);
-            btnSave.setVisibility(View.VISIBLE);
-            btnEdit.setVisibility(View.GONE);
-
-        });
-        btnSave.setOnClickListener(l -> {
-            showProgressDialog();
-            if (isValidUserInput()) {
-                //TOdo
-                if (edNickname.getText().toString().equals(user.getNickname())) {
-                    updateRoutine();
-                }
-                DatabaseHandler.isNicknameExisting(edNickname.getText().toString(), exists -> {
-                    if (exists) {
-                        edNickname.setError(getString(R.string.error_already_in_use));
-                        hideProgressDialog();
-                    } else {
-                        updateRoutine();
-                    }
-                });
-            } else {
-                hideProgressDialog();
-            }
-        });
-
         File pic = new File(getExternalFilesDir(null), "profilePic.jpg");
         if (pic.exists()) {
             profile_pic.setImageURI(Uri.fromFile(pic));
@@ -137,7 +107,66 @@ public class ProfileActivity extends BaseActivity {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.profile_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem edit = menu.findItem(R.id.profile_menuItem_edit_save);
+            edit.setIcon(editState
+                    ? ContextCompat.getDrawable(this, R.drawable.ic_save_white)
+                    : ContextCompat.getDrawable(this, R.drawable.ic_edit_white_24dp));
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.profile_menuItem_edit_save:
+                if (!editState){
+                    editState = true;
+                    invalidateOptionsMenu();
+                    edNickname.setEnabled(true);
+                    edLast.setEnabled(true);
+                    edFirst.setEnabled(true);
+                    edInfo.setEnabled(true);
+                    break;
+                }
+
+                // edit state
+                if (!isValidUserInput())
+                    break;
+
+                if (edNickname.getText().toString().equals(user.getNickname())) {
+                    updateRoutine();
+                    break;
+                }
+
+                boolean success = true;
+                DatabaseHandler.isNicknameExisting(edNickname.getText().toString(), exists -> {
+                    if (exists) {
+                        edNickname.setError(getString(R.string.error_already_in_use));
+                        return;
+                    }
+                    updateRoutine();
+                });
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void updateRoutine() {
+        edNickname.setEnabled(false);
+        edLast.setEnabled(false);
+        edFirst.setEnabled(false);
+        edInfo.setEnabled(false);
+
         user.setFirstName(edFirst.getText().toString());
         user.setLastName(edLast.getText().toString());
         user.setNickname(edNickname.getText().toString());
@@ -151,7 +180,8 @@ public class ProfileActivity extends BaseActivity {
             currentUser.updateProfile(profileUpdate);
         }
         hideProgressDialog();
-        finish();
+        editState = false;
+        invalidateOptionsMenu();
     }
 
     private boolean isValidUserInput() {
@@ -160,14 +190,6 @@ public class ProfileActivity extends BaseActivity {
             edNickname.setError(getString(R.string.error_invalid_input));
             valid = false;
         }
-//        if (TextUtils.isEmpty(edFirst.getText())) {
-//            edFirst.setError(getString(R.string.error_invalid_input));
-//            valid = false;
-//        }
-//        if (TextUtils.isEmpty(edLast.getText())) {
-//            edLast.setError(getString(R.string.error_invalid_input));
-//            valid = false;
-//        }
         return valid;
     }
 
