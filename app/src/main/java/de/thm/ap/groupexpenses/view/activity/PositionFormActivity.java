@@ -41,13 +41,28 @@ public class PositionFormActivity extends BaseActivity {
         int id = item.getItemId();
 
         if (id == R.id.position_form_create_position_btn) {
+            boolean isValidInput = true;
             if (positionNameEditText.getText().toString().isEmpty()) {
+                isValidInput = false;
                 positionNameEditText.setError(getString(R.string.error_field_required));
                 positionNameEditText.requestFocus();
             } else if (positionValEditText.getText().toString().isEmpty()) {
+                isValidInput = false;
                 positionValEditText.setError(getString(R.string.error_field_required));
                 positionValEditText.requestFocus();
             } else {
+                float value = Float.parseFloat(positionValEditText.getText().toString());
+                if(value < 0.f){
+                    positionValEditText.setError(getString(R.string.error_smaller_than_zero));
+                    positionValEditText.requestFocus();
+                    isValidInput = false;
+                } else if(value > 10000.f){
+                    positionValEditText.setError(getString(R.string.error_bigger_than_10000));
+                    positionValEditText.requestFocus();
+                    isValidInput = false;
+                }
+            }
+            if(isValidInput){
                 // update position name, info and value here
                 User creator = App.CurrentUser;
                 String positionName = positionNameEditText.getText().toString().trim();

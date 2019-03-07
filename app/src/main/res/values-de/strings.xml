@@ -71,6 +71,8 @@
     <string name="position_inspect_release_dept_claim_ask">Schulden wirklich erlassen?</string>
     <string name="position_inspect_change_dept_claim_val">Schuldbetrag bearbeiten</string>
     <string name="error_field_required">Feld darf nicht leer sein!</string>
+    <string name="error_smaller_than_zero">Wert darf nicht unter 0€ sein!</string>
+    <string name="error_bigger_than_10000">Wert darf nicht über 10.000€ sein!</string>
     <string name="error_users_required">Mindestens ein Teilnehmer muss vorhanden sein!</string>
     <string name="error_invalid_date">Ungültiges Datum!</string>
     <string name="error_end_date_before_start_date">Enddatum liegt vor Startdatum!</string>
