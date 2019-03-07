@@ -12,11 +12,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,10 +39,10 @@ import de.thm.ap.groupexpenses.view.dialog.ProfileInfoDialog;
 import static de.thm.ap.groupexpenses.view.fragment.CashFragment.SELECTED_EID;
 
 public class PositionEventListFragment<T> extends Fragment {
-    public static final String USERID = "uid";
+    public static final String USER_ID = "uid";
     private View view;
     private ListView object_listView;
-    private View headerView;
+    private TextView fragment_header_val;
     private ObjectItemAdapter adapter;
     private HashMap<String, String> creatorMap;
 
@@ -68,18 +70,17 @@ public class PositionEventListFragment<T> extends Fragment {
             ViewGroup parent = (ViewGroup) view.getParent();
             parent.removeView(view);
         }
-        headerView = getLayoutInflater().inflate(R.layout.fragment_object_list_header, null);
+        RelativeLayout fragment_header = view.findViewById(R.id.fragment_header);
+        TextView fragment_header_text = view.findViewById(R.id.fragment_header_text);
+        fragment_header_val = view.findViewById(R.id.fragment_header_val);
         object_listView = view.findViewById(R.id.fragment_listView);
-
-        TextView header_text = headerView.findViewById(R.id.object_balance_summary_text);
-
         TextView noObjects_textView = view.findViewById(R.id.fragment_no_object_text);
 
         Bundle args = getArguments();
 
         if (args != null) {
             String eid = args.getString(SELECTED_EID);
-            String uid = args.getString(USERID);
+            String uid = args.getString(USER_ID);
 
             if (creatorMap == null) creatorMap = new HashMap<>();
 
@@ -88,23 +89,25 @@ public class PositionEventListFragment<T> extends Fragment {
                 EventLiveData eventLiveData = DatabaseHandler.getEventLiveData(eid);
                 eventLiveData.observe(this, event -> {
                     if (event != null && !event.getPositions().isEmpty()) {
-                        headerView.setVisibility(View.VISIBLE);
+                        fragment_header.setVisibility(View.VISIBLE);
+                        //headerView.setVisibility(View.VISIBLE);
                         object_listView.setVisibility(View.VISIBLE);
                         noObjects_textView.setVisibility(View.GONE);
                         String headerText = getString(R.string.total_expenses) + ":";
-                        header_text.setText(headerText);
+                        fragment_header_text.setText(headerText);
+                        //header_text.setText(headerText);
                         updateTotalBalanceOfPositions(event);
                         List<Position> positions = event.getPositions();
                         for (int idx = 0; idx < positions.size(); ++idx) {
                             creatorMap.putIfAbsent(positions.get(idx).getCreatorId(), "");
                         }
                         generateAdapter((List<T>) positions, true);
-                    }
-                    else {
-                        headerView.setVisibility(View.GONE);
+                    } else {
+                        fragment_header.setVisibility(View.GONE);
+                        //headerView.setVisibility(View.GONE);
                         noObjects_textView.setVisibility(View.VISIBLE);
                         noObjects_textView.setText(R.string.no_positions);
-                        if(adapter != null){
+                        if (adapter != null) {
                             object_listView.setVisibility(View.GONE);
                             adapter.clear();
                         }
@@ -117,22 +120,24 @@ public class PositionEventListFragment<T> extends Fragment {
                 listLiveData.observe(this, eventList -> {
                     if (eventList != null && !eventList.isEmpty()) {
                         String headerText = getString(R.string.total_balance) + ":";
-                        headerView.setVisibility(View.VISIBLE);
+                        fragment_header.setVisibility(View.VISIBLE);
+                        //headerView.setVisibility(View.VISIBLE);
                         object_listView.setVisibility(View.VISIBLE);
                         noObjects_textView.setVisibility(View.GONE);
-                        header_text.setText(headerText);
+                        fragment_header_text.setText(headerText);
+                        //header_text.setText(headerText);
                         updateTotalBalanceOfEvents(eventList);
                         for (int idx = 0; idx < eventList.size(); ++idx) {
                             creatorMap.putIfAbsent(eventList.get(idx).getCreatorId(), "");
                         }
                         generateAdapter((List<T>) eventList, false);
 
-                    }
-                    else {
-                        headerView.setVisibility(View.GONE);
+                    } else {
+                        fragment_header.setVisibility(View.GONE);
+                        //headerView.setVisibility(View.GONE);
                         noObjects_textView.setVisibility(View.VISIBLE);
                         noObjects_textView.setText(R.string.no_events);
-                        if(adapter != null){
+                        if (adapter != null) {
                             object_listView.setVisibility(View.GONE);
                             adapter.clear();
                         }
@@ -164,10 +169,11 @@ public class PositionEventListFragment<T> extends Fragment {
     }
 
     private void buildAdapter(List<T> objectList, boolean isPosition) {
+        // sort object list here
+        Collections.sort(objectList, LIST_SORT);
         if (adapter == null) {
             adapter = new ObjectItemAdapter(getActivity(),
                     R.layout.fragment_object_list_row, objectList, isPosition);
-            object_listView.addHeaderView(headerView);
             object_listView.setAdapter(adapter);
             object_listView.setOnItemClickListener((parent, view, position, id) ->
                     itemSelected(object_listView.getItemAtPosition(position)));
@@ -187,25 +193,24 @@ public class PositionEventListFragment<T> extends Fragment {
     }
 
     private void updateTotalBalanceOfPositions(Event event) {
-        TextView obj_val = headerView.findViewById(R.id.object_balance_summary_val);
         List<Position> positions = event.getPositions();
         float total_expenses = 0;
         for (Position p : positions) {
             total_expenses += p.getValue();
         }
-        obj_val.setText(new DecimalFormat("0.00 €").format(total_expenses));
+        fragment_header_val.setText(new DecimalFormat("0.00 €").format(total_expenses));
     }
 
     private void updateTotalBalanceOfEvents(List<Event> eventList) {
-        TextView obj_val = headerView.findViewById(R.id.object_balance_summary_val);
         float balance = Stats.getBalance(eventList);
 
-        obj_val.setText(new DecimalFormat("0.00 €").format(balance));
+        fragment_header_val.setText(new DecimalFormat("0.00 €").format(balance));
 
         if (balance < 0)
-            obj_val.setTextColor(Color.parseColor("#ef4545"));    // red
+            fragment_header_val.setTextColor(Color.parseColor("#ef4545"));    // red
         else
-            obj_val.setTextColor(Color.parseColor("#2ba050"));    // green
+            fragment_header_val.setTextColor(Color.parseColor("#2ba050"));    // green
+
     }
 
     public void itemSelected(Object object) {
@@ -235,37 +240,37 @@ public class PositionEventListFragment<T> extends Fragment {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(resource, parent, false);
             holder = new Holder();
-            ImageView lifeCycleImageView = view.findViewById(R.id.lifecycleState);
+            TextView event_status = view.findViewById(R.id.event_status);
             holder.object_name = view.findViewById(R.id.name);
             holder.object_creator = view.findViewById(R.id.creator);
             holder.object_balance = view.findViewById(R.id.balance);
             m_object = retrievedObjects.get(index);
-            String fromPart = getString(R.string.from);
-            String creatorPart;
+            String creator_part = getString(R.string.creator);
+            String creator_name;
             String creatorUid;
             String wholePart;
             Spannable spannable;
 
             if (isPosition) {
-                lifeCycleImageView.setVisibility(View.GONE);
+                event_status.setVisibility(View.GONE);
                 Position position = (Position) m_object;
                 float position_expense = position.getValue();
                 holder.object_name.setText(position.getTopic());
                 if (position.getCreatorId().equals(App.CurrentUser.getUid())) {
-                    creatorPart = getString(R.string.you);
+                    creator_name = getString(R.string.you);
                     creatorUid = App.CurrentUser.getUid();
                 } else {
                     creatorUid = position.getCreatorId();
-                    creatorPart = creatorMap.get(creatorUid);
+                    creator_name = creatorMap.get(creatorUid);
                     final int CREATOR_NAME_MAX_LENGTH = 20;
-                    if (creatorPart.length() > CREATOR_NAME_MAX_LENGTH) {
-                        creatorPart = creatorPart.substring(0, CREATOR_NAME_MAX_LENGTH) + "...";
+                    if (creator_name.length() > CREATOR_NAME_MAX_LENGTH) {
+                        creator_name = creator_name.substring(0, CREATOR_NAME_MAX_LENGTH) + "...";
                     }
                 }
-                wholePart = fromPart + " " + creatorPart;
+                wholePart = creator_part + " " + creator_name;
                 spannable = new SpannableString(wholePart);
                 spannable.setSpan(new ForegroundColorSpan(Color.parseColor("#3a90e0")),
-                        fromPart.length(), wholePart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        creator_part.length(), wholePart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 holder.object_creator.setText(spannable, TextView.BufferType.SPANNABLE);
                 holder.object_balance.setText(new DecimalFormat("0.00 €")
                         .format(position_expense));
@@ -273,43 +278,48 @@ public class PositionEventListFragment<T> extends Fragment {
                 Event event = (Event) m_object;
                 float balance = Stats.getEventBalance(event);
 
-                lifeCycleImageView.setVisibility(View.VISIBLE);
+                event_status.setVisibility(View.VISIBLE);
 
-                switch(event.getLifecycleState()){
-                    case ONGOING:
-                        lifeCycleImageView.setImageResource(R.drawable.ic_lifecycle_ongoing_24dp);
+                switch (event.getLifecycleState()) {
+                    case UPCOMING:
+                        event_status.setText(getString(R.string.event_status_upcoming));
+                        event_status.setBackgroundResource(R.drawable.event_status_upcoming);
                         break;
                     case LIVE:
-                        lifeCycleImageView.setImageResource(R.drawable.ic_lifecycle_live_24dp);
+                        event_status.setText(getString(R.string.event_status_live));
+                        event_status.setBackgroundResource(R.drawable.event_status_live);
                         break;
                     case LOCKED:
-                        lifeCycleImageView.setImageResource(R.drawable.ic_lifecycle_lock_24dp);
+                        event_status.setText(getString(R.string.event_status_locked));
+                        event_status.setBackgroundResource(R.drawable.event_status_locked);
                         break;
                     case CLOSED:
-                        lifeCycleImageView.setImageResource(R.drawable.ic_lifecycle_closed2_24dp);
+                        event_status.setText(getString(R.string.event_status_closed));
+                        event_status.setBackgroundResource(R.drawable.event_status_closed);
                         break;
                     case ERROR:
                     default:
-                        lifeCycleImageView.setImageResource(R.drawable.ic_lifecycle_error_24dp);
+                        event_status.setText(getString(R.string.event_status_error));
+                        event_status.setBackgroundResource(R.drawable.event_status_error);
                 }
 
                 holder.object_name.setText(event.getName());
 
                 if (event.getCreatorId().equals(App.CurrentUser.getUid())) {
-                    creatorPart = getString(R.string.you);
+                    creator_name = getString(R.string.you);
                     creatorUid = App.CurrentUser.getUid();
                 } else {
                     creatorUid = event.getCreatorId();
-                    creatorPart = creatorMap.get(creatorUid);
+                    creator_name = creatorMap.get(creatorUid);
                     final int CREATOR_NAME_MAX_LENGTH = 20;
-                    if (creatorPart.length() > CREATOR_NAME_MAX_LENGTH) {
-                        creatorPart = creatorPart.substring(0, CREATOR_NAME_MAX_LENGTH) + "...";
+                    if (creator_name.length() > CREATOR_NAME_MAX_LENGTH) {
+                        creator_name = creator_name.substring(0, CREATOR_NAME_MAX_LENGTH) + "...";
                     }
                 }
-                wholePart = fromPart + " " + creatorPart;
+                wholePart = creator_part + " " + creator_name;
                 spannable = new SpannableString(wholePart);
                 spannable.setSpan(new ForegroundColorSpan(Color.parseColor("#3a90e0")),
-                        fromPart.length(), wholePart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        creator_part.length(), wholePart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 holder.object_creator.setText(spannable, TextView.BufferType.SPANNABLE);
                 holder.object_balance.setText(new DecimalFormat("0.00 €")
                         .format(balance));
@@ -338,5 +348,56 @@ public class PositionEventListFragment<T> extends Fragment {
             TextView object_balance;
         }
     }
+
+    Comparator<T> LIST_SORT = (item1, item2) -> {
+        if (item1 instanceof Event) {
+            Event event1 = (Event) item1;
+            Event event2 = (Event) item2;
+            switch (event1.getLifecycleState()) {
+                case UPCOMING:
+                    if (event2.getLifecycleState() != Event.LifecycleState.UPCOMING) return -1;
+                    else return 0;
+                case LIVE:
+                    switch (event2.getLifecycleState()) {
+                        case UPCOMING:
+                            return 1;
+                        case LIVE:
+                            return 0;
+                        default:
+                            return -1;
+                    }
+                case LOCKED:
+                    switch (event2.getLifecycleState()) {
+                        case UPCOMING:
+                        case LIVE:
+                            return 1;
+                        case LOCKED:
+                            return 0;
+                        default:
+                            return -1;
+                    }
+                case CLOSED:
+                    switch (event2.getLifecycleState()) {
+                        case UPCOMING:
+                        case LIVE:
+                        case LOCKED:
+                            return 1;
+                        case CLOSED:
+                            return 0;
+                        default:
+                            return -1;
+                    }
+                case ERROR:
+                    if (event2.getLifecycleState() != Event.LifecycleState.ERROR) return 1;
+                    else return 0;
+            }
+        } else if (item1 instanceof Position) {
+            Position pos1 = (Position) item1;
+            Position pos2 = (Position) item2;
+            if (pos1.getDate() > pos2.getDate()) return -1;
+            else return 1;
+        }
+        return 0;
+    };
 }
 

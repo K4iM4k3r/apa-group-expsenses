@@ -9,6 +9,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
@@ -16,10 +17,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.List;
 import java.util.Objects;
 
 import de.thm.ap.groupexpenses.App;
@@ -28,7 +29,6 @@ import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.livedata.EventLiveData;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
-import de.thm.ap.groupexpenses.model.User;
 import de.thm.ap.groupexpenses.view.dialog.EventInfoDialog;
 import de.thm.ap.groupexpenses.view.dialog.PositionInfoDialog;
 import de.thm.ap.groupexpenses.view.fragment.CashFragment;
@@ -38,7 +38,7 @@ import de.thm.ap.groupexpenses.view.fragment.UserListDialogFragment;
 import static de.thm.ap.groupexpenses.model.Event.LifecycleState.CLOSED;
 import static de.thm.ap.groupexpenses.model.Event.LifecycleState.ERROR;
 import static de.thm.ap.groupexpenses.model.Event.LifecycleState.LIVE;
-import static de.thm.ap.groupexpenses.model.Event.LifecycleState.ONGOING;
+import static de.thm.ap.groupexpenses.model.Event.LifecycleState.UPCOMING;
 
 public class PositionActivity extends BaseActivity implements PositionEventListFragment.ItemClickListener {
 
@@ -58,8 +58,7 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
         finish();
     };
     private View.OnClickListener deleteEvent = view -> {
-        DatabaseHandler.deleteEvent(selectedEvent.getEid(), null);
-        finish();
+        showDeleteConfirmDialog();
     };
 
     @Override
@@ -117,6 +116,7 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
                     }
 
                 }
+                invalidateOptionsMenu();
                 chooseFabs();
             });
         } else {
@@ -138,7 +138,7 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 mViewPager.setCurrentItem(tab.getPosition());
-                switch (tab.getPosition()){
+                switch (tab.getPosition()) {
                     case 0:
                         chooseFabs();
                         break;
@@ -161,7 +161,29 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
         });
     }
 
-    private void chooseFabs(){
+    private void selectMemberIcon(MenuItem item){
+        if (item == null || selectedEvent == null) return;
+
+        // only creator can add people
+        if (!App.CurrentUser.getUid().equals(selectedEvent.getCreatorId())){
+            item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_person_white_24dp));
+            return;
+        }
+
+        // changes icon due too lifecycle
+        switch (selectedEvent.getLifecycleState()){
+            case UPCOMING:
+            case LIVE:
+                item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_person_add_white_24dp));
+                break;
+            case LOCKED:
+            case CLOSED:
+            case ERROR:
+                item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_person_white_24dp));
+        }
+    }
+
+    private void chooseFabs() {
 
 
         if (selectedEvent == null) return;
@@ -172,14 +194,13 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
         lFab.setVisibility(View.GONE);
         rFab.setVisibility(View.GONE);
 
-        if(isEventCreator && lifecycleState==ERROR) {
+        if (isEventCreator && lifecycleState == ERROR) {
             rFab.setImageResource(R.drawable.ic_delete_white_24dp);
             rFab.setVisibility(View.VISIBLE);
             rFab.setOnClickListener(deleteEvent);
             Toast.makeText(this, R.string.brokenEventCreator, Toast.LENGTH_LONG).show();
             return;
-        }
-        else if(!isEventCreator && lifecycleState==ERROR) {
+        } else if (!isEventCreator && lifecycleState == ERROR) {
             Toast.makeText(this, R.string.brokenEventClient, Toast.LENGTH_LONG).show();
             rFab.setImageResource(R.drawable.ic_exit_white_24dp);
             rFab.setVisibility(View.VISIBLE);
@@ -189,17 +210,15 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
 
         //-- lFab
 
-        if (isEventCreator && selectedEvent.isClosable() && lifecycleState!=CLOSED){
+        if (isEventCreator && selectedEvent.isClosable() && lifecycleState != CLOSED) {
             lFab.setVisibility(View.VISIBLE);
             lFab.setImageResource(R.drawable.ic_delete_white_24dp);
             lFab.setOnClickListener(deleteEvent);
-        }
-        else if (!isEventCreator && selectedEvent.isEven(App.CurrentUser.getUid()) && lifecycleState==ONGOING){
+        } else if (!isEventCreator && selectedEvent.isEven(App.CurrentUser.getUid()) && lifecycleState == UPCOMING) {
             lFab.setVisibility(View.VISIBLE);
             lFab.setImageResource(R.drawable.ic_delete_white_24dp);
             lFab.setOnClickListener(leaveEvent);
-        }
-        else if (!isEventCreator && selectedEvent.isEven(App.CurrentUser.getUid()) && lifecycleState!=CLOSED && lifecycleState!=LIVE){
+        } else if (!isEventCreator && selectedEvent.isEven(App.CurrentUser.getUid()) && lifecycleState != CLOSED && lifecycleState != LIVE) {
             lFab.setVisibility(View.VISIBLE);
             lFab.setImageResource(R.drawable.ic_exit_white_24dp);
             lFab.setOnClickListener(hideEvent);
@@ -208,17 +227,15 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
 
         //-- rFab
 
-        if (isEventCreator && lifecycleState==CLOSED){
+        if (isEventCreator && lifecycleState == CLOSED) {
             rFab.setVisibility(View.VISIBLE);
             rFab.setImageResource(R.drawable.ic_delete_white_24dp);
             rFab.setOnClickListener(deleteEvent);
-        }
-        else if (!isEventCreator && lifecycleState==CLOSED){
+        } else if (!isEventCreator && lifecycleState == CLOSED) {
             rFab.setVisibility(View.VISIBLE);
             rFab.setImageResource(R.drawable.ic_exit_white_24dp);
             rFab.setOnClickListener(hideEvent);
-        }
-        else {
+        } else {
             rFab.setVisibility(View.VISIBLE);
             rFab.setImageResource(R.drawable.ic_add_white_24dp);
             rFab.setOnClickListener(v -> {
@@ -270,6 +287,14 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem add = menu.findItem(R.id.position_menu_add_invite_users);
+        selectMemberIcon(add);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
@@ -277,7 +302,7 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
             case R.id.position_menu_add_invite_users:
                 // display event user list
                 DatabaseHandler.getAllFriendsOfUser(Objects.requireNonNull(auth.getCurrentUser()).getUid(), friendsList -> {
-                    DatabaseHandler.getAllMembersOfEvent(selectedEvent.getEid(), eventMembers ->{
+                    DatabaseHandler.getAllMembersOfEvent(selectedEvent.getEid(), eventMembers -> {
                         UserListDialogFragment dialog = new UserListDialogFragment();
                         dialog.build(selectedEvent, eventMembers, friendsList);
                         dialog.show(getFragmentManager(), "edit_event");
@@ -308,14 +333,6 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
                 }
             });
         }
-    }
-
-    public void setUsersPaid(List<User> usersPaidList, Position position) {
-        for (User user : usersPaidList) {
-            position.removeDebtor(user.getUid());
-        }
-        selectedEvent.updatePosition(position);
-        DatabaseHandler.updateEvent(selectedEvent);
     }
 
     private class CollectionPagerAdapter extends FragmentPagerAdapter {
@@ -380,5 +397,35 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
             }
             return rootView;
         }
+    }
+
+    private void showDeleteConfirmDialog() {
+        LayoutInflater layoutInflater = LayoutInflater.from(PositionActivity.this);
+        View promptView = layoutInflater.inflate(R.layout.dialog_choose_2_options, null);
+        final android.app.AlertDialog confirmDialogBuilder = new android.app.AlertDialog.Builder(PositionActivity.this).create();
+        Button confirm_delete_btn = promptView.findViewById(R.id.dialog_chose_2_options_option1_btn);
+        Button cancel_delete_btn = promptView.findViewById(R.id.dialog_chose_2_options_option2_btn);
+        TextView confirm_text = promptView.findViewById(R.id.dialog_chose_2_options_text);
+        confirm_delete_btn.setText(getString(R.string.confirm));
+        cancel_delete_btn.setText(getString(R.string.cancel));
+        confirm_text.setText(getString(R.string.delete_event_msg));
+        confirm_text.setVisibility(View.VISIBLE);
+
+        confirm_delete_btn.setOnClickListener(v -> {
+            // delete event
+            DatabaseHandler.deleteEvent(selectedEvent.getEid(), null);
+            Toast.makeText(PositionActivity.this, getString(R.string.event_deleted_confirm),
+                    Toast.LENGTH_SHORT).show();
+            confirmDialogBuilder.dismiss();
+            finish();
+        });
+
+        cancel_delete_btn.setOnClickListener(v -> {
+            // cancel delete
+            confirmDialogBuilder.dismiss();
+        });
+
+        confirmDialogBuilder.setView(promptView);
+        confirmDialogBuilder.show();
     }
 }

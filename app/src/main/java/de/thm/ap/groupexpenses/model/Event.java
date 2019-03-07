@@ -2,20 +2,14 @@ package de.thm.ap.groupexpenses.model;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
-import android.util.ArraySet;
 
 import com.google.firebase.firestore.Exclude;
-import com.google.firebase.firestore.auth.User;
-import com.google.protobuf.Enum;
 
-import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class Event {
 
@@ -32,7 +26,7 @@ public class Event {
 
     // NonDB-Stuff
     public enum LifecycleState {
-        ERROR, ONGOING, LIVE, LOCKED, CLOSED
+        UPCOMING, LIVE, LOCKED, CLOSED, ERROR
     }
 
     //region Constructor
@@ -243,7 +237,7 @@ public class Event {
     public boolean isClosable() {
 
         switch (getLifecycleState()){
-            case ONGOING:
+            case UPCOMING:
                 return hasNoOpenTransactions();
             case LIVE:
             case LOCKED:
@@ -281,7 +275,7 @@ public class Event {
         if (date_now >= date_end) return LifecycleState.LOCKED;
         if (date_now >= date_begin) return LifecycleState.LIVE;
 
-        return LifecycleState.ONGOING;
+        return LifecycleState.UPCOMING;
     }
     //endregion
 

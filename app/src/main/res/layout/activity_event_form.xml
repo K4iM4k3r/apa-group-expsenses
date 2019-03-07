@@ -157,6 +157,6 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/app_margin"
         android:layout_marginStart="@dimen/app_margin"
-        android:text="@string/event_form_add_members" />
+        android:text="@string/event_form_add_friend" />
 
 </LinearLayout>

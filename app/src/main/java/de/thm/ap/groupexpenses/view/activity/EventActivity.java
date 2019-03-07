@@ -29,7 +29,7 @@ import de.thm.ap.groupexpenses.view.fragment.CashFragment;
 import de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment;
 
 import static de.thm.ap.groupexpenses.view.activity.LoginActivity.CONFIRM_PROCESS;
-import static de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment.USERID;
+import static de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment.USER_ID;
 
 public class EventActivity extends BaseActivity implements PositionEventListFragment.ItemClickListener {
 
@@ -113,8 +113,22 @@ public class EventActivity extends BaseActivity implements PositionEventListFrag
         if (data.getHost().equals(App.HOST)){
             String eventId = data.getLastPathSegment();
             DatabaseHandler.queryEvent(eventId, event -> {
-                boolean success = event.addMember(App.CurrentUser.getUid());
-                if (success) DatabaseHandler.updateEvent(event);
+                switch (event.getLifecycleState()){
+                    case ERROR:
+                        Toast.makeText(this, R.string.invite_invalid_event_error, Toast.LENGTH_LONG).show();
+                        break;
+                    case UPCOMING:
+                    case LIVE:
+                        boolean success = event.addMember(App.CurrentUser.getUid());
+                        if (success) DatabaseHandler.updateEvent(event);
+                        break;
+                    case LOCKED:
+                        Toast.makeText(this, R.string.invite_locked_error, Toast.LENGTH_LONG).show();
+                        break;
+                    case CLOSED:
+                        Toast.makeText(this, R.string.invite_closed_error, Toast.LENGTH_LONG).show();
+                        break;
+                }
             });
         }
     }
@@ -166,11 +180,11 @@ public class EventActivity extends BaseActivity implements PositionEventListFrag
             switch (i){
                 case 0:
                     fragment = new PositionEventListFragment<>();
-                    args.putString(USERID, uid);
+                    args.putString(USER_ID, uid);
                     break;
                 case 1:
                     fragment = new CashFragment();
-                    args.putString(USERID, uid);
+                    args.putString(USER_ID, uid);
                     break;
                 default:
                     fragment = new PositionActivity.DemoObjectFragment();

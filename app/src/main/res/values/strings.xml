@@ -12,7 +12,7 @@
     <string name="add_with_num">Add (%1$d)</string>
     <string name="remove_with_num">Remove (%1$d)</string>
     <string name="add_remove">Add/Remove</string>
-    <string name="event_form_add_members">add member</string>
+    <string name="event_form_add_friend">Add friend</string>
     <string name="search_name_hint">search a name</string>
     <string name="info">Info</string>
     <string name="show_info">show info</string>
@@ -24,19 +24,25 @@
     <string name="event_form_users">Teilnehmer</string>
     <string name="event_form_begin">Beginn</string>
     <string name="event_form_create_event">create new event</string>
+    <string name="event_inspect_event_info">Event info:</string>
     <string name="position_form_value">Value (€)</string>
     <string name="position_form_create_position">create new position</string>
-    <string name="position_inspect_position_info">Positionsinfo</string>
+    <string name="position_inspect_position_info">Position info</string>
     <string name="add_payment">add payment</string>
+    <string name="fulfill_payment_confirm_msg">Pay %1$s %2$s€ online now?</string>
     <string name="chose_cash">Cash Transaction</string>
     <string name="confirm_cash_payment">%1$s has paid you %2$s€ per cash?</string>
     <string name="done_cash_payment">Cash transaction complete!</string>
+    <string name="done_paypal_payment">Paypal transaction complete!</string>
+    <string name="error_paypal_payment">Paypal transaction could not be completed!</string>
+    <string name="error_wrong_time_for_payment">Payments/ Reminders can online be fulfilled during LOCKED state!</string>
+    <string name="error_not_all_events_locked">NOT POSSIBLE!\nAt least one event is not in LOCKED state!</string>
     <string name="done_delete_position">Position deleted!</string>
     <string name="error_cash_payment">No cash transaction could be completed!</string>
     <string name="chose_remind">Remind for payment</string>
     <string name="position_inspect_change_dept_claim_val">Edit debt amount</string>
     <string name="error_field_required">field cannot be empty!</string>
-    <string name="error_users_required">Atleast one member is required!</string>
+    <string name="error_users_required">At least one member is required!</string>
     <string name="error_invalid_date">Invalid date!</string>
     <string name="error_end_date_before_start_date">End date comes before start date!</string>
     <string name="done">done</string>
@@ -89,8 +95,6 @@
     <string name="success_download_ProfilePic">Successful download profile pic</string>
     <string name="error_download_ProfilePic">Error while downloading profile pic</string>
     <string name="menu_item_event">My Events</string>
-    <string name="invite">Invite</string>
-    <string name="invite_link_share">Share Invite Link</string>
     <string name="send_per_mail">send via E-Mail</string>
     <string name="send_per_whatsapp">send via WhatsApp</string>
     <string name="send_per_copy">copy link to phone cache</string>
@@ -103,6 +107,7 @@
     <string name="no_bounty">Sie haben keine offenen Positionen</string>
     <string name="error_already_in_use">Nickname exists already</string>
     <string name="hint_nickname">nickname</string>
+    <string name="invite_link_share">Share invite link</string>
     <string name="menu_item_friends">Friends</string>
     <string name="reminder">payment reminder</string>
     <string name="send_reminder_mail">Send remainder mail to %1$s</string>
@@ -129,8 +134,8 @@
     <string name="login_typ_password_forgot">Password forgot</string>
     <string name="login_typ_login">Login</string>
     <string name="login_typ_info">Info</string>
-    <string name="you">yourself</string>
-    <string name="yourself">you</string>
+    <string name="yourself">yourself</string>
+    <string name="you">You</string>
     <string name="no_event_info">no eventinfo found!</string>
     <string name="your_depts">your depts:</string>
     <string name="your_dept_claim">Your demands:</string>
@@ -145,7 +150,7 @@
     <string name="position_inspect_clear_dept">settle debts</string>
     <string name="end_position">close position</string>
     <string name="position_inspect_release_dept_claim_ask">really waive debt?</string>
-    <string name="from">from</string>
+    <string name="creator">Creator:</string>
     <string name="history">history</string>
     <string name="delete">delete</string>
     <string name="edit">edit</string>
@@ -165,6 +170,14 @@
     <string name="hint_password_again">Password again</string>
     <string name="doublebacktoexit">Please click BACK again to exit</string>
     <string name="labeljoinDate">JoinDate</string>
+    <string name="event_status_upcoming">UPCOMING</string>
+    <string name="event_status_error">ERROR</string>
+    <string name="event_status_live">LIVE</string>
+    <string name="event_status_closed">CLOSED</string>
+    <string name="event_status_locked">PAYTIME</string>
+    <string name="delete_event_msg">Delete this Event?</string>
+    <string name="event_deleted_confirm">Event deleted!</string>
+    <string name="air_of_mystery">Apparently, this user prefers to keep an air of mystery about them.</string>
 
     <string-array name="pay_stretch_weeks">
         <item>1 week</item>
@@ -175,5 +188,8 @@
     <string name="no_events">no events found!</string>
     <string name="brokenEventCreator">your event seems to be broken, please delete and recreate it.</string>
     <string name="brokenEventClient">this event seems to be broken, feel free to leave</string>
+    <string name="invite_locked_error">This event is locked and cannot be joined anymore.</string>
+    <string name="invite_invalid_event_error">Invalid Event</string>
+    <string name="invite_closed_error">The event you are trying to join is allready closed.</string>
 </resources>
 

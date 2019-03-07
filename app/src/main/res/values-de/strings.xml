@@ -8,18 +8,19 @@
     <string name="event_form_date_end">Ende</string>
     <string name="event_form_one_day">Eintägiges Event</string>
     <string name="event_form_payment_deadline">Zahlungszeitraum</string>
+    <string name="event_inspect_event_info">Eventinfo:</string>
     <string name="ok">Ok</string>
     <string name="unknown">Unbekannt</string>
     <string name="add_with_num">Hinzufügen (%1$d)</string>
     <string name="remove_with_num">Entfernen (%1$d)</string>
     <string name="add_remove">Hinzufügen/ Entfernen</string>
-    <string name="event_form_add_members">Teilnehmer hinzufügen</string>
+    <string name="event_form_add_friend">Freund hinzufügen</string>
     <string name="search_name_hint">Name suchen</string>
     <string name="info">Info</string>
     <string name="show_info">Info anzeigen</string>
     <string name="inspect_users">Teilnehmer inspizieren</string>
-    <string name="you">Dir</string>
-    <string name="yourself">Du</string>
+    <string name="yourself">Dir</string>
+    <string name="you">Du</string>
     <string name="no_position_info">Keine Positionsinfo vorhanden!</string>
     <string name="no_event_info">Keine Eventinfo vorhanden!</string>
     <string name="your_depts">Deine Schulden:</string>
@@ -27,7 +28,7 @@
     <string name="euro">€</string>
     <string name="event_form_users">Teilnehmer</string>
     <string name="position_form_value">Wert (€)</string>
-    <string name="from">Von</string>
+    <string name="creator">Ersteller:</string>
     <string name="create">Erstellen</string>
     <string name="history">Verlauf</string>
     <string name="delete">Löschen</string>
@@ -55,10 +56,15 @@
     <string name="position_inspect_clear_dept">Schulden begleichen</string>
     <string name="confirm_delete_position">Position wirklich löschen?\nWichtig: Alle deine Forderungen werden weg sein!</string>
     <string name="add_payment">Zahlung hinzufügen</string>
+    <string name="fulfill_payment_confirm_msg">%1$s jetzt %2$s€ online überweisen?</string>
     <string name="end_position">Position abschließen</string>
     <string name="chose_cash">Barzahlung abschließen</string>
     <string name="confirm_cash_payment">%1$s hat Ihnen %2$s€ bar bezahlt?</string>
     <string name="done_cash_payment">Barzahlung abgeschlossen!</string>
+    <string name="done_paypal_payment">Paypal-Zahlung abgeschlossen!</string>
+    <string name="error_paypal_payment">Paypal-Zahlung konnte nicht abgeschlossen werden!</string>
+    <string name="error_wrong_time_for_payment">Zahlungen/ Erinnerungen können nur während dem GESPERRT - Zustand getätigt werden!</string>
+    <string name="error_not_all_events_locked">NICHT MÖGLICH!\nNicht alle Events sind im GESPERRT - Zustand!</string>
     <string name="done_delete_position">Position gelöscht!</string>
     <string name="error_cash_payment">Keine Barzahlung konnte abgeschlossen werden!</string>
     <string name="chose_remind">An Zahlung erinnern</string>
@@ -123,7 +129,6 @@
     <string name="no_bounty">Sie haben keine offenen Positionen</string>
     <string name="error_already_in_use">Nickname ist bereits vergeben!</string>
     <string name="hint_nickname">Nickname</string>
-    <string name="invite">Einladen</string>
     <string name="invite_link_share">Invite Link teilen</string>
     <string name="send_per_mail">per E-Mail versenden</string>
     <string name="send_per_whatsapp">per WhatsApp versenden</string>
@@ -160,6 +165,13 @@
     <string name="desc_firebase_lockup">firebase lookup</string>
     <string name="doublebacktoexit">Klicken Sie erneut auf ZURÜCK um die App zu schließen.</string>
     <string name="labeljoinDate">Beigetreten am</string>
+    <string name="event_status_upcoming">ANSTEHEND</string>
+    <string name="event_status_error">FEHLER</string>
+    <string name="event_status_live">LÄUFT</string>
+    <string name="event_status_closed">BEENDET</string>
+    <string name="event_status_locked">ZAHLPHASE</string>
+    <string name="delete_event_msg">Dieses Event wirklich löschen?</string>
+    <string name="event_deleted_confirm">Event gelöscht!</string>
 
     <string-array name="pay_stretch_weeks">
         <item>1 Woche</item>
@@ -170,4 +182,10 @@
     <string name="no_events">Keine Events gefunden!</string>
     <string name="brokenEventCreator">Ihr Event ist fehlerhaft. Bitte erstellen Sie es erneut.</string>
     <string name="brokenEventClient">Dieses Event weist einen Fehler auf. Sie können es verlassen.</string>
+
+    <!-- Invite via Link related-->
+    <string name="invite_locked_error">Dieses Event befindet sich in der Bezahlphase. Kein Beitritt mehr möglich.</string>
+    <string name="invite_invalid_event_error">Error: Event ungültig!</string>
+    <string name="invite_closed_error">Das Event ist bereits geschlossen.</string>
+    <string name="air_of_mystery">Dieser Nutzer scheint es vorzuziehen, einen Hauch an Mysteriosität auszustrahlen.</string>
 </resources>

@@ -47,32 +47,37 @@ public class ProfileInfoDialog {
         user_image = view.findViewById(R.id.profile_dialog_userPic);
         ImageView closeBtn = view.findViewById(R.id.profile_dialog_close_imageView);
 
-        String userFirstName = user.getFirstName();
-        String userLastName = user.getLastName();
-        String userNickname = user.getNickname();
-        String userInfo = user.getInfo();
+        String userFirstNameString = user.getFirstName();
+        String userLastNameString = user.getLastName();
+        String userNicknameString = user.getNickname();
+        String userInfoString = user.getInfo();
 
         final int USER_FIRST_NAME_MAX_LENGTH = 20;
-        if (userFirstName.length() > USER_FIRST_NAME_MAX_LENGTH) {
-            userFirstName = userFirstName.substring(0, USER_FIRST_NAME_MAX_LENGTH) + "...";
+        if (userFirstNameString.length() > USER_FIRST_NAME_MAX_LENGTH) {
+            userFirstNameString = userFirstNameString.substring(0, USER_FIRST_NAME_MAX_LENGTH) + "...";
         }
         final int USER_LAST_NAME_MAX_LENGTH = 20;
-        if (userLastName.length() > USER_LAST_NAME_MAX_LENGTH) {
-            userLastName = userLastName.substring(0, USER_LAST_NAME_MAX_LENGTH) + "...";
+        if (userLastNameString.length() > USER_LAST_NAME_MAX_LENGTH) {
+            userLastNameString = userLastNameString.substring(0, USER_LAST_NAME_MAX_LENGTH) + "...";
         }
         final int USER_NICKNAME_MAX_LENGTH = 20;
-        if (userNickname.length() > USER_NICKNAME_MAX_LENGTH) {
-            userNickname = userNickname.substring(0, USER_NICKNAME_MAX_LENGTH) + "...";
+        if (userNicknameString.length() > USER_NICKNAME_MAX_LENGTH) {
+            userNicknameString = userNicknameString.substring(0, USER_NICKNAME_MAX_LENGTH) + "...";
         }
         final int USER_INFO_MAX_LENGTH = 200;
-        if (userInfo.length() > USER_INFO_MAX_LENGTH) {
-            userInfo = userInfo.substring(0, USER_INFO_MAX_LENGTH) + "...";
+        if (userInfoString.length() > USER_INFO_MAX_LENGTH) {
+            userInfoString = userInfoString.substring(0, USER_INFO_MAX_LENGTH) + "...";
         }
 
-        String user_full_name_string = userFirstName + " " + userLastName;
+        String user_full_name_string = userFirstNameString + " " + userLastNameString;
         user_full_name.setText(user_full_name_string);
-        user_nickname.setText(userNickname);
-        user_info.setText(userInfo);
+        user_nickname.setText(userNicknameString);
+        if(user.getInfo().equals("")){
+            user_info.setText(context.getString(R.string.air_of_mystery));
+        } else {
+            user_info.setText(userInfoString);
+        }
+
         user_join_date.setText(user.joinDateToString());
         if (user.getProfilePic() != null) {
             DatabaseHandler.getUserProfilePic(context, user.getUid(), opPictureUri ->

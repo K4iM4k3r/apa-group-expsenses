@@ -1,5 +1,6 @@
 package de.thm.ap.groupexpenses.view.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -37,7 +38,7 @@ import de.thm.ap.groupexpenses.model.Stats;
 import de.thm.ap.groupexpenses.view.activity.PayActivity;
 import de.thm.ap.groupexpenses.view.dialog.ProfileInfoDialog;
 
-import static de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment.USERID;
+import static de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment.USER_ID;
 
 public class CashFragment extends Fragment {
     public static final String SELECTED_EID = "seid";
@@ -47,6 +48,7 @@ public class CashFragment extends Fragment {
     private ListView cash_check_list;
     private Event event;
     private List<Event> eventList;
+    private final int PAY_REQUEST_CODE = 49824;
 
 
     @Override
@@ -68,12 +70,11 @@ public class CashFragment extends Fragment {
             } else {
                 help_layout.setVisibility(View.GONE);
             }
-
         });
 
         if (args != null) {
             String eid = args.getString(SELECTED_EID);
-            String uid = args.getString(USERID);
+            String uid = args.getString(USER_ID);
             if (eid != null) {
                 EventLiveData eventLiveData;
                 eventLiveData = DatabaseHandler.getEventLiveData(eid);
@@ -160,7 +161,7 @@ public class CashFragment extends Fragment {
             if (currentUserValue.value < 0) { // App.CurrentUser owes money
                 Drawable arrow = getResources().getDrawable(R.drawable.ic_arrow_forward_red_24dp);
                 arrow_imageView.setImageDrawable(arrow);
-                userValueName.setText(R.string.yourself);
+                userValueName.setText(R.string.you);
                 if (currentUserValue.name.length() > MAX_NAME_LENGTH) {
                     userValueName2.setText(currentUserValue.name.substring(0, MAX_NAME_LENGTH)
                             + "...");
@@ -168,14 +169,40 @@ public class CashFragment extends Fragment {
                     userValueName2.setText(currentUserValue.name);
                 }
                 value_layout.setOnClickListener(v -> {
-                    // pay ALL debts to user here (multiple positions)
-                    float totalDebt = currentUserValue.value * (-1);
-                    String amountAsString = new DecimalFormat("0.00").format(totalDebt);
-                    Intent payIntent = new Intent(getContext(), PayActivity.class);
-                    payIntent.putExtra("amount", amountAsString);
-                    startActivity(payIntent);
-
-                    // TODO: After successful payment -> add user to has paid list in ALL positions he just payed for
+                    if (event != null) {
+                        switch (event.getLifecycleState()) {
+                            case UPCOMING:
+                            case CLOSED:
+                            case LIVE:
+                            case ERROR:
+                                // not possible to pay right now
+                                Toast.makeText(getContext(), getString(R.string.error_wrong_time_for_payment),
+                                        Toast.LENGTH_SHORT).show();
+                                break;
+                            case LOCKED:
+                                // possible to pay in LOCKED state!
+                                // now send reminder mail or do cash transaction
+                                fulfillPaymentConfirmDialog(currentUserValue);
+                                break;
+                            default:
+                        }
+                    } else if (eventList != null) {
+                        boolean allEventsAreLocked = true;
+                        for (Event e : Stats.getOpenEvents(currentUserValue.uid, App.CurrentUser.getUid(), eventList)) {
+                            if (e.getLifecycleState() != Event.LifecycleState.LOCKED) {
+                                allEventsAreLocked = false;
+                                break;
+                            }
+                        }
+                        if (allEventsAreLocked) {
+                            // possible to pay, since ALL events are in LOCKED state!
+                            // now send reminder mail or do cash transaction
+                            fulfillPaymentConfirmDialog(currentUserValue);
+                        } else {
+                            Toast.makeText(getContext(), getString(R.string.error_not_all_events_locked),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
                 });
                 userValueName.setOnClickListener(v -> {
                     DatabaseHandler.queryUser(App.CurrentUser.getUid(), user -> {
@@ -190,7 +217,7 @@ public class CashFragment extends Fragment {
             } else {    // App.CurrentUser gets money
                 Drawable arrow = getResources().getDrawable(R.drawable.ic_arrow_forward_green_24dp);
                 arrow_imageView.setImageDrawable(arrow);
-                userValueName2.setText(R.string.you);
+                userValueName2.setText(R.string.yourself);
                 if (currentUserValue.name.length() > MAX_NAME_LENGTH) {
                     userValueName.setText(currentUserValue.name.substring(0, MAX_NAME_LENGTH)
                             + "...");
@@ -198,8 +225,40 @@ public class CashFragment extends Fragment {
                     userValueName.setText(currentUserValue.name);
                 }
                 value_layout.setOnClickListener(v -> {
-                    // reminder mail or do cash transaction
-                    showCashOrReminderDialog(currentUserValue);
+                    if (event != null) {
+                        switch (event.getLifecycleState()) {
+                            case UPCOMING:
+                            case CLOSED:
+                            case LIVE:
+                            case ERROR:
+                                // not possible to pay right now
+                                Toast.makeText(getContext(), getString(R.string.error_wrong_time_for_payment),
+                                        Toast.LENGTH_SHORT).show();
+                                break;
+                            case LOCKED:
+                                // possible to pay in LOCKED state!
+                                // reminder mail or do cash transaction
+                                showCashOrReminderDialog(currentUserValue);
+                                break;
+                            default:
+                        }
+                    } else if(eventList != null){
+                        boolean allEventsAreLocked = true;
+                        for (Event e : Stats.getOpenEvents(App.CurrentUser.getUid(), currentUserValue.uid, eventList)) {
+                            if (e.getLifecycleState() != Event.LifecycleState.LOCKED) {
+                                allEventsAreLocked = false;
+                                break;
+                            }
+                        }
+                        if (allEventsAreLocked) {
+                            // possible to pay in LOCKED state!
+                            // reminder mail or do cash transaction
+                            showCashOrReminderDialog(currentUserValue);
+                        } else {
+                            Toast.makeText(getContext(), getString(R.string.error_not_all_events_locked),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
                 });
                 userValueName.setOnClickListener(v -> {
                     DatabaseHandler.queryUser(currentUserValue.uid, user -> {
@@ -224,10 +283,39 @@ public class CashFragment extends Fragment {
     Comparator<UserValue> DEBT_SORT = (userValue1, userValue2) -> {
         if (userValue1.value < userValue2.value) {
             return -1;
-        } else {
+        } else if (userValue1.value > userValue2.value) {
             return 1;
-        }
+        } else return 0;
     };
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == PAY_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                // payment successful
+                String debtor_uid = data.getStringExtra("debtor_uid");
+                if (event != null) {   // user is paying for one event
+                    for (Position p : event.getPositions()) {
+                        releaseAllDebtsBetweenUsers(p, App.CurrentUser.getUid(), debtor_uid);
+                    }
+                    DatabaseHandler.updateEvent(event);
+                    Toast.makeText(getContext(), getString(R.string.done_paypal_payment), Toast.LENGTH_SHORT).show();
+                } else if (eventList != null) {    // user is paying for all events
+                    for (Event e : Stats.getOpenEvents(App.CurrentUser.getUid(), debtor_uid, eventList)) {
+                        for (Position p : e.getPositions()) {
+                            releaseAllDebtsBetweenUsers(p, App.CurrentUser.getUid(), debtor_uid);
+                        }
+                        DatabaseHandler.updateEvent(e);
+                    }
+                    Toast.makeText(getContext(), getString(R.string.done_paypal_payment), Toast.LENGTH_SHORT).show();
+                }
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                // payment NOT successful
+                Toast.makeText(getContext(), getString(R.string.error_paypal_payment), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
     private void buildCashView() {
         List<String> keyList = new ArrayList<>(cash_check_map.keySet());
@@ -344,6 +432,42 @@ public class CashFragment extends Fragment {
             remind_btn.setOnClickListener(v2 -> {
                 confirmDialogBuilder.dismiss();
             });
+        });
+
+        confirmDialogBuilder.setView(promptView);
+        confirmDialogBuilder.show();
+    }
+
+    private void fulfillPaymentConfirmDialog(UserValue currentUserValue) {
+        // pay ALL debts to user here (multiple positions)
+        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+        View promptView = layoutInflater.inflate(R.layout.dialog_choose_2_options, null);
+        final android.app.AlertDialog confirmDialogBuilder = new android.app.AlertDialog.Builder(getContext()).create();
+        Button confirm_pay_btn = promptView.findViewById(R.id.dialog_chose_2_options_option1_btn);
+        Button cancel_pay_btn = promptView.findViewById(R.id.dialog_chose_2_options_option2_btn);
+        TextView confirm_text = promptView.findViewById(R.id.dialog_chose_2_options_text);
+        confirm_pay_btn.setText(getString(R.string.confirm));
+        cancel_pay_btn.setText(getString(R.string.cancel));
+
+        float amount = currentUserValue.value * (-1);
+        String amountAsString = new DecimalFormat("0.00").format(amount);
+
+        confirm_text.setText(getString(R.string.fulfill_payment_confirm_msg,
+                currentUserValue.name, amountAsString));
+        confirm_text.setVisibility(View.VISIBLE);
+
+        confirm_pay_btn.setOnClickListener(v -> {
+            // fulfill payment
+            Intent payIntent = new Intent(getContext(), PayActivity.class);
+            payIntent.putExtra("amount", amountAsString);
+            payIntent.putExtra("debtor_uid", amount);
+            startActivityForResult(payIntent, PAY_REQUEST_CODE);
+            confirmDialogBuilder.dismiss();
+        });
+
+        cancel_pay_btn.setOnClickListener(v -> {
+            // cancel payment
+            confirmDialogBuilder.dismiss();
         });
 
         confirmDialogBuilder.setView(promptView);
