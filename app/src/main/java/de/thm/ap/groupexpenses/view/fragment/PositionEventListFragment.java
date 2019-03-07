@@ -17,6 +17,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,13 +102,12 @@ public class PositionEventListFragment<T> extends Fragment {
                             creatorMap.putIfAbsent(positions.get(idx).getCreatorId(), "");
                         }
                         generateAdapter((List<T>) positions, true);
-                    }
-                    else {
+                    } else {
                         fragment_header.setVisibility(View.GONE);
                         //headerView.setVisibility(View.GONE);
                         noObjects_textView.setVisibility(View.VISIBLE);
                         noObjects_textView.setText(R.string.no_positions);
-                        if(adapter != null){
+                        if (adapter != null) {
                             object_listView.setVisibility(View.GONE);
                             adapter.clear();
                         }
@@ -131,13 +132,12 @@ public class PositionEventListFragment<T> extends Fragment {
                         }
                         generateAdapter((List<T>) eventList, false);
 
-                    }
-                    else {
+                    } else {
                         fragment_header.setVisibility(View.GONE);
                         //headerView.setVisibility(View.GONE);
                         noObjects_textView.setVisibility(View.VISIBLE);
                         noObjects_textView.setText(R.string.no_events);
-                        if(adapter != null){
+                        if (adapter != null) {
                             object_listView.setVisibility(View.GONE);
                             adapter.clear();
                         }
@@ -169,6 +169,8 @@ public class PositionEventListFragment<T> extends Fragment {
     }
 
     private void buildAdapter(List<T> objectList, boolean isPosition) {
+        // sort object list here
+        Collections.sort(objectList, LIST_SORT);
         if (adapter == null) {
             adapter = new ObjectItemAdapter(getActivity(),
                     R.layout.fragment_object_list_row, objectList, isPosition);
@@ -278,7 +280,7 @@ public class PositionEventListFragment<T> extends Fragment {
 
                 event_status.setVisibility(View.VISIBLE);
 
-                switch(event.getLifecycleState()){
+                switch (event.getLifecycleState()) {
                     case UPCOMING:
                         event_status.setText(getString(R.string.event_status_upcoming));
                         event_status.setBackgroundResource(R.drawable.event_status_upcoming);
@@ -346,5 +348,56 @@ public class PositionEventListFragment<T> extends Fragment {
             TextView object_balance;
         }
     }
+
+    Comparator<T> LIST_SORT = (item1, item2) -> {
+        if (item1 instanceof Event) {
+            Event event1 = (Event) item1;
+            Event event2 = (Event) item2;
+            switch (event1.getLifecycleState()) {
+                case UPCOMING:
+                    if (event2.getLifecycleState() != Event.LifecycleState.UPCOMING) return -1;
+                    else return 0;
+                case LIVE:
+                    switch (event2.getLifecycleState()) {
+                        case UPCOMING:
+                            return 1;
+                        case LIVE:
+                            return 0;
+                        default:
+                            return -1;
+                    }
+                case LOCKED:
+                    switch (event2.getLifecycleState()) {
+                        case UPCOMING:
+                        case LIVE:
+                            return 1;
+                        case LOCKED:
+                            return 0;
+                        default:
+                            return -1;
+                    }
+                case CLOSED:
+                    switch (event2.getLifecycleState()) {
+                        case UPCOMING:
+                        case LIVE:
+                        case LOCKED:
+                            return 1;
+                        case CLOSED:
+                            return 0;
+                        default:
+                            return -1;
+                    }
+                case ERROR:
+                    if (event2.getLifecycleState() != Event.LifecycleState.ERROR) return 1;
+                    else return 0;
+            }
+        } else if (item1 instanceof Position) {
+            Position pos1 = (Position) item1;
+            Position pos2 = (Position) item2;
+            if (pos1.getDate() > pos2.getDate()) return -1;
+            else return 1;
+        }
+        return 0;
+    };
 }
 
