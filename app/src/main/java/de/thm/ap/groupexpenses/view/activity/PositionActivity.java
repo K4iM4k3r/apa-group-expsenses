@@ -28,6 +28,7 @@ import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.livedata.EventLiveData;
 import de.thm.ap.groupexpenses.model.Event;
+import de.thm.ap.groupexpenses.model.InternetCheck;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.view.dialog.EventInfoDialog;
 import de.thm.ap.groupexpenses.view.dialog.PositionInfoDialog;
@@ -425,12 +426,20 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
     }
 
     private void showAddMemberDialog(){
-        // display event user list
-        DatabaseHandler.getAllFriendsOfUser(Objects.requireNonNull(auth.getCurrentUser()).getUid(), friendsList -> {
-            DatabaseHandler.getAllMembersOfEvent(selectedEvent.getEid(), eventMembers -> {
-                UserListDialogFragment dialog = new UserListDialogFragment();
-                dialog.build(selectedEvent, eventMembers, friendsList);
-                dialog.show(getFragmentManager(), "edit_event");
+
+        new InternetCheck(internet -> {
+            if (!internet) {
+                Toast.makeText(this, R.string.no_connection, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // display event user list
+            DatabaseHandler.getAllFriendsOfUser(Objects.requireNonNull(auth.getCurrentUser()).getUid(), friendsList -> {
+                DatabaseHandler.getAllMembersOfEvent(selectedEvent.getEid(), eventMembers -> {
+                    UserListDialogFragment dialog = new UserListDialogFragment();
+                    dialog.build(selectedEvent, eventMembers, friendsList);
+                    dialog.show(getFragmentManager(), "edit_event");
+                });
             });
         });
     }
