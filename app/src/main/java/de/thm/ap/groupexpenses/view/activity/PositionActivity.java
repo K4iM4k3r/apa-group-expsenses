@@ -9,6 +9,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
@@ -20,8 +21,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.DecimalFormat;
-import java.util.List;
 import java.util.Objects;
 
 import de.thm.ap.groupexpenses.App;
@@ -30,15 +29,12 @@ import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.livedata.EventLiveData;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
-import de.thm.ap.groupexpenses.model.Stats;
-import de.thm.ap.groupexpenses.model.User;
 import de.thm.ap.groupexpenses.view.dialog.EventInfoDialog;
 import de.thm.ap.groupexpenses.view.dialog.PositionInfoDialog;
 import de.thm.ap.groupexpenses.view.fragment.CashFragment;
 import de.thm.ap.groupexpenses.view.fragment.PositionEventListFragment;
 import de.thm.ap.groupexpenses.view.fragment.UserListDialogFragment;
 
-import static de.thm.ap.groupexpenses.App.getContext;
 import static de.thm.ap.groupexpenses.model.Event.LifecycleState.CLOSED;
 import static de.thm.ap.groupexpenses.model.Event.LifecycleState.ERROR;
 import static de.thm.ap.groupexpenses.model.Event.LifecycleState.LIVE;
@@ -120,6 +116,7 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
                     }
 
                 }
+                invalidateOptionsMenu();
                 chooseFabs();
             });
         } else {
@@ -162,6 +159,21 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
+    }
+
+    private void selectMemberIcon(MenuItem item){
+        if (item == null || selectedEvent == null) return;
+
+        switch (selectedEvent.getLifecycleState()){
+            case ONGOING:
+            case LIVE:
+                item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_person_add_white_24dp));
+                break;
+            case LOCKED:
+            case CLOSED:
+            case ERROR:
+                item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_person_white_24dp));
+        }
     }
 
     private void chooseFabs() {
@@ -266,6 +278,14 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
         getMenuInflater().inflate(R.menu.position_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem add = menu.findItem(R.id.position_menu_add_invite_users);
+        selectMemberIcon(add);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
