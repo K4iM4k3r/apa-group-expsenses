@@ -354,33 +354,33 @@ public class PositionEventListFragment<T> extends Fragment {
             Event event1 = (Event) item1;
             Event event2 = (Event) item2;
             switch (event1.getLifecycleState()) {
-                case UPCOMING:
-                    if (event2.getLifecycleState() != Event.LifecycleState.UPCOMING) return -1;
-                    else return 0;
                 case LIVE:
+                    if (event2.getLifecycleState() != Event.LifecycleState.LIVE) return -1;
+                    else return 0;
+                case LOCKED:
                     switch (event2.getLifecycleState()) {
-                        case UPCOMING:
-                            return 1;
                         case LIVE:
+                            return 1;
+                        case LOCKED:
                             return 0;
                         default:
                             return -1;
                     }
-                case LOCKED:
+                case UPCOMING:
                     switch (event2.getLifecycleState()) {
-                        case UPCOMING:
                         case LIVE:
-                            return 1;
                         case LOCKED:
+                            return 1;
+                        case UPCOMING:
                             return 0;
                         default:
                             return -1;
                     }
                 case CLOSED:
                     switch (event2.getLifecycleState()) {
-                        case UPCOMING:
                         case LIVE:
                         case LOCKED:
+                        case UPCOMING:
                             return 1;
                         case CLOSED:
                             return 0;
@@ -394,7 +394,7 @@ public class PositionEventListFragment<T> extends Fragment {
         } else if (item1 instanceof Position) {
             Position pos1 = (Position) item1;
             Position pos2 = (Position) item2;
-            if (pos1.getDate() > pos2.getDate()) return -1;
+            if (pos1.getValue() > pos2.getValue()) return -1;
             else return 1;
         }
         return 0;
