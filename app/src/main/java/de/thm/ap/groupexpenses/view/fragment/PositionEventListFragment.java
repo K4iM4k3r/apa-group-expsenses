@@ -348,6 +348,7 @@ public class PositionEventListFragment<T> extends Fragment {
                         event_status_image.setImageResource(R.drawable.event_status_error);
                         holder.object_creator.setText(getString(R.string.broken));
                         holder.object_creator.setTextColor(ContextCompat.getColor(context, R.color.bt_error_red));
+                        holder.object_balance.setTextColor(ContextCompat.getColor(context, R.color.white));
                 }
             }
 
