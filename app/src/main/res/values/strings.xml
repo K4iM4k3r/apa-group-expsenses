@@ -195,5 +195,6 @@
     <string name="invite_invalid_event_error">Invalid Event</string>
     <string name="invite_closed_error">The event you are trying to join is allready closed.</string>
     <string name="no_connection">Your internet connection is to bad to handle this</string>
+    <string name="broken">Broken</string>
 </resources>
 

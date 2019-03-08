@@ -191,4 +191,6 @@
     <string name="invite_invalid_event_error">Error: Event ungültig!</string>
     <string name="invite_closed_error">Das Event ist bereits geschlossen.</string>
     <string name="air_of_mystery">Dieser Nutzer scheint es vorzuziehen, einen Hauch an Mysteriosität auszustrahlen.</string>
+    <string name="no_connection">Sie benötigen eine Internetverbindung.</string>
+    <string name="broken">Fehlerhaft</string>
 </resources>

@@ -1,10 +1,12 @@
 package de.thm.ap.groupexpenses.view.fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -235,6 +237,7 @@ public class PositionEventListFragment<T> extends Fragment {
             this.retrievedObjects = objects;
         }
 
+        @SuppressLint("SetTextI18n")
         @NonNull
         @Override
         public View getView(int index, View convertView, @NonNull ViewGroup parent) {
@@ -282,24 +285,6 @@ public class PositionEventListFragment<T> extends Fragment {
 
                 event_status_image.setVisibility(View.VISIBLE);
 
-                switch (event.getLifecycleState()) {
-                    case UPCOMING:
-                        event_status_image.setImageResource(R.drawable.event_status_soon);
-                        break;
-                    case LIVE:
-                        event_status_image.setImageResource(R.drawable.event_status_live);
-                        break;
-                    case LOCKED:
-                        event_status_image.setImageResource(R.drawable.event_status_pay);
-                        break;
-                    case CLOSED:
-                        event_status_image.setImageResource(R.drawable.event_status_done);
-                        break;
-                    case ERROR:
-                    default:
-                        event_status_image.setImageResource(R.drawable.event_status_error);
-                }
-
                 holder.object_name.setText(event.getName());
 
                 if (event.getCreatorId().equals(App.CurrentUser.getUid())) {
@@ -326,6 +311,26 @@ public class PositionEventListFragment<T> extends Fragment {
                 else
                     holder.object_balance.setTextColor(Color
                             .parseColor("#2ba050"));    // green
+
+                switch (event.getLifecycleState()) {
+                    case UPCOMING:
+                        event_status_image.setImageResource(R.drawable.event_status_soon);
+                        break;
+                    case LIVE:
+                        event_status_image.setImageResource(R.drawable.event_status_live);
+                        break;
+                    case LOCKED:
+                        event_status_image.setImageResource(R.drawable.event_status_pay);
+                        break;
+                    case CLOSED:
+                        event_status_image.setImageResource(R.drawable.event_status_done);
+                        break;
+                    case ERROR:
+                    default:
+                        event_status_image.setImageResource(R.drawable.event_status_error);
+                        holder.object_creator.setText(getString(R.string.broken));
+                        holder.object_creator.setTextColor(ContextCompat.getColor(context, R.color.bt_error_red));
+                }
             }
 
             holder.object_creator.setOnClickListener(v -> {
