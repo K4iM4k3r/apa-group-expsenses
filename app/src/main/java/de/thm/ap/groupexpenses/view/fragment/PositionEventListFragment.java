@@ -285,6 +285,24 @@ public class PositionEventListFragment<T> extends Fragment {
 
                 event_status_image.setVisibility(View.VISIBLE);
 
+                switch (event.getLifecycleState()) {
+                    case UPCOMING:
+                        event_status_image.setImageResource(R.drawable.event_status_soon);
+                        break;
+                    case LIVE:
+                        event_status_image.setImageResource(R.drawable.event_status_live);
+                        break;
+                    case LOCKED:
+                        event_status_image.setImageResource(R.drawable.event_status_pay);
+                        break;
+                    case CLOSED:
+                        event_status_image.setImageResource(R.drawable.event_status_over);
+                        break;
+                    case ERROR:
+                    default:
+                        event_status_image.setImageResource(R.drawable.event_status_error);
+                }
+
                 holder.object_name.setText(event.getName());
 
                 if (event.getCreatorId().equals(App.CurrentUser.getUid())) {
