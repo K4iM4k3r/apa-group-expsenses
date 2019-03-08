@@ -297,8 +297,7 @@ public class PositionEventListFragment<T> extends Fragment {
                         break;
                     case ERROR:
                     default:
-                        //event_status.setText(getString(R.string.event_status_error));
-                        //event_status.setBackgroundResource(R.drawable.event_status_error);
+                        event_status_image.setImageResource(R.drawable.event_status_error);
                 }
 
                 holder.object_name.setText(event.getName());
