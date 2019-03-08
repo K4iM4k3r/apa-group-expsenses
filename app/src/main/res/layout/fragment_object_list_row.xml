@@ -8,45 +8,44 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginStart="@dimen/app_margin"
-        android:orientation="vertical">
+        android:layout_marginStart="@dimen/app_small_margin">
 
-        <TextView
-            android:id="@+id/name"
+        <ImageView
+            android:id="@+id/event_status_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TestName"
-            android:textAppearance="?android:textAppearanceListItem" />
+            android:src="@drawable/event_status_pay" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_marginStart="@dimen/app_small_margin"
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/event_status"
+                android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/app_small_margin"
-                android:background="@drawable/event_status_live"
-                android:paddingEnd="@dimen/app_small_margin"
-                android:paddingStart="@dimen/app_small_margin"
-                android:text="LIVE"
-                android:textAppearance="?android:textAppearanceListItemSmall"
-                android:textColor="@color/black"
-                android:textSize="12sp"
-                android:visibility="visible" />
+                android:text="TestName"
+                android:textAppearance="?android:textAppearanceListItem" />
 
-            <TextView
-                android:id="@+id/creator"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="creator"
-                android:textAppearance="?android:textAppearanceListItemSmall"
-                android:textColor="?android:textColorHint" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/creator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="creator"
+                    android:textAppearance="?android:textAppearanceListItemSmall"
+                    android:textColor="?android:textColorHint" />
+            </LinearLayout>
         </LinearLayout>
 
     </LinearLayout>
+
 
     <TextView
         android:id="@+id/balance"

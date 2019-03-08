@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -240,7 +241,8 @@ public class PositionEventListFragment<T> extends Fragment {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(resource, parent, false);
             holder = new Holder();
-            TextView event_status = view.findViewById(R.id.event_status);
+            //TextView event_status = view.findViewById(R.id.event_status);
+            ImageView event_status_image = view.findViewById(R.id.event_status_image);
             holder.object_name = view.findViewById(R.id.name);
             holder.object_creator = view.findViewById(R.id.creator);
             holder.object_balance = view.findViewById(R.id.balance);
@@ -252,7 +254,7 @@ public class PositionEventListFragment<T> extends Fragment {
             Spannable spannable;
 
             if (isPosition) {
-                event_status.setVisibility(View.GONE);
+                event_status_image.setVisibility(View.GONE);
                 Position position = (Position) m_object;
                 float position_expense = position.getValue();
                 holder.object_name.setText(position.getTopic());
@@ -278,29 +280,25 @@ public class PositionEventListFragment<T> extends Fragment {
                 Event event = (Event) m_object;
                 float balance = Stats.getEventBalance(event);
 
-                event_status.setVisibility(View.VISIBLE);
+                event_status_image.setVisibility(View.VISIBLE);
 
                 switch (event.getLifecycleState()) {
                     case UPCOMING:
-                        event_status.setText(getString(R.string.event_status_upcoming));
-                        event_status.setBackgroundResource(R.drawable.event_status_upcoming);
+                        event_status_image.setImageResource(R.drawable.event_status_soon);
                         break;
                     case LIVE:
-                        event_status.setText(getString(R.string.event_status_live));
-                        event_status.setBackgroundResource(R.drawable.event_status_live);
+                        event_status_image.setImageResource(R.drawable.event_status_live);
                         break;
                     case LOCKED:
-                        event_status.setText(getString(R.string.event_status_locked));
-                        event_status.setBackgroundResource(R.drawable.event_status_locked);
+                        event_status_image.setImageResource(R.drawable.event_status_pay);
                         break;
                     case CLOSED:
-                        event_status.setText(getString(R.string.event_status_closed));
-                        event_status.setBackgroundResource(R.drawable.event_status_closed);
+                        event_status_image.setImageResource(R.drawable.event_status_done);
                         break;
                     case ERROR:
                     default:
-                        event_status.setText(getString(R.string.event_status_error));
-                        event_status.setBackgroundResource(R.drawable.event_status_error);
+                        //event_status.setText(getString(R.string.event_status_error));
+                        //event_status.setBackgroundResource(R.drawable.event_status_error);
                 }
 
                 holder.object_name.setText(event.getName());
