@@ -341,7 +341,7 @@ public class PositionEventListFragment<T> extends Fragment {
                         event_status_image.setImageResource(R.drawable.event_status_pay);
                         break;
                     case CLOSED:
-                        event_status_image.setImageResource(R.drawable.event_status_done);
+                        event_status_image.setImageResource(R.drawable.event_status_over);
                         break;
                     case ERROR:
                     default:
