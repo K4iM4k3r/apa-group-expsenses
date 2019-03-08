@@ -28,6 +28,7 @@ import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.livedata.EventLiveData;
 import de.thm.ap.groupexpenses.model.Event;
+import de.thm.ap.groupexpenses.model.InternetCheck;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.view.dialog.EventInfoDialog;
 import de.thm.ap.groupexpenses.view.dialog.PositionInfoDialog;
@@ -194,6 +195,8 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
         lFab.setVisibility(View.GONE);
         rFab.setVisibility(View.GONE);
 
+        // error
+
         if (isEventCreator && lifecycleState == ERROR) {
             rFab.setImageResource(R.drawable.ic_delete_white_24dp);
             rFab.setVisibility(View.VISIBLE);
@@ -235,19 +238,19 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
             rFab.setVisibility(View.VISIBLE);
             rFab.setImageResource(R.drawable.ic_exit_white_24dp);
             rFab.setOnClickListener(hideEvent);
+        } else if (isEventCreator && selectedEvent.getMembers().size() == 1 && (lifecycleState==UPCOMING || lifecycleState==LIVE)){
+            rFab.setImageResource(R.drawable.ic_person_add_white_24dp);
+            rFab.setVisibility(View.VISIBLE);
+            rFab.setOnClickListener(view -> {
+                showAddMemberDialog();
+            });
         } else {
             rFab.setVisibility(View.VISIBLE);
             rFab.setImageResource(R.drawable.ic_add_white_24dp);
             rFab.setOnClickListener(v -> {
-                if (selectedEvent.getMembers() == null || selectedEvent.getMembers().size() == 1) {
-                    Toast error_no_members_toast = Toast.makeText(this, R.string.error_no_members,
-                            Toast.LENGTH_LONG);
-                    error_no_members_toast.show();
-                } else {
-                    Intent intent = new Intent(PositionActivity.this, PositionFormActivity.class);
-                    intent.putExtra("relatedEventEid", selectedEvent.getEid());
-                    startActivity(intent);
-                }
+                Intent intent = new Intent(PositionActivity.this, PositionFormActivity.class);
+                intent.putExtra("relatedEventEid", selectedEvent.getEid());
+                startActivity(intent);
             });
         }
     }
@@ -300,14 +303,7 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
 
         switch (id) {
             case R.id.position_menu_add_invite_users:
-                // display event user list
-                DatabaseHandler.getAllFriendsOfUser(Objects.requireNonNull(auth.getCurrentUser()).getUid(), friendsList -> {
-                    DatabaseHandler.getAllMembersOfEvent(selectedEvent.getEid(), eventMembers -> {
-                        UserListDialogFragment dialog = new UserListDialogFragment();
-                        dialog.build(selectedEvent, eventMembers, friendsList);
-                        dialog.show(getFragmentManager(), "edit_event");
-                    });
-                });
+                showAddMemberDialog();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -427,5 +423,24 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
 
         confirmDialogBuilder.setView(promptView);
         confirmDialogBuilder.show();
+    }
+
+    private void showAddMemberDialog(){
+
+        new InternetCheck(internet -> {
+            if (!internet) {
+                Toast.makeText(this, R.string.no_connection, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // display event user list
+            DatabaseHandler.getAllFriendsOfUser(Objects.requireNonNull(auth.getCurrentUser()).getUid(), friendsList -> {
+                DatabaseHandler.getAllMembersOfEvent(selectedEvent.getEid(), eventMembers -> {
+                    UserListDialogFragment dialog = new UserListDialogFragment();
+                    dialog.build(selectedEvent, eventMembers, friendsList);
+                    dialog.show(getFragmentManager(), "edit_event");
+                });
+            });
+        });
     }
 }
