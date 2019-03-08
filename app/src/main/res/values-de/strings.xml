@@ -76,6 +76,7 @@
     <string name="error_users_required">Mindestens ein Teilnehmer muss vorhanden sein!</string>
     <string name="error_invalid_date">Ungültiges Datum!</string>
     <string name="error_end_date_before_start_date">Enddatum liegt vor Startdatum!</string>
+    <string name="error_event_start_in_past">Event startet in der Vergangenheit!</string>
     <string name="done">Fertig</string>
     <string name="events_loading">"Events werden geladen … "</string>
     <string name="no_positions">Keine Positionen vorhanden!</string>

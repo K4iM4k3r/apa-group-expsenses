@@ -153,7 +153,7 @@ public class EventFormActivity extends BaseActivity {
             String date = getDateFromLong(start_date.getTime());
             eventBeginDateEditText.setText(date);
 
-            if (start_date.after(end_date)){
+            if (start_date.after(end_date)) {
                 c.set(year, month, day, 23, 59, 59);
                 end_date = c.getTime();
                 eventEndDateEditText.setText(date);
@@ -167,7 +167,7 @@ public class EventFormActivity extends BaseActivity {
             String date = getDateFromLong(end_date.getTime());
             eventEndDateEditText.setText(date);
 
-            if (start_date.after(end_date)){
+            if (start_date.after(end_date)) {
                 eventEndDateEditText.setError(getString(R.string.error_end_date_before_start_date));
                 return;
             }
@@ -185,7 +185,7 @@ public class EventFormActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.event_form_create_event_btn:
                 createEvent();
                 break;
@@ -195,7 +195,7 @@ public class EventFormActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void createEvent(){
+    private void createEvent() {
 
         if (!isValidInput()) return;
 
@@ -207,7 +207,7 @@ public class EventFormActivity extends BaseActivity {
         if (addedMembers == null) addedMembers = new ArrayList<>();
 
         // calculate deadline day
-        int timeSpanInWeeks = selectedDeadlineItem+1;
+        int timeSpanInWeeks = selectedDeadlineItem + 1;
         int timeSpanInDays = timeSpanInWeeks * 7;
         long timeSpanInMillis = TimeUnit.DAYS.toMillis(timeSpanInDays);
 
@@ -229,23 +229,33 @@ public class EventFormActivity extends BaseActivity {
         finish();
     }
 
-    private boolean isValidInput(){
-
-        boolean result = true;
-
+    private boolean isValidInput() {
         if (eventNameEditText.getText().toString().isEmpty()) {
             eventNameEditText.setError(getString(R.string.error_field_required));
             eventNameEditText.requestFocus();
-            result = false;
+            return false;
         }
 
-        if (start_date.after(end_date)){
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+        c.set(year, month, day, 0, 0, 0);
+        // subtract some hours so you can chose the actual day as well
+        c.add(Calendar.HOUR, -12);
+
+        if (start_date.before(c.getTime())) {
+            eventBeginDateEditText.setError(getString(R.string.error_event_start_in_past));
+            eventBeginDateEditText.requestFocus();
+            return false;
+        }
+
+        if (start_date.after(end_date)) {
             eventEndDateEditText.setError(getString(R.string.error_end_date_before_start_date));
             eventEndDateEditText.requestFocus();
-            result = false;
+            return false;
         }
-
-        return result;
+        return true;
     }
 
     public void setEventMembers(List<User> userList) {
@@ -253,7 +263,7 @@ public class EventFormActivity extends BaseActivity {
         eventUsersTextView.setText(listToString(addedMembers));
     }
 
-    private void setDefaultDates(){
+    private void setDefaultDates() {
 
         Calendar c = Calendar.getInstance();
 
@@ -261,7 +271,7 @@ public class EventFormActivity extends BaseActivity {
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
 
-        c.set(year, month, day, 0,0,0);
+        c.set(year, month, day, 0, 0, 0);
         start_date = c.getTime();
         eventBeginDateEditText.setText(getDateFromLong(start_date.getTime()));
 

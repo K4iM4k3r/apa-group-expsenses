@@ -47,6 +47,7 @@
     <string name="error_users_required">At least one member is required!</string>
     <string name="error_invalid_date">Invalid date!</string>
     <string name="error_end_date_before_start_date">End date comes before start date!</string>
+    <string name="error_event_start_in_past">Event starts in the past!</string>
     <string name="done">done</string>
     <string name="create">create</string>
     <string name="confirm">Confirm</string>
