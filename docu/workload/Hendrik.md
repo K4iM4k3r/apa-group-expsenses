@@ -51,13 +51,25 @@ Gesamtaufwand: ~20h
  - Statusicon in Eventliste (später überarbeitet durch LH)
  - addMember Verhalten & Icon angepasst an Lifecycle
 
+## Invite-Links
+
+Gesamtaufwand: ~5h
+
+- Erstellung von Einladungslinks zu Events
+- App Reaktion auf Links
+- Teilen per Mail, WhatsApp, Clipboard, Twitter<sup>\*</sup>, Facebook<sup>\*</sup>, Google+<sup>\*</sup>
+- GUI-Umsetzung durch LH
+- HTML Seite falls App nicht installiert durch KS
+
+
+<sup>\*</sup> nicht über GUI erreichbar, nur technisch integriert
 
 ## Sonstiges
 
 Gesamtaufwand: ~15h
 
 - GUI-Optimierungen:
- - ProfileView edit/save Button in ActionBar umgesetzt (statt Button)
+ - ProfileView edit/save Button in ActionBar (statt Button)
 - Fremdcode Refactoring
  - PositionAcitvity
  - ProfileActivity
