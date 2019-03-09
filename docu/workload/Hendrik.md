@@ -1,0 +1,1 @@
+Grob gegliedert wann man an was gearbeitet aht und wie lange es etwa gedauert hat!
