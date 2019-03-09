@@ -1,13 +1,30 @@
-Abkürzungen:
-- in Absprache: iA
-- zum Beispiel: zB
-- Kai Schäfer: KS
-- Lukas Hilfrich: LH
 
+## Einleitung
+
+Meine Aufgaben innerhalb des Projekts lassen sich grob als Koordination, Modellierung, Logik und Testing zusammenfassen. Details hierzu sind dem nächsten Abschnitt zu entnehmen.
+
+Mein Gesamtaufwand im Projekt sieht wie folgt aus:
+
+| Tätigkeit                 | Aufwand (real)  | Aufwand (geschätzt) |
+|---------------------------|:---------------:|:-------------------:|
+|Projektkoordination        | ~50h            | 30h                 |
+|Modellierung d. Projekts   | ~15h            | 15h                 |
+|Lifecycle                  | ~20h            | --                  |
+|Invite-Links               | ~5h             | 15h                 |
+|Sonstiges                  | ~20h            | --                  |
+|Testing                    | ~15h            | --                  |
+|Doku/Präsentation          | ~20h            | --                  |
+|**Summe**                  | **~145h**       | **135<sup>\*</sup>**|
+
+
+<sup>\*</sup> Der geschätze Gesamtaufwand basiert auf folgender Annahme: 9CP = 270h. Das Projekt macht 50% des Moduls aus. 50% von 270h = 135h.
+
+_____
 
 ##	Projektkoordination
 
-Gesamtaufwand: ~50h (exklusive Testing)
+**Gesamtaufwand**: ~50h (30h)  
+**Anmerkungen**: Teilweise sehr ausführliche Meetings + Diskussionen.
 
 - Discord Server für Teammeetings / Research
 - Issues für Github
@@ -18,7 +35,7 @@ Gesamtaufwand: ~50h (exklusive Testing)
 
 ##	Modellierung des Projekts
 
-Gesamtaufwand: ~20h
+**Gesamtaufwand**: ~15h (15h)  
 
 - Mockup erstellen
 - Umsetzung Mockup in Grundstruktur der App
@@ -31,7 +48,8 @@ Gesamtaufwand: ~20h
 
 ## Integration Ausgabenverwaltung (aka Kassensturz)
 
-Gesamtaufwand: ~25h
+**Gesamtaufwand**: ~20h (15h)  
+**Anmerkungen**: Die durch die Datenbank vorgegebene Struktur hat zu einer komplexeren Lösung geführt als ursprünglich angenommen.
 
 - Evaluierung der Möglichkeiten (iA KS)
  - Firebase Datensystem möglichst effektiv nutzen
@@ -42,7 +60,8 @@ Gesamtaufwand: ~25h
 
 ## Event Lifecycle Implementierung
 
-Gesamtaufwand: ~20h
+**Gesamtaufwand**: ~20h (--)  
+**Anmerkungen**: Der Aufwand wurde im Voraus nicht geschätzt. Der großteil der Arbeitszeit fließ in die GUI Integration.
 
 - Bestimmung des derzeitgen Eventstand anhand der Variablen ```date_begin```, ```date_end``` und ```date_deadlineDay```
 - Kategorisierung in ```UPCOMING```, ```LIVE```, ```PAYTIME```, ```CLOSED```und ```ERROR```
@@ -53,7 +72,8 @@ Gesamtaufwand: ~20h
 
 ## Invite-Links
 
-Gesamtaufwand: ~5h
+**Gesamtaufwand**: ~5h (15h)  
+**Anmerkungen**: Der Umfang dieser Aufgabe war deutlich geringer als erwartet.
 
 - Erstellung von Einladungslinks zu Events
 - App Reaktion auf Links
@@ -66,19 +86,24 @@ Gesamtaufwand: ~5h
 
 ## Sonstiges
 
-Gesamtaufwand: ~15h
+**Gesamtaufwand**: ~20h (--)  
+**Anmerkungen**: Hier sind einige kleinere Tätigkeiten vermerkt. GUI-Optimierungen beschreibt lediglich Optimierungen - der Großteil der jeweiligen UI war schon existent. Da es sich hier um die Summe vieler kleiner Aufgaben handelt, gibt es keine Aufwandsschätzung.
 
 - GUI-Optimierungen:
  - ProfileView edit/save Button in ActionBar (statt Button)
+ - EventForm Anpassung
 - Fremdcode Refactoring
  - PositionAcitvity
  - ProfileActivity
  - EventFormActivtiy
+- PayPal Bezahlsystem über PayPal.me<sup>\*</sup>
+
+<sup>\*</sup> nicht ins Projekt übernommen. Umfangreichere Ansatz von David Omran implementiert.
 
 
 ## Testing
 
-Gesamtaufwand: ~20h
+**Gesamtaufwand**: ~15h
 
 - regelmäßiges durchführen von Funktionstests
 - Optimierungsmöglichkeiten suchen
@@ -87,4 +112,15 @@ Gesamtaufwand: ~20h
 
 ## Projektdokumentation & Präsentationsvorbereitung
 
-Gesamtaufwand: ~20h
+**Gesamtaufwand**: ~20h
+
+_____
+Abkürzungen:
+- in Absprache: iA
+- zum Beispiel: zB
+- Kai Schäfer: KS
+- Lukas Hilfrich: LH
+
+Anmerkungen
+- Aufwand: real (estimated)
+- Der Gesamtaufwand wurde nicht real zeitlich gemessen, sondern nach Abschluss der Tätigkeit grob geschätzt.
