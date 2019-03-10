@@ -1,51 +1,54 @@
 package de.thm.ap.groupexpenses.model;
 
+import java.io.Serializable;
+
 import android.support.annotation.NonNull;
 
+import com.google.common.annotations.Beta;
+
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@Beta
 public class HistoryValue<T> {
 
     private T value;
-    private Map<Date, T> history;
-    private final Date creationDate;
+    private Map<Long, T> history;
+    private final long creationDate;
 
-    public HistoryValue(T value){
+    public HistoryValue(T value) {
         this.value = value;
         this.history = new HashMap<>();
         this.creationDate = getCurrentTime();
         history.put(this.creationDate, value);
     }
 
-    public void set(T value){
+    public void set(T value) {
         this.value = value;
         history.put(getCurrentTime(), value);
     }
 
-    public T get(){
+    public T get() {
         return value;
     }
 
-    public Map<Date, T> getHistory() {
+    public Map<Long, T> getHistory() {
         return history;
     }
 
-    public Date getCreationDate(){
+    public long getCreationDate() {
         return creationDate;
     }
 
-    private Date getCurrentTime(){
-        return Calendar.getInstance().getTime();
+    private long getCurrentTime() {
+        return Calendar.getInstance().getTime().getTime();
     }
 
     @Override
     @NonNull
-    public String toString(){
+    public String toString() {
         return value.toString();
     }
-
 
 }

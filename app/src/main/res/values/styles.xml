@@ -54,6 +54,11 @@
         <item name="android:textSize">36sp</item>
     </style>
 
+    <style name="ThemeOverlay.LoginScreenStateText" parent="AppTheme">
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />

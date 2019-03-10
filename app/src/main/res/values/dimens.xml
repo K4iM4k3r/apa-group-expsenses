@@ -8,5 +8,8 @@
     <dimen name="title_bottom_margin">16dp</dimen>
     <dimen name="field_width_standard">160dp</dimen>
     <dimen name="app_margin">16dp</dimen>
+    <dimen name="app_small_margin">8dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="login_big_space">80dp</dimen>
+    <dimen name="login_normal">16dp</dimen>
 </resources>
