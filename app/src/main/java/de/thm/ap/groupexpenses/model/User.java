@@ -1,9 +1,7 @@
 package de.thm.ap.groupexpenses.model;
 
-import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import java.io.Serializable;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,6 +9,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+/* setter and getter are needed by firestore api
+ *to store the models in the database
+ * therefor ethe unused suppress
+ */
 @SuppressWarnings("unused")
 public class User implements Comparable<User> {
 
