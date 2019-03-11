@@ -8,6 +8,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -39,6 +40,7 @@ import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.livedata.UserLiveData;
+import de.thm.ap.groupexpenses.receivers.NotificationReceiver;
 
 
 @SuppressLint("Registered")
@@ -110,6 +112,9 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
         Intent activityIntent = new Intent(this, BaseActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, activityIntent, 0);
 
+        Intent broadcastIntent = new Intent(this, NotificationReceiver.class);
+        broadcastIntent.putExtra("paymentKey", testPayment);
+        PendingIntent actionIntent = PendingIntent.getBroadcast(this, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Notification payNotification = new NotificationCompat.Builder(this, App.PaymentID )
                 .setSmallIcon(R.drawable.ic_payment_black_24dp)
@@ -117,7 +122,10 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
                 .setContentText(testPayment)
                 .setPriority(NotificationCompat.PRIORITY_HIGH) // triggers if API-Level is below Oreo
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setColor(Color.RED)
                 .setContentIntent(contentIntent)
+                .setAutoCancel(true) // dismiss Notification if tapped
+                .addAction(R.mipmap.ic_launcher, "paymentKey", actionIntent)
                 .build();
         notificationManager.notify(1, payNotification);
     }
