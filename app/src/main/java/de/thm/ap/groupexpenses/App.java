@@ -43,7 +43,7 @@ public class App extends Application {
 
     /**
      * This method creates the Notification Channels.
-     * Its define the Notification message and its system importance.
+     * It defines the Notification message and its system importance.
      */
     private void createNotifcationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { // Check if the Device API-Level is Oreo or higher

@@ -123,12 +123,12 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
     public void sendOnNewEventChannel(View v) {
         Notification eventNotification = new NotificationCompat.Builder(this, App.newEventID )
                 .setSmallIcon(R.drawable.ic_event_black_24dp)
-                .setContentTitle("Geldsammler Payment")
+                .setContentTitle("Geldsammler Event invite")
                 .setContentText(testPayment)
                 .setPriority(NotificationCompat.PRIORITY_HIGH) // triggers if API-Level is below Oreo
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .build();
-        notificationManager.notify(1, eventNotification);
+        notificationManager.notify(2, eventNotification);
 
     }
     @SuppressWarnings("unused")
