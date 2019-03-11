@@ -3,6 +3,7 @@ package de.thm.ap.groupexpenses.view.activity;
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -106,12 +107,17 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
      * @param v
      */
     public void sendOnPaymentChannel(View v) {
+        Intent activityIntent = new Intent(this, BaseActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, activityIntent, 0);
+
+
         Notification payNotification = new NotificationCompat.Builder(this, App.PaymentID )
                 .setSmallIcon(R.drawable.ic_payment_black_24dp)
                 .setContentTitle("Geldsammler Payment")
                 .setContentText(testPayment)
                 .setPriority(NotificationCompat.PRIORITY_HIGH) // triggers if API-Level is below Oreo
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setContentIntent(contentIntent)
                 .build();
         notificationManager.notify(1, payNotification);
     }
@@ -121,12 +127,16 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
      * @param v
      */
     public void sendOnNewEventChannel(View v) {
+        Intent activityIntent = new Intent(this, BaseActivity.class);
+        PendingIntent contentIntent2 = PendingIntent.getActivity(this, 0, activityIntent, 0);
+
         Notification eventNotification = new NotificationCompat.Builder(this, App.newEventID )
                 .setSmallIcon(R.drawable.ic_event_black_24dp)
                 .setContentTitle("Geldsammler Event invite")
                 .setContentText(testPayment)
                 .setPriority(NotificationCompat.PRIORITY_HIGH) // triggers if API-Level is below Oreo
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setContentIntent(contentIntent2)
                 .build();
         notificationManager.notify(2, eventNotification);
 
