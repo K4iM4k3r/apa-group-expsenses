@@ -134,4 +134,7 @@ _____
 **Gesamtaufwand**: ~20h
 
 - Technische Doku
+    - Datenbank
+    - Models
+    - JavaDocs   
 - Präsentation
