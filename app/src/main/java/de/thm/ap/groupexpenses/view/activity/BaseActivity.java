@@ -1,6 +1,8 @@
 package de.thm.ap.groupexpenses.view.activity;
 
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +10,8 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -38,6 +42,9 @@ import de.thm.ap.groupexpenses.livedata.UserLiveData;
 
 @SuppressLint("Registered")
 public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuItemClickListener, View.OnClickListener{
+    private NotificationManagerCompat notificationManager;
+    private String testPayment = "A debt has been paid";
+    private String testEvent = "A Event has been created";
     private final String TAG = this.getClass().getName();
     private FrameLayout view_stub; //This is the framelayout to keep the content view
     private View headerView;
@@ -56,6 +63,7 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.app_base_layout);// The base layout that contains your navigation drawer.
+        notificationManager = NotificationManagerCompat.from(this);
         view_stub = findViewById(R.id.view_stub);
         // The new navigation view from Android Design Library. Can inflate menu resources. Easy
         NavigationView navigation_view = findViewById(R.id.navigation_view);
@@ -93,6 +101,36 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
         checkLoginState();
     }
 
+    /**
+     * Sends payment notifications
+     * @param v
+     */
+    public void sendOnPaymentChannel(View v) {
+        Notification payNotification = new NotificationCompat.Builder(this, App.PaymentID )
+                .setSmallIcon(R.drawable.ic_payment_black_24dp)
+                .setContentTitle("Geldsammler Payment")
+                .setContentText(testPayment)
+                .setPriority(NotificationCompat.PRIORITY_HIGH) // triggers if API-Level is below Oreo
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .build();
+        notificationManager.notify(1, payNotification);
+    }
+
+    /**
+     * Sends event invite notifications
+     * @param v
+     */
+    public void sendOnNewEventChannel(View v) {
+        Notification eventNotification = new NotificationCompat.Builder(this, App.newEventID )
+                .setSmallIcon(R.drawable.ic_event_black_24dp)
+                .setContentTitle("Geldsammler Payment")
+                .setContentText(testPayment)
+                .setPriority(NotificationCompat.PRIORITY_HIGH) // triggers if API-Level is below Oreo
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .build();
+        notificationManager.notify(1, eventNotification);
+
+    }
     @SuppressWarnings("unused")
     public void hideKeyboard(View view) {
         final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);

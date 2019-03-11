@@ -1,7 +1,10 @@
 package de.thm.ap.groupexpenses;
 
 import android.app.Application;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
+import android.os.Build;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -10,6 +13,9 @@ import java.util.List;
 import de.thm.ap.groupexpenses.model.User;
 
 public class App extends Application {
+    public static final String PaymentID = "payment";
+    public static final String newEventID = "eventCreated";
+
 
     public static User CurrentUser; //to be set on Login/AppStart
 
@@ -31,6 +37,33 @@ public class App extends Application {
     public void onCreate() {
         instance = this;
         super.onCreate();
+
+        createNotifcationChannels();
+    }
+
+    /**
+     * This method creates the Notification Channels.
+     * Its define the Notification message and its system importance.
+     */
+    private void createNotifcationChannels() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { // Check if the Device API-Level is Oreo or higher
+            NotificationChannel payment = new NotificationChannel(
+                    PaymentID,
+                    "User paid his debt for position",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            payment.setDescription("Notifications for debt payments");
+            NotificationChannel eventCreated = new NotificationChannel(
+                    newEventID,
+                    "You have been added to an event",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            eventCreated.setDescription("Notifications for event invites");
+
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(payment);
+            manager.createNotificationChannel(eventCreated);
+        }
     }
 
     public static class TestValues {
