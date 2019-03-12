@@ -2,7 +2,6 @@ package de.thm.ap.groupexpenses.view.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -19,7 +18,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,6 +39,7 @@ import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.livedata.UserLiveData;
 import de.thm.ap.groupexpenses.receivers.NotificationReceiver;
+import de.thm.ap.groupexpenses.services.ForegroundService;
 
 
 @SuppressLint("Registered")
@@ -103,6 +102,19 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
 
         checkLoginState();
     }
+    public void startService(View v){
+        String input = "testservice";
+
+        Intent startServiceIntent = new Intent(this, ForegroundService.class);
+        startServiceIntent.putExtra("inputExtra", input);
+
+        startService(startServiceIntent);
+    }
+    public void stopService(View v) {
+        Intent stopServiceIntent = new Intent(this, ForegroundService.class);
+        startService(stopServiceIntent);
+    }
+
 
     /**
      * Sends payment notifications

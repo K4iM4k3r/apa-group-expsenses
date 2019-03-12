@@ -74,6 +74,7 @@
                 android:resource="@xml/file_provider_paths" />
         </provider>
         <receiver android:name=".receivers.NotificationReceiver" />
+        <service android:name=".services.ForegroundService" />
     </application>
 
 </manifest>
