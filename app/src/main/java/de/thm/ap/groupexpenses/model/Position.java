@@ -144,7 +144,7 @@ public class Position {
      * Return the creation date of the pos as long since 1970
      * @return date of creation as long
      */
-    Long getDate() {
+    public Long getDate() {
         return date;
     }
 
