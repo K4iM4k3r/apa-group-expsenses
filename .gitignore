@@ -11,3 +11,4 @@
 /captures
 .externalNativeBuild
 /idea/*
+app/\.idea/
