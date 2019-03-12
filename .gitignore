@@ -12,3 +12,7 @@
 .externalNativeBuild
 /idea/*
 app/\.idea/
+app/gradle/
+app/local\.properties
+app/gradlew\.bat
+app/gradlew
