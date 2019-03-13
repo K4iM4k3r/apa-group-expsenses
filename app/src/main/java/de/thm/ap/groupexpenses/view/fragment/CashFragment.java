@@ -64,6 +64,7 @@ public class CashFragment extends Fragment {
         LinearLayout help_layout = rootView.findViewById(R.id.dialog_cash_check_help_layout);
         Bundle args = getArguments();
 
+
         help_btn.setOnClickListener(v -> {
             if (help_layout.getVisibility() == View.GONE) {
                 help_layout.setVisibility(View.VISIBLE);
@@ -82,7 +83,8 @@ public class CashFragment extends Fragment {
                     if (event != null) {
                         this.event = event;
                         float balance = Stats.getEventBalance(event);
-                        header_val.setText(new DecimalFormat("0.00").format(balance) + "€");
+                        String header_val_text = new DecimalFormat("0.00").format(balance) + "€";
+                        header_val.setText(header_val_text);
                         if (balance < 0) {
                             header_val.setTextColor(Color
                                     .parseColor("#ef4545"));    // red
@@ -96,22 +98,26 @@ public class CashFragment extends Fragment {
                     }
                 });
             } else if (uid != null) {
-                EventListLiveData listLiveData = DatabaseHandler.getEventListLiveData(uid);
-                listLiveData.observe(this, eventList -> {
-                    if (eventList != null) {
-                        this.eventList = eventList;
-                        TextView header_text = rootView.findViewById(R.id.dialog_cash_check_header_text);
-                        header_text.setText(getString(R.string.total_balance));
-                        float balance = Stats.getBalance(eventList);
-                        header_val.setText(new DecimalFormat("0.00").format(balance) + "€");
-                        if (balance < 0)
-                            header_val.setTextColor(Color.parseColor("#ef4545"));    // red
-                        else
-                            header_val.setTextColor(Color.parseColor("#2ba050"));    // green
-                        userValueList = new ArrayList<>();
-                        cash_check_map = Stats.getGlobalBalanceTable(App.CurrentUser, eventList);
-                        buildCashView();
-                    }
+                DatabaseHandler.queryUser(uid, result -> {
+                    App.CurrentUser = result;
+                    EventListLiveData listLiveData = DatabaseHandler.getEventListLiveData(uid);
+                    listLiveData.observe(this, eventList -> {
+                        if (eventList != null) {
+                            this.eventList = eventList;
+                            TextView header_text = rootView.findViewById(R.id.dialog_cash_check_header_text);
+                            header_text.setText(getString(R.string.total_balance));
+                            float balance = Stats.getBalance(eventList);
+                            String header_val_text = new DecimalFormat("0.00").format(balance) + "€";
+                            header_val.setText(header_val_text);
+                            if (balance < 0)
+                                header_val.setTextColor(Color.parseColor("#ef4545"));    // red
+                            else
+                                header_val.setTextColor(Color.parseColor("#2ba050"));    // green
+                            userValueList = new ArrayList<>();
+                            cash_check_map = Stats.getGlobalBalanceTable(App.CurrentUser, eventList);
+                            buildCashView();
+                        }
+                    });
                 });
             }
         }
@@ -163,8 +169,8 @@ public class CashFragment extends Fragment {
                 arrow_imageView.setImageDrawable(arrow);
                 userValueName.setText(R.string.you);
                 if (currentUserValue.name.length() > MAX_NAME_LENGTH) {
-                    userValueName2.setText(currentUserValue.name.substring(0, MAX_NAME_LENGTH)
-                            + "...");
+                    String userValueName2Text = currentUserValue.name.substring(0, MAX_NAME_LENGTH) + "...";
+                    userValueName2.setText(userValueName2Text);
                 } else {
                     userValueName2.setText(currentUserValue.name);
                 }

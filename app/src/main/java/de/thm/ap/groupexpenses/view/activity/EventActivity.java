@@ -52,6 +52,7 @@ public class EventActivity extends BaseActivity implements PositionEventListFrag
         sp.edit().putBoolean(CONFIRM_PROCESS, false).apply();
 
         // Check if user is signed in (non-null) and update UI accordingly.
+        auth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = auth.getCurrentUser();
         if (currentUser == null || !currentUser.isEmailVerified()) {
             startActivity(new Intent(this, LoginActivity.class));
@@ -66,7 +67,6 @@ public class EventActivity extends BaseActivity implements PositionEventListFrag
         createEventBtn = findViewById(R.id.create_event_btn);
         createEventBtn.setOnClickListener(v -> startActivity(
                 new Intent(EventActivity.this, EventFormActivity.class)));
-        auth = FirebaseAuth.getInstance();
 
         CollectionPagerAdapter mCollectionPagerAdapter = new CollectionPagerAdapter(
                 getSupportFragmentManager(), 2, auth.getUid());
