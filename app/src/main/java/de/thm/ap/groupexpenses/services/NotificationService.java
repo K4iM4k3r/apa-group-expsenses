@@ -28,14 +28,13 @@ import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.view.activity.EventActivity;
 import de.thm.ap.groupexpenses.view.activity.PositionActivity;
 
-public class NotificationService extends Service implements LifecycleOwner {
+public class NotificationService extends Service {
 
     Timer timer;
     TimerTask timerTask;
     String TAG = "Timers";
-    int Your_X_SECS = 5;
+    int Your_X_SECS = 60;
     private List<Event> oldEventList;
-    Lifecycle mLifecycle;
     NotificationManager notificationManager;
 
 
@@ -57,35 +56,12 @@ public class NotificationService extends Service implements LifecycleOwner {
 
     @Override
     public void onCreate() {
-        mLifecycle = new Lifecycle() {
-            @Override
-            public void addObserver(@NonNull LifecycleObserver observer) {
-
-            }
-
-            @Override
-            public void removeObserver(@NonNull LifecycleObserver observer) {
-
-            }
-
-            @NonNull
-            @Override
-            public State getCurrentState() {
-                return State.STARTED;
-            }
-        };
-
         notificationManager =
                 (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
-
-        DatabaseHandler.getAllUserEvents(App.CurrentUser.getUid(), eventList -> {
-            oldEventList = eventList;
-        });
     }
 
     @Override
     public void onDestroy() {
-        Log.e(TAG, "onDestroy");
         stopTimerTask();
         super.onDestroy();
     }
@@ -122,17 +98,9 @@ public class NotificationService extends Service implements LifecycleOwner {
                 //use a handler to run a toast that shows the current timestamp
                 handler.post(() -> {
 
-                    DatabaseHandler.getAllUserEvents(App.CurrentUser.getUid(), eventList -> {
-                        if (oldEventList.size() < eventList.size()) {
-                            //  user has been added to an event
-                            sendEventAddedNotification();
-                        }
-                    });
-
-                    /*
                     // everything related to event changes
                     EventListLiveData listLiveData = DatabaseHandler.getEventListLiveData(App.CurrentUser.getUid());
-                    listLiveData.observe(NotificationService.this, eventList -> {
+                    listLiveData.observeForever(eventList -> {
                         if (oldEventList == null) {   // old event list doesn't exist, create it (first call)
                             oldEventList = eventList;
                         } else {    // old event list exists, look for changes
@@ -142,18 +110,12 @@ public class NotificationService extends Service implements LifecycleOwner {
                             }
                         }
                     });
-                    */
+
 
 
                 });
             }
         };
-    }
-
-    @NonNull
-    @Override
-    public Lifecycle getLifecycle() {
-        return mLifecycle;
     }
 
     /**

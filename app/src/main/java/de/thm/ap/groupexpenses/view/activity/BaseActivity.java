@@ -1,6 +1,7 @@
 package de.thm.ap.groupexpenses.view.activity;
 
 import android.annotation.SuppressLint;
+import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -8,7 +9,6 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -28,6 +28,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.File;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import de.thm.ap.groupexpenses.App;
@@ -38,7 +40,7 @@ import de.thm.ap.groupexpenses.services.NotificationService;
 
 
 @SuppressLint("Registered")
-public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuItemClickListener, View.OnClickListener{
+public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuItemClickListener, View.OnClickListener {
     private final String TAG = this.getClass().getName();
     private FrameLayout view_stub; //This is the framelayout to keep the content view
     private View headerView;
@@ -50,8 +52,6 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
     protected FirebaseAuth auth;
     protected FirebaseFirestore db;
     public ProgressDialog mProgressDialog;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +70,7 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
 
         // Add listener
         Menu drawerMenu = navigation_view.getMenu();
-        for(int i = 0; i < drawerMenu.size(); i++) {
+        for (int i = 0; i < drawerMenu.size(); i++) {
             drawerMenu.getItem(i).setOnMenuItemClickListener(this);
         }
         headerView.setOnClickListener(this);
@@ -79,11 +79,11 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        if(auth.getCurrentUser() != null) {
+        if (auth.getCurrentUser() != null) {
 
             userLiveData = DatabaseHandler.qetUserLiveData(auth.getCurrentUser().getUid());
             userLiveData.observe(this, user -> {
-                if(user != null){
+                if (user != null) {
                     App.CurrentUser = user;
                     name.setText(user.getNickname());
                     checkFriendsList();
@@ -93,7 +93,6 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
 
         checkLoginState();
     }
-
 
 
     @SuppressWarnings("unused")
@@ -166,7 +165,6 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
     protected void onStop() {
         super.onStop();
         userLiveData.removeObservers(this);
-        startService(new Intent(this, NotificationService.class));
     }
 
     @Override
@@ -174,17 +172,18 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
         super.onResume();
         checkLoginState();
         userLiveData.observe(this, user -> {
-            if(user != null){
+            if (user != null) {
                 App.CurrentUser = user;
                 name.setText(user.getNickname());
                 checkFriendsList();
             }
         });
+        stopService(new Intent(this, NotificationService.class));
     }
 
     @Override
     public void onClick(View v) {
-        if(v == headerView){
+        if (v == headerView) {
             mDrawerLayout.closeDrawer(GravityCompat.START, false);
             startActivity(new Intent(this, ProfileActivity.class));
         }
@@ -232,18 +231,17 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
     }
 
 
-    public void checkLoginState(){
+    public void checkLoginState() {
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = auth.getCurrentUser();
-        if(currentUser == null || !currentUser.isEmailVerified()){
+        if (currentUser == null || !currentUser.isEmailVerified()) {
             Log.i(TAG, "no user logged in");
             startActivity(new Intent(this, LoginActivity.class));
             finish();
-        }
-        else{
+        } else {
             Log.i(TAG, "User is logged in: " + userLiveData.getValue());
             File pic = new File(getExternalFilesDir(null), "profilePic.jpg");
-            if(pic.exists()){
+            if (pic.exists()) {
                 picture.setImageURI(Uri.fromFile(pic));
             }
         }
@@ -254,11 +252,10 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
         finish();
     }
 
-    private void checkFriendsList(){
-        if(App.CurrentUser.getFriendsIds() == null || App.CurrentUser.getFriendsIds().isEmpty()){
+    private void checkFriendsList() {
+        if (App.CurrentUser.getFriendsIds() == null || App.CurrentUser.getFriendsIds().isEmpty()) {
             findViewById(R.id.notification_friends).setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             findViewById(R.id.notification_friends).setVisibility(View.GONE);
         }
     }
