@@ -30,13 +30,9 @@ import de.thm.ap.groupexpenses.view.activity.PositionActivity;
 
 public class NotificationService extends Service {
 
-    Timer timer;
-    TimerTask timerTask;
     String TAG = "Timers";
-    int Your_X_SECS = 60;
     private List<Event> oldEventList;
     NotificationManager notificationManager;
-
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -47,9 +43,6 @@ public class NotificationService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.e(TAG, "onStartCommand");
         super.onStartCommand(intent, flags, startId);
-
-        startTimer();
-
         return START_STICKY;
     }
 
@@ -58,68 +51,66 @@ public class NotificationService extends Service {
     public void onCreate() {
         notificationManager =
                 (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
-    }
 
-    @Override
-    public void onDestroy() {
-        stopTimerTask();
-        super.onDestroy();
-    }
-
-    //we are going to use a handler to be able to run in our TimerTask
-    final Handler handler = new Handler();
-
-
-    public void startTimer() {
-        //set a new Timer
-        timer = new Timer();
-
-        //initialize the TimerTask's job
-        initializeTimerTask();
-
-        //schedule the timer, after the first 5000ms the TimerTask will run every 10000ms
-        timer.schedule(timerTask, 5000, Your_X_SECS * 1000); //
-        //timer.schedule(timerTask, 5000,1000); //
-    }
-
-    public void stopTimerTask() {
-        //stop the timer, if it's not already null
-        if (timer != null) {
-            timer.cancel();
-            timer = null;
-        }
-    }
-
-    public void initializeTimerTask() {
-
-        timerTask = new TimerTask() {
-            public void run() {
-
-                //use a handler to run a toast that shows the current timestamp
-                handler.post(() -> {
-
-                    // everything related to event changes
-                    EventListLiveData listLiveData = DatabaseHandler.getEventListLiveData(App.CurrentUser.getUid());
-                    listLiveData.observeForever(eventList -> {
-                        if (oldEventList == null) {   // old event list doesn't exist, create it (first call)
-                            oldEventList = eventList;
-                        } else {    // old event list exists, look for changes
-                            if (oldEventList.size() < eventList.size()) {
+        // everything related to event changes
+        EventListLiveData listLiveData = DatabaseHandler.getEventListLiveData(App.CurrentUser.getUid());
+        listLiveData.observeForever(newEventList -> {
+            if (newEventList != null) {
+                if (oldEventList == null) {
+                    // old event list doesn't exist, create it (first call)
+                    oldEventList = newEventList;
+                } else {
+                    for (Event new_event : newEventList) {
+                        Event old_event = getOldEvent(new_event);
+                        if (old_event == null) {
+                            if (oldEventList.size() < newEventList.size()) {
                                 //  user has been added to an event
                                 sendEventAddedNotification();
+                                oldEventList = newEventList;
+                                return;
+                            }
+                        } else {
+                            for (Position new_position : new_event.getPositions()) {
+                                Position old_position = getOldPosition(new_position, old_event);
+                                if (old_position == null) {
+                                    if (old_event.getPositions().size() < new_event.getPositions().size()) {
+                                        //  position has been added to an event
+                                        sendPositionAddedNotification(new_event.getEid());
+                                        oldEventList = newEventList;
+                                        return;
+                                    }
+                                } else {
+                                    if(old_position.getPeopleThatDontHaveToPay().size() < new_position.getPeopleThatDontHaveToPay().size()){
+                                        sendPaymentCompletedNotification(new_event.getEid());
+                                        oldEventList = newEventList;
+                                        return;
+                                    }
+                                }
                             }
                         }
-                    });
-
-
-
-                });
+                    }
+                }
             }
-        };
+
+        });
+    }
+
+    private Event getOldEvent(Event event) {
+        for (Event old_event : oldEventList) {
+            if (old_event.getEid().equals(event.getEid())) return old_event;
+        }
+        return null;
+    }
+
+    private Position getOldPosition(Position position, Event old_event) {
+        for (Position old_position : old_event.getPositions()) {
+            if (old_position.getDate().equals(position.getDate())) return old_position;
+        }
+        return null;
     }
 
     /**
-     * Send event invite notification
+     * Send event added notification
      */
     public void sendEventAddedNotification() {
         Intent intent = new Intent(getApplicationContext(), EventActivity.class);
@@ -135,6 +126,27 @@ public class NotificationService extends Service {
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .build();
         notificationManager.notify(2, eventNotification);
+    }
+
+    /**
+     * Send position added notification
+     */
+    public void sendPositionAddedNotification(String eventEid) {
+        Intent intent = new Intent(getApplicationContext(), PositionActivity.class);
+        intent.putExtra("eventEid", eventEid);
+
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
+
+        Notification positionNotification = new NotificationCompat.Builder(getApplicationContext(), App.newEventID)
+                .setSmallIcon(R.drawable.ic_event_black_24dp)
+                .setContentTitle("Position was added to event")
+                .setContentText("Position added")
+                .setContentIntent(pendingIntent)
+                .setPriority(NotificationCompat.PRIORITY_HIGH) // triggers if API-Level is below Oreo
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .build();
+        notificationManager.notify(2, positionNotification);
     }
 
     /**
