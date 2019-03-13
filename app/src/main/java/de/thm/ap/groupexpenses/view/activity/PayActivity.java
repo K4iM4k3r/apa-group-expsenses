@@ -32,6 +32,7 @@ import de.thm.ap.groupexpenses.R;
 
 public class PayActivity extends AppCompatActivity {
 
+    private final String successful = "eyJ2ZX"; // payment method nonce
     final int REQUEST_CODE = 1;
     final String getToken = "http://expenses.deneb.uberspace.de/main.php";
     final String payDetails = "http://expenses.deneb.uberspace.de/checkout.php";
@@ -98,7 +99,7 @@ public class PayActivity extends AppCompatActivity {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, payDetails,
                 response -> {
                     Intent returnIntent = new Intent();
-                    if (response.contains("Successful")) {
+                    if (response.contains(successful)) {
                         setResult(Activity.RESULT_OK, returnIntent);
                     } else {
                         setResult(Activity.RESULT_CANCELED, returnIntent);

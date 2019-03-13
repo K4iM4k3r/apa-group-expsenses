@@ -80,10 +80,12 @@ public class NotificationService extends Service {
                                         return;
                                     }
                                 } else {
-                                    if(old_position.getPeopleThatDontHaveToPay().size() < new_position.getPeopleThatDontHaveToPay().size()){
-                                        sendPaymentCompletedNotification(new_event.getEid());
-                                        oldEventList = newEventList;
-                                        return;
+                                    if(new_position.getCreatorId().equals(App.CurrentUser.getUid())){
+                                        if(old_position.getPeopleThatDontHaveToPay().size() < new_position.getPeopleThatDontHaveToPay().size()){
+                                            sendPaymentCompletedNotification(new_event.getEid());
+                                            oldEventList = newEventList;
+                                            return;
+                                        }
                                     }
                                 }
                             }
