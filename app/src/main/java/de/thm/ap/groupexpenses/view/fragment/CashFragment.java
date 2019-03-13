@@ -460,7 +460,7 @@ public class CashFragment extends Fragment {
             // fulfill payment
             Intent payIntent = new Intent(getContext(), PayActivity.class);
             payIntent.putExtra("amount", amountAsString);
-            payIntent.putExtra("debtor_uid", amount);
+            payIntent.putExtra("debtor_uid", currentUserValue.uid);
             startActivityForResult(payIntent, PAY_REQUEST_CODE);
             confirmDialogBuilder.dismiss();
         });

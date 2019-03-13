@@ -29,8 +29,6 @@ import de.thm.ap.groupexpenses.view.activity.EventActivity;
 import de.thm.ap.groupexpenses.view.activity.PositionActivity;
 
 public class NotificationService extends Service {
-
-    String TAG = "Timers";
     private List<Event> oldEventList;
     NotificationManager notificationManager;
 
@@ -41,11 +39,9 @@ public class NotificationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.e(TAG, "onStartCommand");
         super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
-
 
     @Override
     public void onCreate() {
@@ -80,8 +76,8 @@ public class NotificationService extends Service {
                                         return;
                                     }
                                 } else {
-                                    if(new_position.getCreatorId().equals(App.CurrentUser.getUid())){
-                                        if(old_position.getPeopleThatDontHaveToPay().size() < new_position.getPeopleThatDontHaveToPay().size()){
+                                    if (new_position.getCreatorId().equals(App.CurrentUser.getUid())) {
+                                        if (old_position.getPeopleThatDontHaveToPay().size() < new_position.getPeopleThatDontHaveToPay().size()) {
                                             sendPaymentCompletedNotification(new_event.getEid());
                                             oldEventList = newEventList;
                                             return;
