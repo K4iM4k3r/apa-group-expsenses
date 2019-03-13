@@ -1,17 +1,13 @@
 package de.thm.ap.groupexpenses.view.activity;
 
 import android.annotation.SuppressLint;
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -38,15 +34,11 @@ import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.livedata.UserLiveData;
-import de.thm.ap.groupexpenses.receivers.NotificationReceiver;
-import de.thm.ap.groupexpenses.services.ForegroundService;
+import de.thm.ap.groupexpenses.services.NotificationService;
 
 
 @SuppressLint("Registered")
 public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuItemClickListener, View.OnClickListener{
-    private NotificationManagerCompat notificationManager;
-    private String testPayment = "A debt has been paid";
-    private String testEvent = "A Event has been created";
     private final String TAG = this.getClass().getName();
     private FrameLayout view_stub; //This is the framelayout to keep the content view
     private View headerView;
@@ -65,7 +57,6 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.app_base_layout);// The base layout that contains your navigation drawer.
-        notificationManager = NotificationManagerCompat.from(this);
         view_stub = findViewById(R.id.view_stub);
         // The new navigation view from Android Design Library. Can inflate menu resources. Easy
         NavigationView navigation_view = findViewById(R.id.navigation_view);
@@ -102,65 +93,9 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
 
         checkLoginState();
     }
-    public void startService(View v){
-        String input = "testservice";
-
-        Intent startServiceIntent = new Intent(this, ForegroundService.class);
-        startServiceIntent.putExtra("inputExtra", input);
-
-        startService(startServiceIntent);
-    }
-    public void stopService(View v) {
-        Intent stopServiceIntent = new Intent(this, ForegroundService.class);
-        startService(stopServiceIntent);
-    }
 
 
-    /**
-     * Sends payment notifications
-     * @param v
-     */
-    public void sendOnPaymentChannel(View v) {
-        Intent activityIntent = new Intent(this, BaseActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, activityIntent, 0);
 
-        Intent broadcastIntent = new Intent(this, NotificationReceiver.class);
-        broadcastIntent.putExtra("paymentKey", testPayment);
-        PendingIntent actionIntent = PendingIntent.getBroadcast(this, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Notification payNotification = new NotificationCompat.Builder(this, App.PaymentID )
-                .setSmallIcon(R.drawable.ic_payment_black_24dp)
-                .setContentTitle("Geldsammler Payment")
-                .setContentText(testPayment)
-                .setPriority(NotificationCompat.PRIORITY_HIGH) // triggers if API-Level is below Oreo
-                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                .setColor(Color.RED)
-                .setContentIntent(contentIntent)
-                .setAutoCancel(true) // dismiss Notification if tapped
-                .addAction(R.mipmap.ic_launcher, "paymentKey", actionIntent)
-                .build();
-        notificationManager.notify(1, payNotification);
-    }
-
-    /**
-     * Sends event invite notifications
-     * @param v
-     */
-    public void sendOnNewEventChannel(View v) {
-        Intent activityIntent = new Intent(this, BaseActivity.class);
-        PendingIntent contentIntent2 = PendingIntent.getActivity(this, 0, activityIntent, 0);
-
-        Notification eventNotification = new NotificationCompat.Builder(this, App.newEventID )
-                .setSmallIcon(R.drawable.ic_event_black_24dp)
-                .setContentTitle("Geldsammler Event invite")
-                .setContentText(testPayment)
-                .setPriority(NotificationCompat.PRIORITY_HIGH) // triggers if API-Level is below Oreo
-                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                .setContentIntent(contentIntent2)
-                .build();
-        notificationManager.notify(2, eventNotification);
-
-    }
     @SuppressWarnings("unused")
     public void hideKeyboard(View view) {
         final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -231,6 +166,7 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
     protected void onStop() {
         super.onStop();
         userLiveData.removeObservers(this);
+        startService(new Intent(this, NotificationService.class));
     }
 
     @Override
