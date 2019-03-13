@@ -1,27 +1,35 @@
 package de.thm.ap.groupexpenses;
 
+import android.app.Activity;
 import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleObserver;
+import android.arch.lifecycle.LifecycleOwner;
+import android.arch.lifecycle.OnLifecycleEvent;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import de.thm.ap.groupexpenses.model.User;
+import de.thm.ap.groupexpenses.services.NotificationService;
 
 public class App extends Application {
     public static final String PaymentID = "payment";
     public static final String newEventID = "eventCreated";
 
-
     public static User CurrentUser; //to be set on Login/AppStart
 
     public static String HOST = "group-expenses-omran.firebaseapp.com";
     public static String BASE_URL = "https://" + HOST + "/";
-
 
     private static App instance;
 
@@ -39,6 +47,8 @@ public class App extends Application {
         super.onCreate();
 
         createNotifcationChannels();
+
+        registerActivityLifecycleCallbacks(new AppLifecycleTracker());
     }
 
     /**
@@ -80,7 +90,7 @@ public class App extends Application {
     public static String listToHTMLString(List<?> list) {
         String result = "";
         for (int i = 0; i < list.size(); ++i) {
-            result += list.get(i) + (i == list.size()-1 ? "" : ", ");
+            result += list.get(i) + (i == list.size() - 1 ? "" : ", ");
         }
         result += "\b";
         return result;
@@ -89,13 +99,51 @@ public class App extends Application {
     public static String listToString(List<?> list) {
         String result = "";
         for (int i = 0; i < list.size(); ++i) {
-            result += list.get(i) + (i == list.size()-1 ? "" : ", ");
+            result += list.get(i) + (i == list.size() - 1 ? "" : ", ");
         }
         return result;
     }
 
-    public static String getDateFromLong(long date){
+    public static String getDateFromLong(long date) {
         Format format = new SimpleDateFormat("dd.MM.yyyy");
         return format.format(date);
     }
+
+    private class AppLifecycleTracker implements ActivityLifecycleCallbacks {
+        private int numStarted = 0;
+
+        @Override
+        public void onActivityCreated(Activity activity, Bundle bundle) {}
+
+        @Override
+        public void onActivityStarted(Activity activity) {
+            if (numStarted == 0) {
+                // app went to foreground, stop NotificationService
+                stopService(new Intent(getApplicationContext(), NotificationService.class));
+            }
+            numStarted++;
+        }
+
+        @Override
+        public void onActivityResumed(Activity activity) {}
+
+        @Override
+        public void onActivityPaused(Activity activity) {}
+
+        @Override
+        public void onActivityStopped(Activity activity) {
+            numStarted--;
+            if (numStarted == 0) {
+                // app went to background, start NotificationService
+                startService(new Intent(getApplicationContext(), NotificationService.class));
+            }
+        }
+
+        @Override
+        public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {}
+
+        @Override
+        public void onActivityDestroyed(Activity activity) {}
+    }
 }
+
