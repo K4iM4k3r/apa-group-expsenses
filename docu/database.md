@@ -23,11 +23,11 @@ Or Queries sind nicht so ohne weiteres möglich führt zu längeren Abfragezeite
 Negative Bedingungen bei Abfragen bei Arrays nicht unterstützt
 
 ### Queries
-Es gab mehrere Iterationen der Anfragen (Queries) 
+Es gab mehrere Iterationen der Anfragen (Queries)
 - erst gab es nur einmalige Antworten in einem async Callback (jetzt -> deprecated)
-- Jetzt Anwort auf Queries als LiveDataObjekt 
+- Jetzt Anwort auf Queries als LiveDataObjekt
   - um auf stetige Änderungen an den ausgewählten Daten zu reagieren zu können
-  - Ausnahme ist die Methode **_getAllFriendsOfUser_** die kein LiveDataObjekt zurückliefert sonder nur einmalig eine Liste mit Usern im Callback liefert 
+  - Ausnahme sind die Methoden, die keine LiveDataObjekt zurückliefert sonder nur einmalig ein Ergebnis zurückliefern
 
 ######  LiveDataObjekt
 Eigene LiveDataKlassen:
