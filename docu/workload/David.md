@@ -1,14 +1,14 @@
 
 | Tätigkeit                 | Aufwand (real)  | Aufwand (geschätzt) |  
 |---------------------------|:---------------:|:-------------------:|  
-|Projektkoordination           | 30h            | 30h                 |  
-|Recherche Bezahlsystem        | 10h            | 10h                 |  
-|Implementierung Bezahlsystem  | 30h            | 20                  |  
-|Recherche Notification        | 10h            | 10h                 |  
-|Implementierung Notification  | 25h            | 20                  |  
-|Testing&Bugfixing             | 10h            | 10                 |  
-|Doku/Präsentation             | 15h            | 20                  |  
-|**Summe** | **~145h** | **135<sup>\*</sup>**|
+|Projektkoordination           | 30h            | 30h               |  
+|Recherche Bezahlsystem        | 10h            | 10h               |  
+|Implementierung Bezahlsystem  | 30h            | 20h               |  
+|Recherche Notification        | 10h            | 10h               |  
+|Implementierung Notification  | 25h            | 20h               |  
+|Testing&Bugfixing             | 10h            | 10h               |  
+|Doku/Präsentation             | 15h            | 20h               |  
+|**Summe**                     | **130h**       | **120h<sup>\*</sup>**|
   
   
 ## Projektkoordination  
