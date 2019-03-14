@@ -10,8 +10,9 @@ Die Ausgaben werden anschließend durch einen Algorithmus auf alle Gruppenmitgli
 Das Projekt nutzt zwei unterschiedliche Backends:
  
 * **Firebase**: Zuständig für die Verwaltung der Profildaten und den Emailverkehr  
-* **Braintree:** Zuständig für die Abwicklung des Zahlungsverkehrs  
-  
+* **Braintree:** Zuständig für die Abwicklung des Zahlungsverkehrs.
+
+Die Implementierung und Struktur des Braintree-Servers ist in der Dokumentation im Ordner "braintree" festgehalten.
 Eine Einbindung dieser Backends ist für die Funktionalität der Anwendung absolut notwendig.  
   
 ### Entwicklumgsumgebung  
