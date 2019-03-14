@@ -20,8 +20,8 @@ Die Anforderungen für die Entwicklungsumgebung werden in der setup.md beschrieb
   
 # Funktionalität  
 Die Funktionalität der Anwendung wird zur besseren Übersicht
-in dem Ordner **"functionality"** zusammengefasst. Dieser Ordner beinhaltet alle systemrelevanten Abschnitte der Implementierung. Folgende Abschnitte sind Bestandteil
-der Funktionalität:
+in dem Ordner **"functionality"** zusammengefasst. Dieser Ordner beinhaltet alle systemrelevanten Abschnitte 
+der Implementierung. Folgende Abschnitte sind Bestandteil der Funktionalität:
 
 - **Datenbank (database.md, livedata.md)**
 - **Modelle (model.md)**
@@ -29,8 +29,13 @@ der Funktionalität:
 - **Services (service.md)**
 - **Bezahlsystem (payment.md)**
   
- Die entsprechenden Dateien mit der Endung **.md** beinhalten die Technische Dokumentation der Funktionalität und Implementierung der entsprechenden Abschnitte.
+ Die entsprechenden Dateien mit der Endung **.md** beinhalten die Technische Dokumentation der Funktionalität 
+ und Implementierung der entsprechenden Abschnitte.
 
 # Arbeitsaufwand
 
-Der Projektaufwand wird im Ordner **"workload"** verteilt auf die entsprechenden Gruppenteilnehmer zusammengefasst. Alle Gruppenteilnehmer haben ihre Zeitinvestition in das Projekt dokumentiert und die einzelnen Arbeitsabschnitte erläutert.
+Der Projektaufwand wird im Ordner **"workload"** verteilt auf die entsprechenden Gruppenteilnehmer zusammengefasst. 
+Alle Gruppenteilnehmer haben ihre Zeitinvestition in das Projekt dokumentiert und die einzelnen Arbeitsabschnitte erläutert.
+
+## Grafische Darstellung
+Die UML-Diagramme sind im Doku-Ordner UML enthalten.
