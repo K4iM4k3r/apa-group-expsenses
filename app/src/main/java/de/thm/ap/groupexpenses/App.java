@@ -1,6 +1,7 @@
 package de.thm.ap.groupexpenses;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -12,6 +13,8 @@ import android.os.Bundle;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import de.thm.ap.groupexpenses.model.User;
 import de.thm.ap.groupexpenses.services.NotificationService;
@@ -72,37 +75,63 @@ public class App extends Application {
         private int numStarted = 0;
 
         @Override
-        public void onActivityCreated(Activity activity, Bundle bundle) {}
+        public void onActivityCreated(Activity activity, Bundle bundle) {
+        }
 
         @Override
         public void onActivityStarted(Activity activity) {
             if (numStarted == 0) {
                 // app went to foreground, stop NotificationService
-                stopService(new Intent(getApplicationContext(), NotificationService.class));
+                //stopService(new Intent(App.this, NotificationService.class));
+
+                if (NotificationService.isRunning) {
+                    // stop NotificationService
+                    Intent intent = new Intent(getApplicationContext(), NotificationService.class);
+                    stopService(intent);
+                }
             }
             numStarted++;
         }
 
         @Override
-        public void onActivityResumed(Activity activity) {}
+        public void onActivityResumed(Activity activity) {
+        }
 
         @Override
-        public void onActivityPaused(Activity activity) {}
+        public void onActivityPaused(Activity activity) {
+        }
 
         @Override
         public void onActivityStopped(Activity activity) {
             numStarted--;
             if (numStarted == 0) {
                 // app went to background, start NotificationService
-                startService(new Intent(getApplicationContext(), NotificationService.class));
+                // startService(new Intent(App.this, NotificationService.class));
+                if (!NotificationService.isRunning) {
+                    // start NotificationService
+                    Intent intent = new Intent(getApplicationContext(), NotificationService.class);
+                    startService(intent);
+                }
             }
         }
 
         @Override
-        public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {}
+        public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {
+        }
 
         @Override
-        public void onActivityDestroyed(Activity activity) {}
+        public void onActivityDestroyed(Activity activity) {
+        }
+    }
+
+    private static ActivityManager.RunningServiceInfo getRunningServiceInfo(Class serviceClass, Context context) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return service;
+            }
+        }
+        return null;
     }
 }
 

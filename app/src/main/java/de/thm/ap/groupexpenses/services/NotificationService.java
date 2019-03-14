@@ -27,9 +27,15 @@ import de.thm.ap.groupexpenses.view.activity.FriendsActivity;
 import de.thm.ap.groupexpenses.view.activity.PositionActivity;
 
 public class NotificationService extends Service {
+    private int NOTIFICATION = 1; // unique identifier for our notification
+    public static boolean isRunning = false;
+    public static NotificationService instance = null;
+
     private List<Event> oldEventList;
     private List<User> oldFriendsList;
     NotificationManager notificationManager;
+    UserListLiveData userListLiveData;
+    EventListLiveData eventListLiveData;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -44,13 +50,16 @@ public class NotificationService extends Service {
 
     @Override
     public void onCreate() {
+        super.onCreate();
+        instance = this;
+        isRunning = true;
         notificationManager =
                 (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
         createNotificationChannels();
 
         // everything related to event changes
-        EventListLiveData listLiveData = DatabaseHandler.getEventListLiveData(App.CurrentUser.getUid());
-        listLiveData.observeForever(newEventList -> {
+        eventListLiveData = DatabaseHandler.getEventListLiveData(App.CurrentUser.getUid());
+        eventListLiveData.observeForever(newEventList -> {
             if (newEventList != null) {
                 if (oldEventList == null) {
                     // old event list doesn't exist, create it (first call)
@@ -105,7 +114,7 @@ public class NotificationService extends Service {
         });
 
         // everything related to friend list changes
-        UserListLiveData userListLiveData = DatabaseHandler.getAllFriendsOfUser(App.CurrentUser.getUid());
+        userListLiveData = DatabaseHandler.getAllFriendsOfUser(App.CurrentUser.getUid());
         userListLiveData.observeForever(newFriendsList -> {
             if (newFriendsList != null) {
                 if (oldFriendsList == null) {
@@ -126,6 +135,14 @@ public class NotificationService extends Service {
             }
 
         });
+    }
+
+    @Override
+    public void onDestroy(){
+        isRunning = false;
+        instance = null;
+        notificationManager.cancel(NOTIFICATION); // remove NotificationService
+        super.onDestroy();
     }
 
     private Event getOldEvent(Event event) {
@@ -166,7 +183,7 @@ public class NotificationService extends Service {
                 .setPriority(NotificationCompat.PRIORITY_HIGH) // triggers if API-Level is below Oreo
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .build();
-        notificationManager.notify(App.newEventID, newEventNotification);
+        startForeground(NOTIFICATION, newEventNotification);
     }
 
     /**
@@ -186,7 +203,7 @@ public class NotificationService extends Service {
                 .setPriority(NotificationCompat.PRIORITY_HIGH) // triggers if API-Level is below Oreo
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .build();
-        notificationManager.notify(App.newPositionID, newPositionNotification);
+        startForeground(NOTIFICATION, newPositionNotification);
     }
 
     /**
@@ -204,7 +221,7 @@ public class NotificationService extends Service {
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .setContentIntent(pendingIntent)
                 .build();
-        notificationManager.notify(App.newPaymentID, payNotification);
+        startForeground(NOTIFICATION, payNotification);
     }
 
     /**
@@ -222,7 +239,7 @@ public class NotificationService extends Service {
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .setContentIntent(pendingIntent)
                 .build();
-        notificationManager.notify(App.newFriendID, newFriendNotification);
+        startForeground(NOTIFICATION, newFriendNotification);
     }
 
     /**
