@@ -35,6 +35,7 @@ import de.thm.ap.groupexpenses.livedata.EventLiveData;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.Stats;
+import de.thm.ap.groupexpenses.services.NotificationService;
 import de.thm.ap.groupexpenses.view.activity.PayActivity;
 import de.thm.ap.groupexpenses.view.dialog.ProfileInfoDialog;
 
@@ -305,6 +306,8 @@ public class CashFragment extends Fragment {
                     for (Position p : event.getPositions()) {
                         releaseAllDebtsBetweenUsers(p, App.CurrentUser.getUid(), debtor_uid);
                     }
+                    // tell the NotificationService that we did the payment
+                    NotificationService.isCaller = true;
                     DatabaseHandler.updateEvent(event);
                     Toast.makeText(getContext(), getString(R.string.done_paypal_payment), Toast.LENGTH_SHORT).show();
                 } else if (eventList != null) {    // user is paying for all events
@@ -312,6 +315,8 @@ public class CashFragment extends Fragment {
                         for (Position p : e.getPositions()) {
                             releaseAllDebtsBetweenUsers(p, App.CurrentUser.getUid(), debtor_uid);
                         }
+                        // tell the NotificationService that we did the payment
+                        NotificationService.isCaller = true;
                         DatabaseHandler.updateEvent(e);
                     }
                     Toast.makeText(getContext(), getString(R.string.done_paypal_payment), Toast.LENGTH_SHORT).show();
