@@ -82,7 +82,6 @@ public class App extends Application {
         public void onActivityStarted(Activity activity) {
             if (numStarted == 0) {
                 // app went to foreground, stop NotificationService
-                //stopService(new Intent(App.this, NotificationService.class));
 
                 if (NotificationService.isRunning) {
                     // stop NotificationService
