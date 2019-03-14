@@ -242,7 +242,7 @@ public class CashFragment extends Fragment {
                                 break;
                             default:
                         }
-                    } else if(eventList != null){
+                    } else if (eventList != null) {
                         boolean allEventsAreLocked = true;
                         for (Event e : Stats.getOpenEvents(App.CurrentUser.getUid(), currentUserValue.uid, eventList)) {
                             if (e.getLifecycleState() != Event.LifecycleState.LOCKED) {
@@ -318,41 +318,62 @@ public class CashFragment extends Fragment {
     }
 
     private void buildCashView() {
-        List<String> keyList = new ArrayList<>(cash_check_map.keySet());
-        int idx = 0;
-        while (idx < keyList.size()) {
-            userValueList.add(null);
-            idx++;
-        }
-        for (idx = 0; idx < keyList.size(); ++idx) {
-            final String key = keyList.get(idx);
-            DatabaseHandler.queryUser(key, user -> {
-                for (int idx2 = 0; idx2 < userValueList.size(); ++idx2) {
-                    if (userValueList.get(idx2) == null) {
-                        if (user != null) {
-                            userValueList.set(idx2, new UserValue(
-                                    user.getUid(),
-                                    user.getNickname(),
-                                    user.getEmail(),
-                                    cash_check_map.get(key)));
-                        } else {
-                            userValueList.set(idx2, new UserValue(
-                                    getString(R.string.unknown),
-                                    getString(R.string.unknown),
-                                    getString(R.string.unknown),
-                                    cash_check_map.get(key)));
+        if (cash_check_map.isEmpty()) {
+            // create and set adapter
+            if (userValueArrayAdapter == null) {
+                Collections.sort(userValueList, DEBT_SORT);
+                userValueArrayAdapter = new UserValueArrayAdapter(Objects.requireNonNull(getContext()), userValueList);
+                cash_check_list.setAdapter(userValueArrayAdapter);
+            } else {
+                userValueArrayAdapter.clear();
+                userValueArrayAdapter.addAll(userValueList);
+                userValueArrayAdapter.notifyDataSetChanged();
+
+            }
+        } else {
+            List<String> keyList = new ArrayList<>(cash_check_map.keySet());
+            int idx = 0;
+            while (idx < keyList.size()) {
+                userValueList.add(null);
+                idx++;
+            }
+            for (idx = 0; idx < keyList.size(); ++idx) {
+                final String key = keyList.get(idx);
+                DatabaseHandler.queryUser(key, user -> {
+                    for (int idx2 = 0; idx2 < userValueList.size(); ++idx2) {
+                        if (userValueList.get(idx2) == null) {
+                            if (user != null) {
+                                userValueList.set(idx2, new UserValue(
+                                        user.getUid(),
+                                        user.getNickname(),
+                                        user.getEmail(),
+                                        cash_check_map.get(key)));
+                            } else {
+                                userValueList.set(idx2, new UserValue(
+                                        getString(R.string.unknown),
+                                        getString(R.string.unknown),
+                                        getString(R.string.unknown),
+                                        cash_check_map.get(key)));
+                            }
+                            break;
                         }
-                        break;
                     }
-                }
-                if (!userValueList.contains(null)) {
-                    // create and set adapter
-                    Collections.sort(userValueList, DEBT_SORT);
-                    userValueArrayAdapter = new UserValueArrayAdapter(Objects.requireNonNull(getContext()), userValueList);
-                    cash_check_list.setAdapter(userValueArrayAdapter);
-                }
-            });
+                    if (!userValueList.contains(null)) {
+                        // create and set adapter
+                        if (userValueArrayAdapter == null) {
+                            Collections.sort(userValueList, DEBT_SORT);
+                            userValueArrayAdapter = new UserValueArrayAdapter(Objects.requireNonNull(getContext()), userValueList);
+                            cash_check_list.setAdapter(userValueArrayAdapter);
+                        } else {
+                            userValueArrayAdapter.clear();
+                            userValueArrayAdapter.addAll(userValueList);
+                            userValueArrayAdapter.notifyDataSetChanged();
+                        }
+                    }
+                });
+            }
         }
+
     }
 
     private void showCashOrReminderDialog(UserValue currentUserValue) {
