@@ -69,11 +69,13 @@ public class NotificationService extends Service {
                             for (Position new_position : new_event.getPositions()) {
                                 Position old_position = getOldPosition(new_position, old_event);
                                 if (old_position == null) {
-                                    if (old_event.getPositions().size() < new_event.getPositions().size()) {
-                                        //  position has been added to an event
-                                        sendPositionAddedNotification(new_event.getEid());
-                                        oldEventList = newEventList;
-                                        return;
+                                    if (!new_position.getCreatorId().equals(App.CurrentUser.getUid())) {
+                                        if (old_event.getPositions().size() < new_event.getPositions().size()) {
+                                            //  position has been added to an event
+                                            sendPositionAddedNotification(new_event.getEid());
+                                            oldEventList = newEventList;
+                                            return;
+                                        }
                                     }
                                 } else {
                                     if (new_position.getCreatorId().equals(App.CurrentUser.getUid())) {
@@ -89,7 +91,6 @@ public class NotificationService extends Service {
                     }
                 }
             }
-
         });
     }
 
