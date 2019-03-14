@@ -11,6 +11,7 @@ import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.User;
+import de.thm.ap.groupexpenses.services.NotificationService;
 
 public class PositionFormActivity extends BaseActivity {
 
@@ -80,6 +81,8 @@ public class PositionFormActivity extends BaseActivity {
                             positionName + "' not found!");
                 } else {
                     String relatedEventEid = extras.getString("relatedEventEid");
+                    // tell the NotificationService that we created the position
+                    NotificationService.isCaller = true;
                     DatabaseHandler.queryEvent(relatedEventEid, relatedEvent -> {
                         relatedEvent.addPosition(position);
                         DatabaseHandler.updateEvent(relatedEvent);

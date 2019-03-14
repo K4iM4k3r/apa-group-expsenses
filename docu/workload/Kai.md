@@ -1,4 +1,3 @@
-
 # Arbeitsbericht Kai
 
 #### Grobe Auflistung der Tätigkeiten
@@ -139,3 +138,4 @@ _____
     - Models
     - JavaDocs   
 - Präsentation
+

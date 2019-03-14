@@ -1,4 +1,3 @@
-Grob gegliedert wann man an was gearbeitet aht und wie lange es etwa gedauert hat!
 
 | Tätigkeit                 | Aufwand (real)  | Aufwand (geschätzt) |  
 |---------------------------|:---------------:|:-------------------:|  
@@ -79,7 +78,7 @@ der *App* Klasse. Die **App** Klasse wurde um die Methoden onActivityStarted (= 
 - Der Nutzer wurde als Freund hinzugefügt  
 - Der Aktionszeitraum eines Events endet in 3,2 oder 1 Tag(en).  
   
-Alle Notifications befinden sich in der NotificationService Klasse.  
+Alle Notifications befinden sich in der **NotificationService** Klasse.  
   
 ## Testing&Bugfixing  
 Durch die Benutzung der oben genannten Features kam es vereinzelt zu Fehlern die während dem Implementierungsprozess   
