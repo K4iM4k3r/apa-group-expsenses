@@ -72,7 +72,6 @@ public class App extends Application {
     }
 
     private class AppLifecycleTracker implements ActivityLifecycleCallbacks {
-        private int numStarted = 0;
 
         @Override
         public void onActivityCreated(Activity activity, Bundle bundle) {
@@ -80,16 +79,12 @@ public class App extends Application {
 
         @Override
         public void onActivityStarted(Activity activity) {
-            if (numStarted == 0) {
-                // app went to foreground, stop NotificationService
-
-                if (NotificationService.isRunning) {
-                    // stop NotificationService
-                    Intent intent = new Intent(getApplicationContext(), NotificationService.class);
-                    stopService(intent);
-                }
+            // app went to foreground, start NotificationService
+            if (!NotificationService.isRunning) {
+                // start NotificationService
+                Intent intent = new Intent(getApplicationContext(), NotificationService.class);
+                startService(intent);
             }
-            numStarted++;
         }
 
         @Override
@@ -102,16 +97,6 @@ public class App extends Application {
 
         @Override
         public void onActivityStopped(Activity activity) {
-            numStarted--;
-            if (numStarted == 0) {
-                // app went to background, start NotificationService
-                // startService(new Intent(App.this, NotificationService.class));
-                if (!NotificationService.isRunning) {
-                    // start NotificationService
-                    Intent intent = new Intent(getApplicationContext(), NotificationService.class);
-                    startService(intent);
-                }
-            }
         }
 
         @Override

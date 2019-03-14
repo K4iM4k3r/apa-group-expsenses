@@ -34,6 +34,7 @@ import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.livedata.UserListLiveData;
 import de.thm.ap.groupexpenses.model.User;
+import de.thm.ap.groupexpenses.services.NotificationService;
 import de.thm.ap.groupexpenses.view.dialog.ProfileInfoDialog;
 
 public class FriendsActivity extends BaseActivity {
@@ -76,6 +77,8 @@ public class FriendsActivity extends BaseActivity {
                             Snackbar.make(view, getString(R.string.error_user_not_found), Snackbar.LENGTH_LONG)
                                     .setAction(getString(R.string.dialog_friend_retry), l -> fab.callOnClick()).show();
                         } else {
+                            // tell the NotificationService that we added the friend
+                            NotificationService.isCaller = true;
                             DatabaseHandler.queryUserByNickname(userInput, friend -> DatabaseHandler.makeFriendship(App.CurrentUser, friend));
                         }
                     });

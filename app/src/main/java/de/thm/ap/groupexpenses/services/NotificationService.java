@@ -30,7 +30,7 @@ import de.thm.ap.groupexpenses.view.activity.PositionActivity;
 public class NotificationService extends Service {
     private int NOTIFICATION = 1; // unique identifier for our notification
     public static boolean isRunning = false;
-    public static NotificationService instance = null;
+    public static boolean isCaller = false;
 
     private List<Event> oldEventList;
     private List<User> oldFriendsList;
@@ -50,7 +50,6 @@ public class NotificationService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        instance = this;
         isRunning = true;
         notificationManager =
                 (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
@@ -61,50 +60,64 @@ public class NotificationService extends Service {
         // everything related to event changes
         EventListLiveData eventListLiveData = DatabaseHandler.getEventListLiveData(currentUser.getUid());
         eventListLiveData.observeForever(newEventList -> {
-            if (newEventList != null) {
-                if (oldEventList == null) {
-                    // old event list doesn't exist, create it (first call)
-                    oldEventList = newEventList;
-                } else {
+            if (newEventList == null) return;
+            if (oldEventList == null) {
+                // old event list doesn't exist, create it (first call)
+                oldEventList = newEventList;
+            } else {
+                if (oldEventList.size() < newEventList.size()) {
+                    // an event was added
                     for (Event new_event : newEventList) {
                         Event old_event = getOldEvent(new_event);
                         if (old_event == null) {
-                            if (oldEventList.size() < newEventList.size()) {
-                                // user has been added to an event
-                                sendEventAddedNotification(new_event);
+                            if (isCaller) {
+                                isCaller = false;
                                 oldEventList = newEventList;
                                 return;
                             }
-                        } else {
-                            for (Position new_position : new_event.getPositions()) {
-                                Position old_position = getOldPosition(new_position, old_event);
-                                if (old_position == null) {
-                                    if (!new_position.getCreatorId().equals(currentUser.getUid())) {
-                                        if (old_event.getPositions().size() < new_event.getPositions().size()) {
-                                            // position has been added to an event
-                                            sendPositionAddedNotification(new_event);
-                                            oldEventList = newEventList;
-                                            return;
+                            // user has been added to an event and is not the caller
+                            sendEventAddedNotification(new_event);
+                            oldEventList = newEventList;
+                            return;
+                        }
+                    }
+                } else if (oldEventList.size() == newEventList.size()) {
+                    // a position was added or a payment was fulfilled
+                    for (Event new_event : newEventList) {
+                        Event old_event = getOldEvent(new_event);
+                        for (Position new_position : new_event.getPositions()) {
+                            Position old_position = getOldPosition(new_position, old_event);
+                            if (old_position == null) {
+                                // position was added
+                                if (isCaller) {
+                                    isCaller = false;
+                                    oldEventList = newEventList;
+                                    return;
+                                }
+                                sendPositionAddedNotification(new_event);
+                                oldEventList = newEventList;
+                                return;
+                            } else {
+                                // position is not new, look for changes in 'peopleThatDontHaveToPay'
+                                // if it increased in size -> payment fulfilled
+
+                                if (!new_position.getCreatorId().equals(currentUser.getUid()))
+                                    continue; // it's not our position, stop searching
+
+                                if (old_position.getPeopleThatDontHaveToPay().size() < new_position.getPeopleThatDontHaveToPay().size()) {
+                                    String debtor_uid_found = null;
+                                    for (String debtor_who_just_payed_uid : new_position.getPeopleThatDontHaveToPay()) {
+                                        if (!old_position.getPeopleThatDontHaveToPay().contains(debtor_who_just_payed_uid)) {
+                                            debtor_uid_found = debtor_who_just_payed_uid;
+                                            break;
                                         }
                                     }
-                                } else {
-                                    if (new_position.getCreatorId().equals(currentUser.getUid())) {
-                                        if (old_position.getPeopleThatDontHaveToPay().size() < new_position.getPeopleThatDontHaveToPay().size()) {
-                                            String debtor_uid_found = null;
-                                            for (String debtor_who_just_payed_uid : new_position.getPeopleThatDontHaveToPay()) {
-                                                if (!old_position.getPeopleThatDontHaveToPay().contains(debtor_who_just_payed_uid)) {
-                                                    debtor_uid_found = debtor_who_just_payed_uid;
-                                                    break;
-                                                }
-                                            }
-                                            if (debtor_uid_found != null) {
-                                                DatabaseHandler.queryUser(debtor_uid_found, debtor_who_just_payed -> {
-                                                    sendPaymentCompletedNotification(debtor_who_just_payed.getNickname());
-                                                    oldEventList = newEventList;
-                                                    return;
-                                                });
-                                            }
-                                        }
+                                    if (debtor_uid_found != null) {
+                                        DatabaseHandler.queryUser(debtor_uid_found, debtor_who_just_payed -> {
+                                            sendPaymentCompletedNotification(debtor_who_just_payed.getNickname());
+                                            oldEventList = newEventList;
+                                            return;
+                                        });
                                     }
                                 }
                             }
@@ -117,33 +130,36 @@ public class NotificationService extends Service {
         // everything related to friend list changes
         UserListLiveData userListLiveData = DatabaseHandler.getAllFriendsOfUser(currentUser.getUid());
         userListLiveData.observeForever(newFriendsList -> {
-            if (newFriendsList != null) {
-                if (oldFriendsList == null) {
-                    // oldFriendsList list doesn't exist, create it (first call)
+            if (newFriendsList == null) return;
+            if (oldFriendsList == null) {
+                // oldFriendsList list doesn't exist, create it (first call)
+                oldFriendsList = newFriendsList;
+            } else {
+                if (oldFriendsList.size() > newFriendsList.size()) {
+                    // user was removed, so break
                     oldFriendsList = newFriendsList;
-                } else {
-                    for (User friend : newFriendsList) {
-                        User old_friend = getOldUser(friend);
-                        if (old_friend == null) {
-                            if (oldFriendsList.size() < newFriendsList.size()) { // a user added you
-                                sendFriendAddedYouNotification(friend.getNickname());
-                                oldFriendsList = newFriendsList;
-                                return;
-                            }
+                    return;
+                }
+                for (User friend : newFriendsList) {
+                    User old_friend = getOldUser(friend);
+                    if (old_friend == null) {
+                        if (isCaller) {
+                            isCaller = false;
+                            oldFriendsList = newFriendsList;
+                            return;
                         }
+                        sendFriendAddedYouNotification(friend.getNickname());
+                        oldFriendsList = newFriendsList;
+                        return;
                     }
                 }
             }
-
         });
-
     }
 
     @Override
     public void onDestroy() {
         isRunning = false;
-        instance = null;
-        notificationManager.cancel(NOTIFICATION); // remove NotificationService
         super.onDestroy();
     }
 
@@ -175,7 +191,7 @@ public class NotificationService extends Service {
         Intent intent = new Intent(getApplicationContext(), PositionActivity.class);
         intent.putExtra("eventEid", new_event.getEid());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), App.newEventID, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 345647, intent, 0);
 
         Notification newEventNotification = new NotificationCompat.Builder(getApplicationContext(), Integer.toString(App.newEventID))
                 .setSmallIcon(R.drawable.ic_event_black_24dp)
@@ -184,8 +200,9 @@ public class NotificationService extends Service {
                 .setContentIntent(pendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_MAX) // triggers if API-Level is below Oreo
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setAutoCancel(true)
                 .build();
-        startForeground(NOTIFICATION, newEventNotification);
+        notificationManager.notify(App.newPositionID, newEventNotification);
     }
 
     /**
@@ -195,7 +212,7 @@ public class NotificationService extends Service {
         Intent intent = new Intent(getApplicationContext(), PositionActivity.class);
         intent.putExtra("eventEid", event.getEid());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), App.newPositionID, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 454534, intent, 0);
 
         Notification newPositionNotification = new NotificationCompat.Builder(getApplicationContext(), Integer.toString(App.newPositionID))
                 .setSmallIcon(R.drawable.ic_event_black_24dp)
@@ -204,8 +221,9 @@ public class NotificationService extends Service {
                 .setContentIntent(pendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_MAX) // triggers if API-Level is below Oreo
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setAutoCancel(true)
                 .build();
-        startForeground(NOTIFICATION, newPositionNotification);
+        notificationManager.notify(App.newPositionID, newPositionNotification);
     }
 
     /**
@@ -213,7 +231,7 @@ public class NotificationService extends Service {
      */
     public void sendPaymentCompletedNotification(String debtor_nickname) {
         Intent intent = new Intent(getApplicationContext(), EventActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), App.newPaymentID, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 546749, intent, 0);
 
         Notification payNotification = new NotificationCompat.Builder(this, Integer.toString(App.newPaymentID))
                 .setSmallIcon(R.drawable.ic_payment_black_24dp)
@@ -222,8 +240,9 @@ public class NotificationService extends Service {
                 .setPriority(NotificationCompat.PRIORITY_MAX) // triggers if API-Level is below Oreo
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
                 .build();
-        startForeground(NOTIFICATION, payNotification);
+        notificationManager.notify(App.newPositionID, payNotification);
     }
 
     /**
@@ -231,7 +250,7 @@ public class NotificationService extends Service {
      */
     public void sendFriendAddedYouNotification(String nickname_of_adder) {
         Intent intent = new Intent(getApplicationContext(), FriendsActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), App.newFriendID, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 863465, intent, 0);
 
         Notification newFriendNotification = new NotificationCompat.Builder(this, Integer.toString(App.newFriendID))
                 .setSmallIcon(R.drawable.ic_payment_black_24dp)
@@ -240,8 +259,9 @@ public class NotificationService extends Service {
                 .setPriority(NotificationCompat.PRIORITY_MAX) // triggers if API-Level is below Oreo
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
                 .build();
-        startForeground(NOTIFICATION, newFriendNotification);
+        notificationManager.notify(App.newPositionID, newFriendNotification);
     }
 
     /**
