@@ -27,7 +27,7 @@ der Implementierung. Folgende Abschnitte sind Bestandteil der Funktionalität:
 - **Datenbank (database.md, livedata.md)**
 - **Modelle (model.md)**
 - **Views (activities.md, dialog.md, fragment.md)**
-- **Services (service.md)**
+- **Services (notifications.md)**
 - **Bezahlsystem (payment.md)**
   
  Die entsprechenden Dateien mit der Endung **.md** beinhalten die Technische Dokumentation der Funktionalität 
