@@ -1,35 +1,34 @@
 package de.thm.ap.groupexpenses.services;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.LifecycleObserver;
-import android.arch.lifecycle.LifecycleOwner;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Handler;
+import android.os.Build;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.livedata.EventListLiveData;
+import de.thm.ap.groupexpenses.livedata.UserListLiveData;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
+import de.thm.ap.groupexpenses.model.User;
+import de.thm.ap.groupexpenses.view.activity.BaseActivity;
 import de.thm.ap.groupexpenses.view.activity.EventActivity;
+import de.thm.ap.groupexpenses.view.activity.FriendsActivity;
 import de.thm.ap.groupexpenses.view.activity.PositionActivity;
 
 public class NotificationService extends Service {
     private List<Event> oldEventList;
+    private List<User> oldFriendsList;
     NotificationManager notificationManager;
 
     @Override
@@ -47,6 +46,7 @@ public class NotificationService extends Service {
     public void onCreate() {
         notificationManager =
                 (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
+        createNotificationChannels();
 
         // everything related to event changes
         EventListLiveData listLiveData = DatabaseHandler.getEventListLiveData(App.CurrentUser.getUid());
@@ -60,8 +60,8 @@ public class NotificationService extends Service {
                         Event old_event = getOldEvent(new_event);
                         if (old_event == null) {
                             if (oldEventList.size() < newEventList.size()) {
-                                //  user has been added to an event
-                                sendEventAddedNotification();
+                                // user has been added to an event
+                                sendEventAddedNotification(new_event);
                                 oldEventList = newEventList;
                                 return;
                             }
@@ -71,8 +71,8 @@ public class NotificationService extends Service {
                                 if (old_position == null) {
                                     if (!new_position.getCreatorId().equals(App.CurrentUser.getUid())) {
                                         if (old_event.getPositions().size() < new_event.getPositions().size()) {
-                                            //  position has been added to an event
-                                            sendPositionAddedNotification(new_event.getEid());
+                                            // position has been added to an event
+                                            sendPositionAddedNotification(new_event);
                                             oldEventList = newEventList;
                                             return;
                                         }
@@ -80,9 +80,20 @@ public class NotificationService extends Service {
                                 } else {
                                     if (new_position.getCreatorId().equals(App.CurrentUser.getUid())) {
                                         if (old_position.getPeopleThatDontHaveToPay().size() < new_position.getPeopleThatDontHaveToPay().size()) {
-                                            sendPaymentCompletedNotification(new_event.getEid());
-                                            oldEventList = newEventList;
-                                            return;
+                                            String debtor_uid_found = null;
+                                            for (String debtor_who_just_payed_uid : new_position.getPeopleThatDontHaveToPay()) {
+                                                if (!old_position.getPeopleThatDontHaveToPay().contains(debtor_who_just_payed_uid)) {
+                                                    debtor_uid_found = debtor_who_just_payed_uid;
+                                                    break;
+                                                }
+                                            }
+                                            if (debtor_uid_found != null) {
+                                                DatabaseHandler.queryUser(debtor_uid_found, debtor_who_just_payed -> {
+                                                    sendPaymentCompletedNotification(debtor_who_just_payed.getNickname());
+                                                    oldEventList = newEventList;
+                                                    return;
+                                                });
+                                            }
                                         }
                                     }
                                 }
@@ -91,6 +102,29 @@ public class NotificationService extends Service {
                     }
                 }
             }
+        });
+
+        // everything related to friend list changes
+        UserListLiveData userListLiveData = DatabaseHandler.getAllFriendsOfUser(App.CurrentUser.getUid());
+        userListLiveData.observeForever(newFriendsList -> {
+            if (newFriendsList != null) {
+                if (oldFriendsList == null) {
+                    // oldFriendsList list doesn't exist, create it (first call)
+                    oldFriendsList = newFriendsList;
+                } else {
+                    for (User friend : newFriendsList) {
+                        User old_friend = getOldUser(friend);
+                        if (old_friend == null) {
+                            if (oldFriendsList.size() < newFriendsList.size()) { // a user added you
+                                sendFriendAddedYouNotification(friend.getNickname());
+                                oldFriendsList = newFriendsList;
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+
         });
     }
 
@@ -108,64 +142,119 @@ public class NotificationService extends Service {
         return null;
     }
 
+    private User getOldUser(User user) {
+        for (User old_user : oldFriendsList) {
+            if (old_user.getUid().equals(user.getUid())) return old_user;
+        }
+        return null;
+    }
+
     /**
      * Send event added notification
      */
-    public void sendEventAddedNotification() {
-        Intent intent = new Intent(getApplicationContext(), EventActivity.class);
+    public void sendEventAddedNotification(Event new_event) {
+        Intent intent = new Intent(getApplicationContext(), PositionActivity.class);
+        intent.putExtra("eventEid", new_event.getEid());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
 
-        Notification eventNotification = new NotificationCompat.Builder(getApplicationContext(), App.newEventID)
+        Notification newEventNotification = new NotificationCompat.Builder(getApplicationContext(), Integer.toString(App.newEventID))
                 .setSmallIcon(R.drawable.ic_event_black_24dp)
-                .setContentTitle("Geldsammler Event invite")
-                .setContentText("Event einladung")
+                .setContentTitle("Neues Event")
+                .setContentText("Du wurdest zu dem Event " + new_event.getName() + " hinzugefügt!")
                 .setContentIntent(pendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_HIGH) // triggers if API-Level is below Oreo
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .build();
-        notificationManager.notify(2, eventNotification);
+        notificationManager.notify(App.newEventID, newEventNotification);
     }
 
     /**
      * Send position added notification
      */
-    public void sendPositionAddedNotification(String eventEid) {
+    public void sendPositionAddedNotification(Event event) {
         Intent intent = new Intent(getApplicationContext(), PositionActivity.class);
-        intent.putExtra("eventEid", eventEid);
-
+        intent.putExtra("eventEid", event.getEid());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
 
-        Notification positionNotification = new NotificationCompat.Builder(getApplicationContext(), App.newEventID)
+        Notification newPositionNotification = new NotificationCompat.Builder(getApplicationContext(), Integer.toString(App.newPositionID))
                 .setSmallIcon(R.drawable.ic_event_black_24dp)
-                .setContentTitle("Position was added to event")
-                .setContentText("Position added")
+                .setContentTitle("Neue Position")
+                .setContentText("Eine neue Position wurde zum Event " + event.getName() + " hinzugefügt!")
                 .setContentIntent(pendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_HIGH) // triggers if API-Level is below Oreo
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .build();
-        notificationManager.notify(2, positionNotification);
+        notificationManager.notify(App.newPositionID, newPositionNotification);
     }
 
     /**
      * Send payment notification
      */
-    public void sendPaymentCompletedNotification(String eventID) {
-        Intent intent = new Intent(getApplicationContext(), PositionActivity.class);
-        intent.putExtra("eventEid", eventID);
+    public void sendPaymentCompletedNotification(String debtor_nickname) {
+        Intent intent = new Intent(getApplicationContext(), EventActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
 
-        Notification payNotification = new NotificationCompat.Builder(this, App.PaymentID)
+        Notification payNotification = new NotificationCompat.Builder(this, Integer.toString(App.newPaymentID))
                 .setSmallIcon(R.drawable.ic_payment_black_24dp)
-                .setContentTitle("Geldsammler Bezahlung")
-                .setContentText("Bezahlung ist erfolgt!")
+                .setContentTitle("Bezahlung erfolgt")
+                .setContentText(debtor_nickname + " hat Schulden bei dir beglichen!")
                 .setPriority(NotificationCompat.PRIORITY_HIGH) // triggers if API-Level is below Oreo
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                .setColor(Color.RED)
                 .setContentIntent(pendingIntent)
-                .setAutoCancel(true) // dismiss Notification if tapped
                 .build();
-        notificationManager.notify(1, payNotification);
+        notificationManager.notify(App.newPaymentID, payNotification);
+    }
+
+    /**
+     * Send payment notification
+     */
+    public void sendFriendAddedYouNotification(String nickname_of_adder) {
+        Intent intent = new Intent(getApplicationContext(), FriendsActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
+
+        Notification newFriendNotification = new NotificationCompat.Builder(this, Integer.toString(App.newFriendID))
+                .setSmallIcon(R.drawable.ic_payment_black_24dp)
+                .setContentTitle("Neue Freundschaft")
+                .setContentText(nickname_of_adder + " hat sie hinzugefügt!")
+                .setPriority(NotificationCompat.PRIORITY_HIGH) // triggers if API-Level is below Oreo
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setContentIntent(pendingIntent)
+                .build();
+        notificationManager.notify(App.newFriendID, newFriendNotification);
+    }
+
+    /**
+     * This method creates the Notification Channels.
+     * It defines the Notification message and its system importance.
+     */
+    private void createNotificationChannels() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { // Check if the Device API-Level is Oreo or higher
+            NotificationChannel new_payment = new NotificationChannel(
+                    Integer.toString(App.newPaymentID),
+                    "NEW_PAYMENT",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            NotificationChannel new_event = new NotificationChannel(
+                    Integer.toString(App.newEventID),
+                    "NEW_EVENT",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+            NotificationChannel new_position = new NotificationChannel(
+                    Integer.toString(App.newPositionID),
+                    "NEW_POSITION",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+            NotificationChannel new_friend = new NotificationChannel(
+                    Integer.toString(App.newFriendID),
+                    "NEW_FRIEND",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+            notificationManager.createNotificationChannel(new_payment);
+            notificationManager.createNotificationChannel(new_event);
+            notificationManager.createNotificationChannel(new_position);
+            notificationManager.createNotificationChannel(new_friend);
+        }
     }
 }
