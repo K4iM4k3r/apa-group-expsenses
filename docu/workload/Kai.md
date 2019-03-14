@@ -125,8 +125,9 @@ _____
  - FriendsActivity Logik
    - Freunde hinzufügen
  - Dauerhafte Benachrichtigung das Freundesliste leer ist und so wenig effektiv die Funktionweise
- - Datenbank zurücksetzen/ Dateb reset machen
+ - Datenbank zurücksetzen
  - Testen von Funktionen
+ - Firebase functions für Einladungen u.a Error page 
 
 
 ## Projektdokumentation & Präsentationsvorbereitung
