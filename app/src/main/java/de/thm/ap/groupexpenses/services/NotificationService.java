@@ -6,10 +6,12 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
@@ -21,7 +23,6 @@ import de.thm.ap.groupexpenses.livedata.UserListLiveData;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.User;
-import de.thm.ap.groupexpenses.view.activity.BaseActivity;
 import de.thm.ap.groupexpenses.view.activity.EventActivity;
 import de.thm.ap.groupexpenses.view.activity.FriendsActivity;
 import de.thm.ap.groupexpenses.view.activity.PositionActivity;
@@ -33,9 +34,7 @@ public class NotificationService extends Service {
 
     private List<Event> oldEventList;
     private List<User> oldFriendsList;
-    NotificationManager notificationManager;
-    UserListLiveData userListLiveData;
-    EventListLiveData eventListLiveData;
+    private NotificationManager notificationManager;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -57,8 +56,10 @@ public class NotificationService extends Service {
                 (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
         createNotificationChannels();
 
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
         // everything related to event changes
-        eventListLiveData = DatabaseHandler.getEventListLiveData(App.CurrentUser.getUid());
+        EventListLiveData eventListLiveData = DatabaseHandler.getEventListLiveData(currentUser.getUid());
         eventListLiveData.observeForever(newEventList -> {
             if (newEventList != null) {
                 if (oldEventList == null) {
@@ -78,7 +79,7 @@ public class NotificationService extends Service {
                             for (Position new_position : new_event.getPositions()) {
                                 Position old_position = getOldPosition(new_position, old_event);
                                 if (old_position == null) {
-                                    if (!new_position.getCreatorId().equals(App.CurrentUser.getUid())) {
+                                    if (!new_position.getCreatorId().equals(currentUser.getUid())) {
                                         if (old_event.getPositions().size() < new_event.getPositions().size()) {
                                             // position has been added to an event
                                             sendPositionAddedNotification(new_event);
@@ -87,7 +88,7 @@ public class NotificationService extends Service {
                                         }
                                     }
                                 } else {
-                                    if (new_position.getCreatorId().equals(App.CurrentUser.getUid())) {
+                                    if (new_position.getCreatorId().equals(currentUser.getUid())) {
                                         if (old_position.getPeopleThatDontHaveToPay().size() < new_position.getPeopleThatDontHaveToPay().size()) {
                                             String debtor_uid_found = null;
                                             for (String debtor_who_just_payed_uid : new_position.getPeopleThatDontHaveToPay()) {
@@ -114,7 +115,7 @@ public class NotificationService extends Service {
         });
 
         // everything related to friend list changes
-        userListLiveData = DatabaseHandler.getAllFriendsOfUser(App.CurrentUser.getUid());
+        UserListLiveData userListLiveData = DatabaseHandler.getAllFriendsOfUser(currentUser.getUid());
         userListLiveData.observeForever(newFriendsList -> {
             if (newFriendsList != null) {
                 if (oldFriendsList == null) {
@@ -135,10 +136,11 @@ public class NotificationService extends Service {
             }
 
         });
+
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         isRunning = false;
         instance = null;
         notificationManager.cancel(NOTIFICATION); // remove NotificationService

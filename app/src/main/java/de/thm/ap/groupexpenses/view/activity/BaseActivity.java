@@ -28,15 +28,12 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.File;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.livedata.UserLiveData;
-import de.thm.ap.groupexpenses.services.NotificationService;
 
 
 @SuppressLint("Registered")
@@ -178,7 +175,6 @@ public class BaseActivity extends AppCompatActivity implements MenuItem.OnMenuIt
                 checkFriendsList();
             }
         });
-        stopService(new Intent(this, NotificationService.class));
     }
 
     @Override

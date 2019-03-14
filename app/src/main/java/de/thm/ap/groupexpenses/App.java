@@ -122,15 +122,5 @@ public class App extends Application {
         public void onActivityDestroyed(Activity activity) {
         }
     }
-
-    private static ActivityManager.RunningServiceInfo getRunningServiceInfo(Class serviceClass, Context context) {
-        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return service;
-            }
-        }
-        return null;
-    }
 }
 
