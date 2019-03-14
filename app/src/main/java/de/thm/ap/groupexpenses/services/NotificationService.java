@@ -182,7 +182,7 @@ public class NotificationService extends Service {
                 .setContentTitle("Neues Event")
                 .setContentText("Du wurdest zu dem Event " + new_event.getName() + " hinzugefügt!")
                 .setContentIntent(pendingIntent)
-                .setPriority(NotificationCompat.PRIORITY_HIGH) // triggers if API-Level is below Oreo
+                .setPriority(NotificationCompat.PRIORITY_MAX) // triggers if API-Level is below Oreo
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .build();
         startForeground(NOTIFICATION, newEventNotification);
@@ -202,7 +202,7 @@ public class NotificationService extends Service {
                 .setContentTitle("Neue Position")
                 .setContentText("Eine neue Position wurde zum Event " + event.getName() + " hinzugefügt!")
                 .setContentIntent(pendingIntent)
-                .setPriority(NotificationCompat.PRIORITY_HIGH) // triggers if API-Level is below Oreo
+                .setPriority(NotificationCompat.PRIORITY_MAX) // triggers if API-Level is below Oreo
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .build();
         startForeground(NOTIFICATION, newPositionNotification);
@@ -219,7 +219,7 @@ public class NotificationService extends Service {
                 .setSmallIcon(R.drawable.ic_payment_black_24dp)
                 .setContentTitle("Bezahlung erfolgt")
                 .setContentText(debtor_nickname + " hat Schulden bei dir beglichen!")
-                .setPriority(NotificationCompat.PRIORITY_HIGH) // triggers if API-Level is below Oreo
+                .setPriority(NotificationCompat.PRIORITY_MAX) // triggers if API-Level is below Oreo
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .setContentIntent(pendingIntent)
                 .build();
@@ -237,7 +237,7 @@ public class NotificationService extends Service {
                 .setSmallIcon(R.drawable.ic_payment_black_24dp)
                 .setContentTitle("Neue Freundschaft")
                 .setContentText(nickname_of_adder + " hat sie hinzugefügt!")
-                .setPriority(NotificationCompat.PRIORITY_HIGH) // triggers if API-Level is below Oreo
+                .setPriority(NotificationCompat.PRIORITY_MAX) // triggers if API-Level is below Oreo
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .setContentIntent(pendingIntent)
                 .build();
@@ -258,17 +258,17 @@ public class NotificationService extends Service {
             NotificationChannel new_event = new NotificationChannel(
                     Integer.toString(App.newEventID),
                     "NEW_EVENT",
-                    NotificationManager.IMPORTANCE_DEFAULT
+                    NotificationManager.IMPORTANCE_HIGH
             );
             NotificationChannel new_position = new NotificationChannel(
                     Integer.toString(App.newPositionID),
                     "NEW_POSITION",
-                    NotificationManager.IMPORTANCE_DEFAULT
+                    NotificationManager.IMPORTANCE_HIGH
             );
             NotificationChannel new_friend = new NotificationChannel(
                     Integer.toString(App.newFriendID),
                     "NEW_FRIEND",
-                    NotificationManager.IMPORTANCE_DEFAULT
+                    NotificationManager.IMPORTANCE_HIGH
             );
             notificationManager.createNotificationChannel(new_payment);
             notificationManager.createNotificationChannel(new_event);
