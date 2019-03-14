@@ -56,7 +56,12 @@ public class NotificationService extends Service {
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        // everything related to event changes
+        /*
+         everything related to event changes
+         ---
+         var 'isCaller' always looks if we did the action by ourselves,
+         if 'true' -> cancel the notification
+          */
         EventListLiveData eventListLiveData = DatabaseHandler.getEventListLiveData(currentUser.getUid());
         eventListLiveData.observeForever(newEventList -> {
             if (newEventList == null) return;
@@ -99,6 +104,12 @@ public class NotificationService extends Service {
                             } else {
                                 // position is not new, look for changes in 'peopleThatDontHaveToPay'
                                 // if it increased in size -> payment fulfilled
+
+                                if (isCaller) {
+                                    isCaller = false;
+                                    oldEventList = newEventList;
+                                    return;
+                                }
 
                                 if (!new_position.getCreatorId().equals(currentUser.getUid()))
                                     continue; // it's not our position, stop searching
