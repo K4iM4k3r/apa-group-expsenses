@@ -196,5 +196,19 @@
     <string name="invite_closed_error">The event you are trying to join is allready closed.</string>
     <string name="no_connection">Your internet connection is to bad to handle this</string>
     <string name="broken">Broken</string>
+
+    <!-- NotificationService -->
+    <string name="notification_new_event_title">New Event</string>
+    <string name="notification_new_event_text">You were added to the event %1$s!</string>
+    <string name="notification_new_position_title">New Position</string>
+    <string name="notification_new_position_text">A new position was added to the event %1$s!</string>
+    <string name="notification_new_payment_title">Payment received</string>
+    <string name="notification_new_payment_text">%1$s has paid some debts!</string>
+    <string name="notification_new_friend_title">New Friendship</string>
+    <string name="notification_new_friend_text">%1$s has added you as a friend!</string>
+
+
+
+
 </resources>
 

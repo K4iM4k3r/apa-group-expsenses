@@ -193,4 +193,14 @@
     <string name="air_of_mystery">Dieser Nutzer scheint es vorzuziehen, einen Hauch an Mysteriosität auszustrahlen.</string>
     <string name="no_connection">Sie benötigen eine Internetverbindung.</string>
     <string name="broken">Fehlerhaft</string>
+
+    <!-- NotificationService -->
+    <string name="notification_new_event_title">Neues Event</string>
+    <string name="notification_new_event_text">Du wurdest zum Event %1$s hinzugefügt!</string>
+    <string name="notification_new_position_title">Neue Position</string>
+    <string name="notification_new_position_text">Eine neue Position wurde zum Event %1$s hinzugefügt!</string>
+    <string name="notification_new_payment_title">Bezahlung erfolgt</string>
+    <string name="notification_new_payment_text">%1$s hat Schulden bei Dir beglichen!</string>
+    <string name="notification_new_friend_title">Neue Freundschaft</string>
+    <string name="notification_new_friend_text">%1$s hat Dich als Freund hinzugefügt!</string>
 </resources>

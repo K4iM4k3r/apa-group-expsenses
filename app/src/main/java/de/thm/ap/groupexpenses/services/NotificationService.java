@@ -137,7 +137,12 @@ public class NotificationService extends Service {
             }
         });
 
-        // everything related to friend list changes
+        /*
+         everything related to friend list changes
+         ---
+         var 'isCaller' always looks if we did the action by ourselves,
+         if 'true' -> cancel the notification
+          */
         UserListLiveData userListLiveData = DatabaseHandler.getAllFriendsOfUser(currentUser.getUid());
         userListLiveData.observeForever(newFriendsList -> {
             if (newFriendsList == null) return;
@@ -206,8 +211,8 @@ public class NotificationService extends Service {
 
         Notification newEventNotification = new NotificationCompat.Builder(getApplicationContext(), Integer.toString(App.newEventID))
                 .setSmallIcon(R.drawable.ic_event_black_24dp)
-                .setContentTitle("Neues Event")
-                .setContentText("Du wurdest zu dem Event " + new_event.getName() + " hinzugefügt!")
+                .setContentTitle(getString(R.string.notification_new_event_title))
+                .setContentText(getString(R.string.notification_new_event_text, new_event.getName()))
                 .setContentIntent(pendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_MAX) // triggers if API-Level is below Oreo
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
@@ -228,8 +233,8 @@ public class NotificationService extends Service {
 
         Notification newPositionNotification = new NotificationCompat.Builder(getApplicationContext(), Integer.toString(App.newPositionID))
                 .setSmallIcon(R.drawable.ic_event_black_24dp)
-                .setContentTitle("Neue Position")
-                .setContentText("Eine neue Position wurde zum Event " + event.getName() + " hinzugefügt!")
+                .setContentTitle(getString(R.string.notification_new_position_title))
+                .setContentText(getString(R.string.notification_new_position_text, event.getName()))
                 .setContentIntent(pendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_MAX) // triggers if API-Level is below Oreo
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
@@ -248,8 +253,8 @@ public class NotificationService extends Service {
 
         Notification payNotification = new NotificationCompat.Builder(this, Integer.toString(App.newPaymentID))
                 .setSmallIcon(R.drawable.ic_payment_black_24dp)
-                .setContentTitle("Bezahlung erfolgt")
-                .setContentText(debtor_nickname + " hat Schulden bei dir beglichen!")
+                .setContentTitle(getString(R.string.notification_new_payment_title))
+                .setContentText(getString(R.string.notification_new_payment_text, debtor_nickname))
                 .setPriority(NotificationCompat.PRIORITY_MAX) // triggers if API-Level is below Oreo
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .setContentIntent(pendingIntent)
@@ -268,8 +273,8 @@ public class NotificationService extends Service {
 
         Notification newFriendNotification = new NotificationCompat.Builder(this, Integer.toString(App.newFriendID))
                 .setSmallIcon(R.drawable.ic_payment_black_24dp)
-                .setContentTitle("Neue Freundschaft")
-                .setContentText(nickname_of_adder + " hat sie hinzugefügt!")
+                .setContentTitle(getString(R.string.notification_new_friend_title))
+                .setContentText(getString(R.string.notification_new_friend_text, nickname_of_adder))
                 .setPriority(NotificationCompat.PRIORITY_MAX) // triggers if API-Level is below Oreo
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .setContentIntent(pendingIntent)
