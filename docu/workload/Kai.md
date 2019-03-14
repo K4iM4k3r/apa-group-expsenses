@@ -1,4 +1,3 @@
-
 # Arbeitsbericht Kai
 
 #### Grobe Auflistung der Tätigkeiten
@@ -134,4 +133,8 @@ _____
 **Gesamtaufwand**: ~20h
 
 - Technische Doku
+    - Datenbank
+    - Models
+    - JavaDocs   
 - Präsentation
+
