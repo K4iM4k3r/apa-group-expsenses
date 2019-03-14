@@ -70,9 +70,13 @@ public class ProfileInfoDialog {
         }
 
         String user_full_name_string = userFirstNameString + " " + userLastNameString;
-        user_full_name.setText(user_full_name_string);
+        if (user_full_name_string.equals(" ")) {
+            user_full_name.setVisibility(View.GONE);
+        } else {
+            user_full_name.setText(user_full_name_string);
+        }
         user_nickname.setText(userNicknameString);
-        if(user.getInfo().equals("")){
+        if (user.getInfo().equals("")) {
             user_info.setText(context.getString(R.string.air_of_mystery));
         } else {
             user_info.setText(userInfoString);
