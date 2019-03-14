@@ -28,7 +28,6 @@ import de.thm.ap.groupexpenses.view.activity.FriendsActivity;
 import de.thm.ap.groupexpenses.view.activity.PositionActivity;
 
 public class NotificationService extends Service {
-    private int NOTIFICATION = 1; // unique identifier for our notification
     public static boolean isRunning = false;
     public static boolean isCaller = false;
 
@@ -191,7 +190,8 @@ public class NotificationService extends Service {
         Intent intent = new Intent(getApplicationContext(), PositionActivity.class);
         intent.putExtra("eventEid", new_event.getEid());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 345647, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
+                App.newEventID, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
         Notification newEventNotification = new NotificationCompat.Builder(getApplicationContext(), Integer.toString(App.newEventID))
                 .setSmallIcon(R.drawable.ic_event_black_24dp)
@@ -212,7 +212,8 @@ public class NotificationService extends Service {
         Intent intent = new Intent(getApplicationContext(), PositionActivity.class);
         intent.putExtra("eventEid", event.getEid());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 454534, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
+                App.newPositionID, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
         Notification newPositionNotification = new NotificationCompat.Builder(getApplicationContext(), Integer.toString(App.newPositionID))
                 .setSmallIcon(R.drawable.ic_event_black_24dp)
@@ -231,7 +232,8 @@ public class NotificationService extends Service {
      */
     public void sendPaymentCompletedNotification(String debtor_nickname) {
         Intent intent = new Intent(getApplicationContext(), EventActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 546749, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
+                App.newPaymentID, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
         Notification payNotification = new NotificationCompat.Builder(this, Integer.toString(App.newPaymentID))
                 .setSmallIcon(R.drawable.ic_payment_black_24dp)
@@ -250,7 +252,8 @@ public class NotificationService extends Service {
      */
     public void sendFriendAddedYouNotification(String nickname_of_adder) {
         Intent intent = new Intent(getApplicationContext(), FriendsActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 863465, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
+                App.newFriendID, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
         Notification newFriendNotification = new NotificationCompat.Builder(this, Integer.toString(App.newFriendID))
                 .setSmallIcon(R.drawable.ic_payment_black_24dp)
