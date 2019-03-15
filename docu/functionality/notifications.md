@@ -10,7 +10,8 @@ Dies wird durch ein IMPORTANCE_LEVEL von **high** erreicht.
   
 Falls die Anwendung komplett terminiert wird, wird der Service sobald die Anwendung wieder gestartet wird  
 aktiviert und gleicht sich mit seinem zuletzt bekannten LiveData Datensatz ab. Kommt es zu Unterscheidungen  
-führt der Service nachträglich die Notifications aus, um den Nutzer über Änderungen zu informieren.  
+mit den vom NotificationService zwischengespeicherten Datensatz, führt der Service nachträglich 
+die Notifications aus, um den Nutzer über Änderungen zu informieren.  
   
 Der NotificationService ist während der Laufzeit der Applikation aktiv. Entsprechende Zustandsänderungen werden   
 dem aktiven Nutzer unabhängig davon angezeigt ob er sich in der Anwendung befindet oder nicht.  
@@ -19,7 +20,7 @@ dem aktiven Nutzer unabhängig davon angezeigt ob er sich in der Anwendung befin
 - Der Nutzer wurde einem neuen Event hinzugefügt  
 - Eine Position wurde in einem Event hinzugefügt in dem der Nutzer ein Teilnehmer ist  
 - Der Nutzer wurde von einer anderen Person als Freund hinzugefügt  
-- Eine offende Position des Nutzers wurde zurückgezahlt  
+- Eine offene Position des Nutzers wurde zurückgezahlt  
   
 Die vier Notifications sind in der NotificationService.class in Notificationchannels zusammengefasst.  
 
@@ -34,7 +35,7 @@ Notifications vom selben Typ überschreiben sich, indem sie den gleichen Request
 Die Notifications werden mit dem Android-eigenen Builder generiert.   
 
 - **.setSmallIcon** 
->**Das Symbol der Notification**  
+>**Das Symbol der Notification in der Android-Statusbar**  
 - **.setContentTitle** 
 >**Der Titel der Notification**  
 - **.setContentText** 
@@ -49,6 +50,14 @@ Die Notifications werden mit dem Android-eigenen Builder generiert.
 >**Automatisches schließen der Notification nach einmaligem Klick**  
 - **.build();** 
 >**Bau der Notification mit allen oben genannten Bausteinen**  
+
+____________________________________________________________________________
+
+**Datenabgleich**
+
+Der LiveData Datensatz wird in den Variablen **oldEventList** und **oldFriendList** abgespeichert. 
+Zustandsänderungen werden durch Unterschiede  im Listenindex erkannt und entsprechend auf  
+die richtige Objekt-ID referenziert.
   
 ## Lifecyyle  
 onCreate() **->** Wenn die Applikation gestartet wird.  
