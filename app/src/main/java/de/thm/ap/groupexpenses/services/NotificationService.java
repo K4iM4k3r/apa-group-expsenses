@@ -235,7 +235,7 @@ public class NotificationService extends Service {
                 newPositionID, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
         Notification newPositionNotification = new NotificationCompat.Builder(getApplicationContext(), Integer.toString(newPositionID))
-                .setSmallIcon(R.drawable.ic_event_black_24dp)
+                .setSmallIcon(R.drawable.ic_new_position_black_24dp)
                 .setContentTitle(getString(R.string.notification_new_position_title))
                 .setContentText(getString(R.string.notification_new_position_text, event.getName()))
                 .setContentIntent(pendingIntent)
@@ -275,7 +275,7 @@ public class NotificationService extends Service {
                 newFriendID, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
         Notification newFriendNotification = new NotificationCompat.Builder(this, Integer.toString(newFriendID))
-                .setSmallIcon(R.drawable.ic_payment_black_24dp)
+                .setSmallIcon(R.drawable.ic_friend_black_24dp)
                 .setContentTitle(getString(R.string.notification_new_friend_title))
                 .setContentText(getString(R.string.notification_new_friend_text, nickname_of_adder))
                 .setPriority(NotificationCompat.PRIORITY_MAX) // triggers if API-Level is below Oreo
