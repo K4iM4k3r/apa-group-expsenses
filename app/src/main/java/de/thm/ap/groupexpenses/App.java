@@ -1,30 +1,19 @@
 package de.thm.ap.groupexpenses;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.Application;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import de.thm.ap.groupexpenses.model.User;
 import de.thm.ap.groupexpenses.services.NotificationService;
 
 public class App extends Application {
-    public static final int newEventID = 1;
-    public static final int newPositionID = 2;
-    public static final int newPaymentID = 3;
-    public static final int newFriendID = 4;
-
     public static User CurrentUser; //to be set on Login/AppStart
 
     public static String HOST = "group-expenses-omran.firebaseapp.com";

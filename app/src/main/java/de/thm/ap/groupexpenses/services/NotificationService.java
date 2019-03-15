@@ -15,7 +15,6 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
-import de.thm.ap.groupexpenses.App;
 import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.livedata.EventListLiveData;
@@ -28,6 +27,10 @@ import de.thm.ap.groupexpenses.view.activity.FriendsActivity;
 import de.thm.ap.groupexpenses.view.activity.PositionActivity;
 
 public class NotificationService extends Service {
+    public static final int newEventID = 1;
+    public static final int newPositionID = 2;
+    public static final int newPaymentID = 3;
+    public static final int newFriendID = 4;
     public static boolean isRunning = false;
     public static boolean isCaller = false;
 
@@ -207,9 +210,9 @@ public class NotificationService extends Service {
         intent.putExtra("eventEid", new_event.getEid());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
-                App.newEventID, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+                newEventID, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
-        Notification newEventNotification = new NotificationCompat.Builder(getApplicationContext(), Integer.toString(App.newEventID))
+        Notification newEventNotification = new NotificationCompat.Builder(getApplicationContext(), Integer.toString(newEventID))
                 .setSmallIcon(R.drawable.ic_event_black_24dp)
                 .setContentTitle(getString(R.string.notification_new_event_title))
                 .setContentText(getString(R.string.notification_new_event_text, new_event.getName()))
@@ -218,7 +221,7 @@ public class NotificationService extends Service {
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .setAutoCancel(true)
                 .build();
-        notificationManager.notify(App.newPositionID, newEventNotification);
+        notificationManager.notify(newPositionID, newEventNotification);
     }
 
     /**
@@ -229,9 +232,9 @@ public class NotificationService extends Service {
         intent.putExtra("eventEid", event.getEid());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
-                App.newPositionID, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+                newPositionID, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
-        Notification newPositionNotification = new NotificationCompat.Builder(getApplicationContext(), Integer.toString(App.newPositionID))
+        Notification newPositionNotification = new NotificationCompat.Builder(getApplicationContext(), Integer.toString(newPositionID))
                 .setSmallIcon(R.drawable.ic_event_black_24dp)
                 .setContentTitle(getString(R.string.notification_new_position_title))
                 .setContentText(getString(R.string.notification_new_position_text, event.getName()))
@@ -240,7 +243,7 @@ public class NotificationService extends Service {
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .setAutoCancel(true)
                 .build();
-        notificationManager.notify(App.newPositionID, newPositionNotification);
+        notificationManager.notify(newPositionID, newPositionNotification);
     }
 
     /**
@@ -249,9 +252,9 @@ public class NotificationService extends Service {
     public void sendPaymentCompletedNotification(String debtor_nickname) {
         Intent intent = new Intent(getApplicationContext(), EventActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
-                App.newPaymentID, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+                newPaymentID, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
-        Notification payNotification = new NotificationCompat.Builder(this, Integer.toString(App.newPaymentID))
+        Notification payNotification = new NotificationCompat.Builder(this, Integer.toString(newPaymentID))
                 .setSmallIcon(R.drawable.ic_payment_black_24dp)
                 .setContentTitle(getString(R.string.notification_new_payment_title))
                 .setContentText(getString(R.string.notification_new_payment_text, debtor_nickname))
@@ -260,7 +263,7 @@ public class NotificationService extends Service {
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
                 .build();
-        notificationManager.notify(App.newPositionID, payNotification);
+        notificationManager.notify(newPositionID, payNotification);
     }
 
     /**
@@ -269,9 +272,9 @@ public class NotificationService extends Service {
     public void sendFriendAddedYouNotification(String nickname_of_adder) {
         Intent intent = new Intent(getApplicationContext(), FriendsActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
-                App.newFriendID, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+                newFriendID, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
-        Notification newFriendNotification = new NotificationCompat.Builder(this, Integer.toString(App.newFriendID))
+        Notification newFriendNotification = new NotificationCompat.Builder(this, Integer.toString(newFriendID))
                 .setSmallIcon(R.drawable.ic_payment_black_24dp)
                 .setContentTitle(getString(R.string.notification_new_friend_title))
                 .setContentText(getString(R.string.notification_new_friend_text, nickname_of_adder))
@@ -280,7 +283,7 @@ public class NotificationService extends Service {
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
                 .build();
-        notificationManager.notify(App.newPositionID, newFriendNotification);
+        notificationManager.notify(newPositionID, newFriendNotification);
     }
 
     /**
@@ -290,22 +293,22 @@ public class NotificationService extends Service {
     private void createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { // Check if the Device API-Level is Oreo or higher
             NotificationChannel new_payment = new NotificationChannel(
-                    Integer.toString(App.newPaymentID),
+                    Integer.toString(newPaymentID),
                     "NEW_PAYMENT",
                     NotificationManager.IMPORTANCE_HIGH
             );
             NotificationChannel new_event = new NotificationChannel(
-                    Integer.toString(App.newEventID),
+                    Integer.toString(newEventID),
                     "NEW_EVENT",
                     NotificationManager.IMPORTANCE_HIGH
             );
             NotificationChannel new_position = new NotificationChannel(
-                    Integer.toString(App.newPositionID),
+                    Integer.toString(newPositionID),
                     "NEW_POSITION",
                     NotificationManager.IMPORTANCE_HIGH
             );
             NotificationChannel new_friend = new NotificationChannel(
-                    Integer.toString(App.newFriendID),
+                    Integer.toString(newFriendID),
                     "NEW_FRIEND",
                     NotificationManager.IMPORTANCE_HIGH
             );
