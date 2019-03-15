@@ -113,9 +113,9 @@ Zuständig für die Darstellung wiederkehrender Muster.
 
 	Beinhaltet:
 	
--- PositionEventListFragment
--- UserListDialogFragment
--- CashFragment
+-- PositionEventListFragment  
+-- UserListDialogFragment  
+-- CashFragment  
 
 #### PositionEventListFragment
 **Layout:** *R.layout.fragment_object_list.xml*
