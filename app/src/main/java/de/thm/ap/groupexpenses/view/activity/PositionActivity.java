@@ -187,7 +187,10 @@ public class PositionActivity extends BaseActivity implements PositionEventListF
     private void chooseFabs() {
 
 
-        if (selectedEvent == null) return;
+        if (selectedEvent == null){
+            finish();
+            return;
+        }
 
         boolean isEventCreator = selectedEvent.getCreatorId().equals(App.CurrentUser.getUid());
         Event.LifecycleState lifecycleState = selectedEvent.getLifecycleState();

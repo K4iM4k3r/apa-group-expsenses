@@ -13,8 +13,8 @@ Mein Gesamtaufwand im Projekt sieht wie folgt aus:
 |Invite-Links               | ~5h             | 15h                 |
 |Sonstiges                  | ~20h            | --                  |
 |Testing                    | ~15h            | --                  |
-|Doku/Präsentation          | ~20h            | --                  |
-|**Summe**                  | **~145h**       | **135<sup>\*</sup>**|
+|Doku/Präsentation          | ~15h            | --                  |
+|**Summe**                  | **~140h**       | **135<sup>\*</sup>**|
 
 
 <sup>\*</sup> Der geschätze Gesamtaufwand basiert auf folgender Annahme: 9CP = 270h. Das Projekt macht 50% des Moduls aus. 50% von 270h = 135h.

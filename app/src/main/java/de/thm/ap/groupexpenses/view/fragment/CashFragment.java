@@ -35,6 +35,7 @@ import de.thm.ap.groupexpenses.livedata.EventLiveData;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.Position;
 import de.thm.ap.groupexpenses.model.Stats;
+import de.thm.ap.groupexpenses.services.NotificationService;
 import de.thm.ap.groupexpenses.view.activity.PayActivity;
 import de.thm.ap.groupexpenses.view.dialog.ProfileInfoDialog;
 
@@ -64,6 +65,7 @@ public class CashFragment extends Fragment {
         LinearLayout help_layout = rootView.findViewById(R.id.dialog_cash_check_help_layout);
         Bundle args = getArguments();
 
+
         help_btn.setOnClickListener(v -> {
             if (help_layout.getVisibility() == View.GONE) {
                 help_layout.setVisibility(View.VISIBLE);
@@ -82,7 +84,8 @@ public class CashFragment extends Fragment {
                     if (event != null) {
                         this.event = event;
                         float balance = Stats.getEventBalance(event);
-                        header_val.setText(new DecimalFormat("0.00").format(balance) + "€");
+                        String header_val_text = new DecimalFormat("0.00").format(balance) + "€";
+                        header_val.setText(header_val_text);
                         if (balance < 0) {
                             header_val.setTextColor(Color
                                     .parseColor("#ef4545"));    // red
@@ -96,22 +99,26 @@ public class CashFragment extends Fragment {
                     }
                 });
             } else if (uid != null) {
-                EventListLiveData listLiveData = DatabaseHandler.getEventListLiveData(uid);
-                listLiveData.observe(this, eventList -> {
-                    if (eventList != null) {
-                        this.eventList = eventList;
-                        TextView header_text = rootView.findViewById(R.id.dialog_cash_check_header_text);
-                        header_text.setText(getString(R.string.total_balance));
-                        float balance = Stats.getBalance(eventList);
-                        header_val.setText(new DecimalFormat("0.00").format(balance) + "€");
-                        if (balance < 0)
-                            header_val.setTextColor(Color.parseColor("#ef4545"));    // red
-                        else
-                            header_val.setTextColor(Color.parseColor("#2ba050"));    // green
-                        userValueList = new ArrayList<>();
-                        cash_check_map = Stats.getGlobalBalanceTable(App.CurrentUser, eventList);
-                        buildCashView();
-                    }
+                DatabaseHandler.queryUser(uid, result -> {
+                    App.CurrentUser = result;
+                    EventListLiveData listLiveData = DatabaseHandler.getEventListLiveData(uid);
+                    listLiveData.observe(this, eventList -> {
+                        if (eventList != null) {
+                            this.eventList = eventList;
+                            TextView header_text = rootView.findViewById(R.id.dialog_cash_check_header_text);
+                            header_text.setText(getString(R.string.total_balance));
+                            float balance = Stats.getBalance(eventList);
+                            String header_val_text = new DecimalFormat("0.00").format(balance) + "€";
+                            header_val.setText(header_val_text);
+                            if (balance < 0)
+                                header_val.setTextColor(Color.parseColor("#ef4545"));    // red
+                            else
+                                header_val.setTextColor(Color.parseColor("#2ba050"));    // green
+                            userValueList = new ArrayList<>();
+                            cash_check_map = Stats.getGlobalBalanceTable(App.CurrentUser, eventList);
+                            buildCashView();
+                        }
+                    });
                 });
             }
         }
@@ -163,8 +170,8 @@ public class CashFragment extends Fragment {
                 arrow_imageView.setImageDrawable(arrow);
                 userValueName.setText(R.string.you);
                 if (currentUserValue.name.length() > MAX_NAME_LENGTH) {
-                    userValueName2.setText(currentUserValue.name.substring(0, MAX_NAME_LENGTH)
-                            + "...");
+                    String userValueName2Text = currentUserValue.name.substring(0, MAX_NAME_LENGTH) + "...";
+                    userValueName2.setText(userValueName2Text);
                 } else {
                     userValueName2.setText(currentUserValue.name);
                 }
@@ -242,7 +249,7 @@ public class CashFragment extends Fragment {
                                 break;
                             default:
                         }
-                    } else if(eventList != null){
+                    } else if (eventList != null) {
                         boolean allEventsAreLocked = true;
                         for (Event e : Stats.getOpenEvents(App.CurrentUser.getUid(), currentUserValue.uid, eventList)) {
                             if (e.getLifecycleState() != Event.LifecycleState.LOCKED) {
@@ -299,6 +306,8 @@ public class CashFragment extends Fragment {
                     for (Position p : event.getPositions()) {
                         releaseAllDebtsBetweenUsers(p, App.CurrentUser.getUid(), debtor_uid);
                     }
+                    // tell the NotificationService that we did the payment
+                    NotificationService.isCaller = true;
                     DatabaseHandler.updateEvent(event);
                     Toast.makeText(getContext(), getString(R.string.done_paypal_payment), Toast.LENGTH_SHORT).show();
                 } else if (eventList != null) {    // user is paying for all events
@@ -306,6 +315,8 @@ public class CashFragment extends Fragment {
                         for (Position p : e.getPositions()) {
                             releaseAllDebtsBetweenUsers(p, App.CurrentUser.getUid(), debtor_uid);
                         }
+                        // tell the NotificationService that we did the payment
+                        NotificationService.isCaller = true;
                         DatabaseHandler.updateEvent(e);
                     }
                     Toast.makeText(getContext(), getString(R.string.done_paypal_payment), Toast.LENGTH_SHORT).show();
@@ -318,41 +329,62 @@ public class CashFragment extends Fragment {
     }
 
     private void buildCashView() {
-        List<String> keyList = new ArrayList<>(cash_check_map.keySet());
-        int idx = 0;
-        while (idx < keyList.size()) {
-            userValueList.add(null);
-            idx++;
-        }
-        for (idx = 0; idx < keyList.size(); ++idx) {
-            final String key = keyList.get(idx);
-            DatabaseHandler.queryUser(key, user -> {
-                for (int idx2 = 0; idx2 < userValueList.size(); ++idx2) {
-                    if (userValueList.get(idx2) == null) {
-                        if (user != null) {
-                            userValueList.set(idx2, new UserValue(
-                                    user.getUid(),
-                                    user.getNickname(),
-                                    user.getEmail(),
-                                    cash_check_map.get(key)));
-                        } else {
-                            userValueList.set(idx2, new UserValue(
-                                    getString(R.string.unknown),
-                                    getString(R.string.unknown),
-                                    getString(R.string.unknown),
-                                    cash_check_map.get(key)));
+        if (cash_check_map.isEmpty()) {
+            // create and set adapter
+            if (userValueArrayAdapter == null) {
+                Collections.sort(userValueList, DEBT_SORT);
+                userValueArrayAdapter = new UserValueArrayAdapter(Objects.requireNonNull(getContext()), userValueList);
+                cash_check_list.setAdapter(userValueArrayAdapter);
+            } else {
+                userValueArrayAdapter.clear();
+                userValueArrayAdapter.addAll(userValueList);
+                userValueArrayAdapter.notifyDataSetChanged();
+
+            }
+        } else {
+            List<String> keyList = new ArrayList<>(cash_check_map.keySet());
+            int idx = 0;
+            while (idx < keyList.size()) {
+                userValueList.add(null);
+                idx++;
+            }
+            for (idx = 0; idx < keyList.size(); ++idx) {
+                final String key = keyList.get(idx);
+                DatabaseHandler.queryUser(key, user -> {
+                    for (int idx2 = 0; idx2 < userValueList.size(); ++idx2) {
+                        if (userValueList.get(idx2) == null) {
+                            if (user != null) {
+                                userValueList.set(idx2, new UserValue(
+                                        user.getUid(),
+                                        user.getNickname(),
+                                        user.getEmail(),
+                                        cash_check_map.get(key)));
+                            } else {
+                                userValueList.set(idx2, new UserValue(
+                                        getString(R.string.unknown),
+                                        getString(R.string.unknown),
+                                        getString(R.string.unknown),
+                                        cash_check_map.get(key)));
+                            }
+                            break;
                         }
-                        break;
                     }
-                }
-                if (!userValueList.contains(null)) {
-                    // create and set adapter
-                    Collections.sort(userValueList, DEBT_SORT);
-                    userValueArrayAdapter = new UserValueArrayAdapter(Objects.requireNonNull(getContext()), userValueList);
-                    cash_check_list.setAdapter(userValueArrayAdapter);
-                }
-            });
+                    if (!userValueList.contains(null)) {
+                        // create and set adapter
+                        if (userValueArrayAdapter == null) {
+                            Collections.sort(userValueList, DEBT_SORT);
+                            userValueArrayAdapter = new UserValueArrayAdapter(Objects.requireNonNull(getContext()), userValueList);
+                            cash_check_list.setAdapter(userValueArrayAdapter);
+                        } else {
+                            userValueArrayAdapter.clear();
+                            userValueArrayAdapter.addAll(userValueList);
+                            userValueArrayAdapter.notifyDataSetChanged();
+                        }
+                    }
+                });
+            }
         }
+
     }
 
     private void showCashOrReminderDialog(UserValue currentUserValue) {
@@ -460,7 +492,7 @@ public class CashFragment extends Fragment {
             // fulfill payment
             Intent payIntent = new Intent(getContext(), PayActivity.class);
             payIntent.putExtra("amount", amountAsString);
-            payIntent.putExtra("debtor_uid", amount);
+            payIntent.putExtra("debtor_uid", currentUserValue.uid);
             startActivityForResult(payIntent, PAY_REQUEST_CODE);
             confirmDialogBuilder.dismiss();
         });

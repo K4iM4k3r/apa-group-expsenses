@@ -73,11 +73,8 @@ public class PositionEventListFragment<T> extends Fragment {
             ViewGroup parent = (ViewGroup) view.getParent();
             parent.removeView(view);
         }
-        RelativeLayout fragment_header = view.findViewById(R.id.fragment_header);
-        TextView fragment_header_text = view.findViewById(R.id.fragment_header_text);
         fragment_header_val = view.findViewById(R.id.fragment_header_val);
         object_listView = view.findViewById(R.id.fragment_listView);
-        TextView noObjects_textView = view.findViewById(R.id.fragment_no_object_text);
 
         Bundle args = getArguments();
 
@@ -87,68 +84,85 @@ public class PositionEventListFragment<T> extends Fragment {
 
             if (creatorMap == null) creatorMap = new HashMap<>();
 
-            //if you want to show the list of positions of one Event
-            if (eid != null) {
-                EventLiveData eventLiveData = DatabaseHandler.getEventLiveData(eid);
-                eventLiveData.observe(this, event -> {
-                    if (event != null && !event.getPositions().isEmpty()) {
-                        fragment_header.setVisibility(View.VISIBLE);
-                        //headerView.setVisibility(View.VISIBLE);
-                        object_listView.setVisibility(View.VISIBLE);
-                        noObjects_textView.setVisibility(View.GONE);
-                        String headerText = getString(R.string.total_expenses) + ":";
-                        fragment_header_text.setText(headerText);
-                        //header_text.setText(headerText);
-                        updateTotalBalanceOfPositions(event);
-                        List<Position> positions = event.getPositions();
-                        for (int idx = 0; idx < positions.size(); ++idx) {
-                            creatorMap.putIfAbsent(positions.get(idx).getCreatorId(), "");
-                        }
-                        generateAdapter((List<T>) positions, true);
-                    } else {
-                        fragment_header.setVisibility(View.GONE);
-                        //headerView.setVisibility(View.GONE);
-                        noObjects_textView.setVisibility(View.VISIBLE);
-                        noObjects_textView.setText(R.string.no_positions);
-                        if (adapter != null) {
-                            object_listView.setVisibility(View.GONE);
-                            adapter.clear();
-                        }
-                    }
+            if(App.CurrentUser == null){
+                DatabaseHandler.queryUser(uid, user -> {
+                    App.CurrentUser = user;
+                    continueBuildFragment(uid, eid);
                 });
             }
-            // if you want to show the list of events
-            else if (uid != null) {
-                EventListLiveData listLiveData = DatabaseHandler.getEventListLiveData(uid);
-                listLiveData.observe(this, eventList -> {
-                    if (eventList != null && !eventList.isEmpty()) {
-                        String headerText = getString(R.string.total_balance) + ":";
-                        fragment_header.setVisibility(View.VISIBLE);
-                        //headerView.setVisibility(View.VISIBLE);
-                        object_listView.setVisibility(View.VISIBLE);
-                        noObjects_textView.setVisibility(View.GONE);
-                        fragment_header_text.setText(headerText);
-                        //header_text.setText(headerText);
-                        updateTotalBalanceOfEvents(eventList);
-                        for (int idx = 0; idx < eventList.size(); ++idx) {
-                            creatorMap.putIfAbsent(eventList.get(idx).getCreatorId(), "");
-                        }
-                        generateAdapter((List<T>) eventList, false);
-
-                    } else {
-                        fragment_header.setVisibility(View.GONE);
-                        //headerView.setVisibility(View.GONE);
-                        noObjects_textView.setVisibility(View.VISIBLE);
-                        noObjects_textView.setText(R.string.no_events);
-                        if (adapter != null) {
-                            object_listView.setVisibility(View.GONE);
-                            adapter.clear();
-                        }
-                    }
-                });
+            else {
+                continueBuildFragment(uid, eid);
             }
         }
         return view;
+    }
+
+    private void continueBuildFragment(String uid, String eid){
+        RelativeLayout fragment_header = view.findViewById(R.id.fragment_header);
+        TextView fragment_header_text = view.findViewById(R.id.fragment_header_text);
+        TextView noObjects_textView = view.findViewById(R.id.fragment_no_object_text);
+
+
+        //if you want to show the list of positions of one Event
+        if (eid != null) {
+            EventLiveData eventLiveData = DatabaseHandler.getEventLiveData(eid);
+            eventLiveData.observe(this, event -> {
+                if (event != null && !event.getPositions().isEmpty()) {
+                    fragment_header.setVisibility(View.VISIBLE);
+                    //headerView.setVisibility(View.VISIBLE);
+                    object_listView.setVisibility(View.VISIBLE);
+                    noObjects_textView.setVisibility(View.GONE);
+                    String headerText = getString(R.string.total_expenses) + ":";
+                    fragment_header_text.setText(headerText);
+                    //header_text.setText(headerText);
+                    updateTotalBalanceOfPositions(event);
+                    List<Position> positions = event.getPositions();
+                    for (int idx = 0; idx < positions.size(); ++idx) {
+                        creatorMap.putIfAbsent(positions.get(idx).getCreatorId(), "");
+                    }
+                    generateAdapter((List<T>) positions, true);
+                } else {
+                    fragment_header.setVisibility(View.GONE);
+                    //headerView.setVisibility(View.GONE);
+                    noObjects_textView.setVisibility(View.VISIBLE);
+                    noObjects_textView.setText(R.string.no_positions);
+                    if (adapter != null) {
+                        object_listView.setVisibility(View.GONE);
+                        adapter.clear();
+                    }
+                }
+            });
+        }
+        // if you want to show the list of events
+        else if (uid != null) {
+            EventListLiveData listLiveData = DatabaseHandler.getEventListLiveData(uid);
+            listLiveData.observe(this, eventList -> {
+                if (eventList != null && !eventList.isEmpty()) {
+                    String headerText = getString(R.string.total_balance) + ":";
+                    fragment_header.setVisibility(View.VISIBLE);
+                    //headerView.setVisibility(View.VISIBLE);
+                    object_listView.setVisibility(View.VISIBLE);
+                    noObjects_textView.setVisibility(View.GONE);
+                    fragment_header_text.setText(headerText);
+                    //header_text.setText(headerText);
+                    updateTotalBalanceOfEvents(eventList);
+                    for (int idx = 0; idx < eventList.size(); ++idx) {
+                        creatorMap.putIfAbsent(eventList.get(idx).getCreatorId(), "");
+                    }
+                    generateAdapter((List<T>) eventList, false);
+
+                } else {
+                    fragment_header.setVisibility(View.GONE);
+                    //headerView.setVisibility(View.GONE);
+                    noObjects_textView.setVisibility(View.VISIBLE);
+                    noObjects_textView.setText(R.string.no_events);
+                    if (adapter != null) {
+                        object_listView.setVisibility(View.GONE);
+                        adapter.clear();
+                    }
+                }
+            });
+        }
     }
 
     private void generateAdapter(List<T> objectList, boolean isPosition) {

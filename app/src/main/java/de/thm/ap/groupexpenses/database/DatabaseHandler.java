@@ -27,7 +27,20 @@ import de.thm.ap.groupexpenses.model.User;
 
 public class DatabaseHandler {
 
+    /**
+     * Callback are used to send the answer back, because database operations are asynchron.
+     * For Usage Example:
+     *
+     *  isNicknameExisting("hansi", exits ->{
+     *      if(exists) ...
+     *  })
+     * @param <T> return type of the Callback
+     */
     public interface Callback<T>{
+        /**
+         * If Result exits this method is called
+         * @param result Result object
+         */
         void onResult(T result);
     }
 
@@ -76,6 +89,11 @@ public class DatabaseHandler {
         updateUser(second);
     }
 
+    /**
+     * Remove the Entry of each other in friend list
+     * @param one first User
+     * @param two other User
+     */
     public static void destroyFriendship(User one, User two){
         one.removeFriend(two.getUid());
         two.removeFriend(one.getUid());
@@ -152,6 +170,7 @@ public class DatabaseHandler {
             }
         })));
     }
+
 
     private static void updateEventWithoutMakeAllMemberActive(Event event){
         DocumentReference documentReference = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_EVENTS).document(event.getEid());
@@ -376,8 +395,8 @@ public class DatabaseHandler {
 
     /**
      * Method to leave event entirely
-     * @param eid
-     * @param uid
+     * @param eid Id of event
+     * @param uid Id of user
      */
     public static void leaveEvent(String eid, String uid){
         queryEvent(eid, event -> {

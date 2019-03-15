@@ -27,6 +27,7 @@ import de.thm.ap.groupexpenses.R;
 import de.thm.ap.groupexpenses.database.DatabaseHandler;
 import de.thm.ap.groupexpenses.model.Event;
 import de.thm.ap.groupexpenses.model.User;
+import de.thm.ap.groupexpenses.services.NotificationService;
 import de.thm.ap.groupexpenses.view.fragment.UserListDialogFragment;
 
 import static de.thm.ap.groupexpenses.App.CurrentUser;
@@ -224,7 +225,8 @@ public class EventFormActivity extends BaseActivity {
                         .map(User::getUid)
                         .collect(Collectors.toList())
         );
-
+        // tell the NotificationService that we created the event
+        NotificationService.isCaller = true;
         DatabaseHandler.createEvent(event);
         finish();
     }

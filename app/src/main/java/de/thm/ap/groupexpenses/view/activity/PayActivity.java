@@ -32,11 +32,13 @@ import de.thm.ap.groupexpenses.R;
 
 public class PayActivity extends AppCompatActivity {
 
+    private final String successful = "Braintree"; // payment method nonce
     final int REQUEST_CODE = 1;
     final String getToken = "http://expenses.deneb.uberspace.de/main.php";
     final String payDetails = "http://expenses.deneb.uberspace.de/checkout.php";
     String token, amount;
     HashMap<String, String> paramHash;
+    private Bundle extras;
 
     Button btnPay;
     TextView tVAmount;
@@ -49,7 +51,7 @@ public class PayActivity extends AppCompatActivity {
         llHolder = findViewById(R.id.llHolder);
         tVAmount = findViewById(R.id.tVPrice);
         btnPay = findViewById(R.id.btnPay);
-        Bundle extras = getIntent().getExtras();
+        extras = getIntent().getExtras();
         String payThis = extras.getString("amount");
         tVAmount.setText(payThis + "€");
         btnPay.setOnClickListener(v -> onBraintreeSubmit());
@@ -98,7 +100,9 @@ public class PayActivity extends AppCompatActivity {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, payDetails,
                 response -> {
                     Intent returnIntent = new Intent();
-                    if (response.contains("Successful")) {
+                    String debtor_uid = extras.getString("debtor_uid");
+                    returnIntent.putExtra("debtor_uid", debtor_uid);
+                    if (response.contains(successful)) {
                         setResult(Activity.RESULT_OK, returnIntent);
                     } else {
                         setResult(Activity.RESULT_CANCELED, returnIntent);
