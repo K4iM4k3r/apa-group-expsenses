@@ -59,7 +59,7 @@ Frontend-Gimmick der Anwendung.
 Zuständig für die Darstellung von Infos sowie kürzere Benutzerinteraktionen.
 
 	Beinhaltet:
--- EventInfoDialog 
+-- EventInfoDialog  
 -- InviteDialog  
 -- PositionInfoDialog  
 -- ProfileInfoDialog  
@@ -123,7 +123,7 @@ Ein *object* kann sowohl ein Event als auch eine Position sein, die mittels dies
 Bei Klick auf ein item in der Liste wird der entsprechende InfoDialog aufgerufen (*EventInfoDialog* oder *PositionInfoDialog*).  
 Bei noch genauerem Klick auf den Ersteller in einem item in der Liste wird der *ProfileInfoDialog* des Erstellers aufgerufen.  
 Es exisitiert außerdem ein Header, der fix über der Liste ist und einen Gesamtbetrag anzeigt, abhängig von Position oder Event-Liste.  
-In der Event-Liste werden links zusätzlich *ImageView*´über den Status des Events eingeblendet.
+In der Event-Liste werden zusätzlich auf der linken Seite *ImageView* über den Status des Events eingeblendet.
 
 #### UserListDialogFragment
 **Layout:** *R.layout.fragment_user_list.xml*
@@ -132,7 +132,8 @@ Es existieren zwei Umstände, unter welchen dieses Fragment aufgerufen wird:
 1. create_event
 2. edit_event
 
-Abhängig von diesen zwei Zuständen ist eine unterschiedliche Ansicht dieses Dialogs implementiert. Teilweise fungiert dieser Dialog als Picker, teils aber auch nur als reine Auflistung der Nutzer.
+Abhängig von diesen zwei Zuständen ist eine unterschiedliche Ansicht dieses Dialogs implementiert.  
+Teilweise fungiert dieser Dialog als Picker, teils aber auch nur als reine Auflistung der Nutzer.
 
 #### CashFragment
 **Layout:** *R.layout.fragment_cash_check.xml*
