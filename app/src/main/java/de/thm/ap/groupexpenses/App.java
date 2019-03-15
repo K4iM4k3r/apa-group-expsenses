@@ -69,7 +69,6 @@ public class App extends Application {
         @Override
         public void onActivityStarted(Activity activity) {
             // app went to foreground, start NotificationService
-            NotificationService.isCaller = false;
             if (!NotificationService.isRunning) {
                 // start NotificationService
                 Intent intent = new Intent(getApplicationContext(), NotificationService.class);

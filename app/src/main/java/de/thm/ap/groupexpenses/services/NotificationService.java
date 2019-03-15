@@ -108,16 +108,15 @@ public class NotificationService extends Service {
                                 // position is not new, look for changes in 'peopleThatDontHaveToPay'
                                 // if it increased in size -> payment fulfilled
 
-                                if (isCaller) {
-                                    isCaller = false;
-                                    oldEventList = newEventList;
-                                    return;
-                                }
-
                                 if (!new_position.getCreatorId().equals(currentUser.getUid()))
                                     continue; // it's not our position, stop searching
 
                                 if (old_position.getPeopleThatDontHaveToPay().size() < new_position.getPeopleThatDontHaveToPay().size()) {
+                                    if (isCaller) {
+                                        isCaller = false;
+                                        oldEventList = newEventList;
+                                        return;
+                                    }
                                     String debtor_uid_found = null;
                                     for (String debtor_who_just_payed_uid : new_position.getPeopleThatDontHaveToPay()) {
                                         if (!old_position.getPeopleThatDontHaveToPay().contains(debtor_who_just_payed_uid)) {
